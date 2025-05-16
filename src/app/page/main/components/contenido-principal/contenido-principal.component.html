@@ -1,7 +1,7 @@
 <!-- Card unificada para tabs + contenido -->
-<div class="bg-white rounded-xl shadow overflow-visible relative text-[#243659] border mt-6 border-gray-200">
+<div class="bg-white rounded-b-xl overflow-visible shadow relative text-[#243659] border-solid border mt-6 border-gray-200 ">
   <!-- Tabs integrados al borde superior -->
-  <div class="flex w-full border-b border-gray-200">
+  <div class="flex w-full">
     <!-- Tab: Registro -->
     <button (click)="cambiarTab('registro')"
       class="group relative flex flex-1 justify-center items-center gap-2 px-4 py-3 text-[14px] font-semibold uppercase tracking-wide transition-all duration-300"
@@ -9,7 +9,7 @@
 				'text-[#E30512] bg-white ': activeTab === 'registro',
 				'text-[#243659] hover:text-[#E30512] bg-gray-100': activeTab !== 'registro'
 			}">
-      <i class="pi pi-folder-plus text-[15px]"></i>
+      <i class="pi pi-folder-plus text-base"></i>
       Registro
       <span class="absolute bottom-0 left-0 w-full h-1 bg-[#E30512] rounded-t" *ngIf="activeTab === 'registro'"></span>
     </button>
@@ -21,7 +21,7 @@
 				'text-[#E30512] bg-white ': activeTab === 'listado',
 				'text-[#243659] hover:text-[#E30512] bg-gray-100': activeTab !== 'listado'
 			}">
-      <i class="pi pi-folder-plus text-[15px]"></i>
+      <i class="pi pi-list text-base"></i>
       Listado
       <span class="absolute bottom-0 left-0 w-full h-1 bg-[#E30512] rounded-t" *ngIf="activeTab === 'listado'"></span>
     </button>
@@ -45,14 +45,14 @@
 				'text-[#E30512] bg-white': activeTab === 'historial',
 				'text-[#243659] hover:text-[#E30512] bg-gray-100':activeTab !== 'historial'
 			}">
-      <i class="pi pi-list-check text-[15px]"></i>
+      <i class="pi pi-history text-base"></i>
       Historial
       <span class="absolute bottom-0 left-0 w-full h-1 bg-[#E30512] rounded-t" *ngIf="activeTab === 'historial'"></span>
     </button>
   </div>
 
   <!-- Contenido del tab -->
-  <div class="p-6 space-y-6">
+  <div>
     <!-- Registro -->
     <app-registro *ngIf="activeTab === 'registro'" />
     <!-- Listado -->

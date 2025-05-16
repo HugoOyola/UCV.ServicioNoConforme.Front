@@ -1,1 +1,227 @@
-<p>registro works!</p>
+<!-- Componente de Registro -->
+<div class="w-full mx-auto">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-50 px-10 py-6 border-solid border-0 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-[#1a2a47] flex items-center">
+      <i class="pi pi-exclamation-circle mr-3 text-xl text-red-500" aria-hidden="true"></i>
+      Registro del Servicio No Conforme
+    </h2>
+    <p class="text-gray-600 text-sm mt-2">
+      Complete todos los campos requeridos <span class="text-red-500 font-bold" aria-hidden="true">(*)</span> para
+      registrar su no conformidad.
+    </p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="w-full" novalidate>
+    <!-- Formulario -->
+    <div class="px-10 py-8 shadow-sm">
+      <!-- Campos en grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Area Destino -->
+        <div class="form-group">
+          <label for="area" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            Área o Escuela destinataria <span class="text-red-500" aria-hidden="true">*</span>
+            <span class="sr-only">(requerido)</span>
+          </label>
+          <p-select
+            id="area"
+            formControlName="area"
+            [options]="areas"
+            optionLabel="name"
+            optionValue="value"
+            [attr.aria-required]="true"
+            [attr.aria-invalid]="form.get('area')?.touched && form.get('area')?.invalid"
+            placeholder="Seleccione área destinataria"
+            styleClass="w-full"
+            aria-describedby="area-error"
+          >
+          </p-select>
+          <div
+            id="area-error"
+            *ngIf="form.get('area')?.touched && form.get('area')?.invalid"
+            class="text-red-500 text-xs mt-2 flex items-center"
+            aria-live="assertive"
+          >
+            <i class="pi pi-exclamation-circle mr-1.5" aria-hidden="true"></i> Seleccione un área destinataria.
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="form-group">
+          <label for="categoria" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            Categoría <span class="text-red-500" aria-hidden="true">*</span>
+            <span class="sr-only">(requerido)</span>
+          </label>
+          <p-select
+            id="categoria"
+            formControlName="categoria"
+            [options]="categorias"
+            optionLabel="name"
+            optionValue="value"
+            [attr.aria-required]="true"
+            [attr.aria-invalid]="form.get('categoria')?.touched && form.get('categoria')?.invalid"
+            placeholder="Seleccione una categoría"
+            styleClass="w-full"
+            aria-describedby="categoria-error"
+          >
+          </p-select>
+          <div
+            id="categoria-error"
+            *ngIf="form.get('categoria')?.touched && form.get('categoria')?.invalid"
+            class="text-red-500 text-xs mt-2 flex items-center"
+            aria-live="assertive"
+          >
+            <i class="pi pi-exclamation-circle mr-1.5" aria-hidden="true"></i> Seleccione una categoría.
+          </div>
+        </div>
+
+        <!-- Fecha del incidente -->
+        <div class="form-group">
+          <label for="fecha" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            Fecha del incidente
+          </label>
+          <p-datepicker
+            id="fecha"
+            formControlName="fecha"
+            [iconDisplay]="'input'"
+            [showIcon]="true"
+            inputId="fecha-input"
+            [maxDate]="maxDate"
+            styleClass="w-full"
+            placeholder="Seleccione una fecha"
+            [attr.aria-label]="'Seleccione fecha del incidente'"
+          ></p-datepicker>
+        </div>
+
+        <!-- Lugar -->
+        <div class="form-group">
+          <label for="lugar" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            Lugar en el campus
+          </label>
+          <div class="relative flex-grow">
+            <input
+              id="lugar"
+              pInputText
+              formControlName="lugar"
+              type="text"
+              class="w-full"
+              placeholder="Ej. Biblioteca, Aula 101..."
+              aria-label="Ingrese lugar en el campus"
+            >
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true">
+              <i class="pi pi-map-marker"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Prioridad -->
+        <div class="form-group">
+          <fieldset>
+            <legend class="block text-sm font-medium mb-2 text-[#1a2a47]">
+              Prioridad <span class="text-red-500" aria-hidden="true">*</span>
+              <span class="sr-only">(requerido)</span>
+            </legend>
+            <div
+              class="flex flex-wrap gap-4"
+              role="radiogroup"
+              aria-required="true"
+              aria-invalid="form.get('prioridad')?.touched && form.get('prioridad')?.invalid"
+              aria-describedby="prioridad-error"
+            >
+              <div class="flex items-center" *ngFor="let opcion of prioridades; let i = index">
+                <p-radioButton
+                  name="prioridad"
+                  [value]="opcion.label"
+                  formControlName="prioridad"
+                  [inputId]="'prioridad' + i"
+                  [attr.aria-label]="'Prioridad ' + opcion.label"
+                >
+                </p-radioButton>
+                <label [for]="'prioridad' + i" class="ml-2 flex items-center gap-2">
+                  <span
+                    class="w-3 h-3 rounded-full inline-block"
+                    [style.backgroundColor]="getColorForPriority(opcion)"
+                    aria-hidden="true"
+                  ></span>
+                  <span>{{ opcion.label }}</span>
+                </label>
+              </div>
+            </div>
+            <div
+              id="prioridad-error"
+              *ngIf="form.get('prioridad')?.touched && form.get('prioridad')?.invalid"
+              class="text-red-500 text-xs mt-2 flex items-center"
+              aria-live="assertive"
+            >
+              <i class="pi pi-exclamation-circle mr-1.5" aria-hidden="true"></i> Seleccione una prioridad.
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Detalle con contador de caracteres mejorado -->
+      <div class="mb-6">
+        <div class="form-group">
+          <label for="detalle" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            Detalle del servicio no conforme <span class="text-red-500" aria-hidden="true">*</span>
+            <span class="sr-only">(requerido)</span>
+          </label>
+          <textarea
+            id="detalle"
+            pTextarea
+            formControlName="detalle"
+            rows="5"
+            [autoResize]="true"
+            class="w-full"
+            maxlength="2000"
+            placeholder="Describa detalladamente su servicio no conforme..."
+            [attr.aria-required]="true"
+            [attr.aria-invalid]="form.get('detalle')?.touched && form.get('detalle')?.invalid"
+            aria-describedby="detalle-error contador-caracteres"
+          ></textarea>
+          <div class="flex justify-between mt-2">
+            <div
+              id="detalle-error"
+              *ngIf="form.get('detalle')?.touched && form.get('detalle')?.invalid"
+              class="text-red-500 text-xs flex items-center"
+              aria-live="assertive"
+            >
+              <i class="pi pi-exclamation-circle mr-1.5" aria-hidden="true"></i> Debe ingresar al menos 10 caracteres.
+            </div>
+            <div id="contador-caracteres" class="text-sm text-gray-500 flex items-center" aria-live="polite">
+              <i class="pi pi-file-edit mr-1.5" aria-hidden="true"></i>
+              <span>{{ form.get('detalle')?.value?.length || 0 }}/2000 caracteres</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerta mejorada -->
+      <div
+        class="bg-yellow-50 border-solid border border-yellow-200 border-l-4 border-l-yellow-400 text-yellow-800 p-4 rounded-md mb-6 flex items-start"
+        role="alert"
+        aria-labelledby="alert-heading"
+      >
+        <i class="pi pi-exclamation-triangle text-yellow-500 mr-3 text-lg mt-0.5" aria-hidden="true"></i>
+        <div>
+          <p id="alert-heading" class="text-lg font-semibold mb-1">Atención:</p>
+          <p class="text-md">La no conformidad será registrada para el <span class="font-semibold">Campus
+              Trujillo</span>.</p>
+          <p class="text-sm mt-1">Asegúrese de que todos los datos sean correctos antes de enviar.</p>
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <div class="flex justify-end">
+        <p-button
+          label="Registrar"
+          icon="pi pi-save"
+          severity="success"
+          type="submit"
+          [disabled]="form.invalid"
+          styleClass="w-full sm:w-auto uppercase font-semibold"
+        >
+        </p-button>
+      </div>
+    </div>
+  </form>
+</div>
