@@ -1,0 +1,56 @@
+<!-- profile-card.component.html -->
+<div class="w-full bg-white shadow-md rounded-md overflow-hidden">
+  <!-- Barra roja superior -->
+  <div class="h-2 bg-red-600 w-full"></div>
+
+  <!-- Contenido principal -->
+  <div class="p-5 flex flex-col md:flex-row items-start gap-4">
+    <!-- Avatar con foto en lugar de iniciales -->
+    <div class="flex-shrink-0">
+      <div class="w-24 h-24 rounded-full border-solid border-white shadow-lg overflow-hidden">
+        <img [src]="professorData.foto" alt="{{ professorData.name }}" class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- Información del profesor -->
+    <div class="flex-grow">
+      <!-- Nombre y email -->
+      <h2 class="text-xl font-bold text-gray-800">{{ professorData.name }}</h2>
+      <p class="text-gray-600 mb-2">{{ professorData.email }}</p>
+
+      <!-- Badge de posición -->
+      <div class="inline-block bg-gray-800 text-white text-sm px-3 py-1 rounded-md mb-4">
+        {{ professorData.position }}
+      </div>
+    </div>
+
+    <!-- Etiquetas (movidas al final) -->
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center bg-white border border-gray-300 rounded-full px-3 py-1 text-sm">
+        <span class="mr-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </span>
+        {{ professorData.location }}
+      </div>
+      <div class="flex items-center bg-white border border-gray-300 rounded-full px-3 py-1 text-sm">
+        <span class="mr-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </span>
+        {{ professorData.faculty }}
+      </div>
+      <div class="flex items-center bg-white border border-gray-300 rounded-full px-3 py-1 text-sm">
+        <span class="mr-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </span>
+        {{ professorData.role }}
+      </div>
+    </div>
+  </div>
+</div>

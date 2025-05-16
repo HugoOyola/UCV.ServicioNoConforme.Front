@@ -1,21 +1,27 @@
-<div class="flex flex-wrap gap-1 w-full justify-center p-4">
-	<button mat-stroked-button color="primary" (click)="cargarDatosNuevos('7002812989')">7002812989 alumno externo</button>
-</div>
-
-<!-- {{ this._mainSharedService.datosModuloSignal() | json }} -->
-
-<div class="flex flex-col col-span-12 w-full p-2 md:p-4 gap-4 min-w-[300px] max-w-screen-2xl m-auto">
-	<div class="flex flex-col">
-		<!-- <h2 class="text-xl text-[#233559] font-semibold">Dashboard</h2> -->
-		<span class="text-base">¡Bienvenido de nuevo!</span>
-		<!-- <span class="text-xl text-[#233559] font-semibold">¡Bienvenido de nuevo!</span> -->
+<!-- Estructura principal con scroll -->
+<div class="flex flex-col h-screen overflow-hidden">
+	<!-- Encabezado (fuera del área de scroll) -->
+	<div class="w-full px-8 py-6 bg-gradient-to-r from-[#243659] to-[#222e61] text-white z-10 flex-shrink-0">
+		<div class="flex items-center gap-4">
+			<div class="bg-white/10 p-2.5 border-solid border rounded-md flex items-center justify-center">
+				<i class="pi pi-briefcase text-xl"></i>
+			</div>
+			<div class="flex flex-col">
+				<h1 class="text-xl font-bold sm:text-xl leading-tight uppercase">
+					Modulo de Servicios no Conforme
+				</h1>
+				<span class="text-sm text-white/60">
+					Gestione el registro y seguimiento de los servicios no conformes en la Universidad César Vallejo
+				</span>
+			</div>
+		</div>
 	</div>
-	<div class="grid grid-cols-12 gap-4">
-		<!-- <button mat-button class="col-span-12" color="primary" (click)="valor = !valor">toogle</button> -->
-		<!-- [@fade]="valor ? '*' : 'void'" -->
-		<section class="card col-span-12 md:col-span-5 lg:col-span-4 justify-start items-center gap-4">
-			<span class="text-base text-textPrimary font-bold w-full">Datos Básicos</span>
-			<app-datos-basicos class="w-full"></app-datos-basicos>
-		</section>
+
+	<!-- Contenedor con scroll -->
+	<div class="flex-grow overflow-y-auto">
+		<div class="px-8 py-8">
+			<app-usuario-info/>
+			<!-- Aquí irá el resto del contenido que necesita scroll -->
+		</div>
 	</div>
 </div>
