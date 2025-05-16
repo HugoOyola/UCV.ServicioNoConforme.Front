@@ -12,11 +12,12 @@ import {MainSharedService} from '@shared/services/main-shared.service';
 import {ModuleService} from '@shared/services/module.service';
 import { ButtonModule } from 'primeng/button';
 import { UsuarioInfoComponent } from "./components/usuario-info/usuario-info.component";
+import { ContenidoPrincipalComponent } from "./components/contenido-principal/contenido-principal.component";
 
 @Component({
 	selector: 'app-main',
 	standalone: true,
-	imports: [CommonModule, SkeletonComponent, MatIconModule, MatButtonModule, DatosBasicosComponent, ButtonModule, UsuarioInfoComponent],
+	imports: [CommonModule, SkeletonComponent, MatIconModule, MatButtonModule, DatosBasicosComponent, ButtonModule, UsuarioInfoComponent, ContenidoPrincipalComponent],
 	providers: [MainService],
 	templateUrl: './main.component.html',
 	styleUrl: './main.component.scss',
