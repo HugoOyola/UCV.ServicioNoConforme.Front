@@ -4,6 +4,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
+import { VerTicketComponent } from "./ver-ticket/ver-ticket.component";
 
 interface Ticket {
   id: string;
@@ -22,7 +23,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transfe
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent],
   templateUrl: './listado.component.html',
   styleUrl: './listado.component.scss'
 })
@@ -31,6 +32,9 @@ export class ListadoComponent implements OnInit {
   public ticketsFiltrados: Ticket[] = [];
   public searchTerm: string = '';
   public estadoFiltro: EstadoFiltro = 'Todos';
+
+  public modalVisible: boolean = false;
+  public selectedTicket: any = null;
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
@@ -375,6 +379,11 @@ export class ListadoComponent implements OnInit {
   }
 
   verDetalles(ticket: Ticket): void {
-    console.log('Ver detalles del ticket:', ticket);
+    this.selectedTicket = ticket;
+    this.modalVisible = true;
+  }
+
+  closeModal(): void {
+    this.modalVisible = false;
   }
 }

@@ -1,0 +1,99 @@
+<div *ngIf="visible" class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Overlay de fondo -->
+  <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
+
+  <!-- Modal -->
+  <div class="relative bg-white rounded-md shadow-lg w-full max-w-md mx-4 z-10">
+    <!-- Cabecera con título y botón de cerrar -->
+    <div class="flex bg-[#e30512] items-center justify-between p-4 border-b rounded-t-md">
+      <h3 class="text-lg font-medium text-white">
+        Detalle del Servicio No Conforme
+      </h3>
+      <!-- Botón X para cerrar -->
+      <button type="button" class="text-white hover:text-gray-200" (click)="close()">
+        <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
+      </button>
+    </div>
+
+    <!-- Contenido del modal -->
+    <div class="p-4" *ngIf="ticket">
+      <!-- ID y tipo de servicio -->
+      <div class="text-gray-600 text-sm mb-4">
+        ID: {{ticket.id}} - {{ticket.categoria}}
+      </div>
+
+      <!-- Grid de información en dos columnas -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <!-- Columna izquierda -->
+        <div>
+          <div class="mb-3">
+            <div class="text-sm text-gray-500">Fecha del Incidente</div>
+            <div class="font-medium">{{ticket.fecha}}</div>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-sm text-gray-500">Área Destino</div>
+            <div class="font-medium">{{ticket.areaDestino}}</div>
+          </div>
+
+          <div>
+            <div class="text-sm text-gray-500">Prioridad</div>
+            <div>
+              <span [ngClass]="{
+                'bg-red-200 text-red-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Alta',
+                'bg-yellow-200 text-yellow-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Media',
+                'bg-green-200 text-green-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Baja'
+              }">{{ticket.prioridad}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div>
+          <div class="mb-3">
+            <div class="text-sm text-gray-500">Fecha de Registro</div>
+            <div class="font-medium">{{ticket.fechaRegistro}}</div>
+          </div>
+
+          <div class="mb-3">
+            <div class="text-sm text-gray-500">Lugar</div>
+            <div class="font-medium">{{ticket.lugar}}</div>
+          </div>
+
+          <div>
+            <div class="text-sm text-gray-500">Estado</div>
+            <div>
+              <span [ngClass]="{
+                'bg-gray-200 text-gray-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Pendiente',
+                'bg-blue-100 text-blue-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'En Proceso',
+                'bg-green-100 text-green-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Resuelto',
+                'bg-purple-100 text-purple-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Transferido'
+              }">{{ticket.estado}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalle del problema -->
+      <div class="mt-4">
+        <div class="text-sm text-gray-500 mb-1">Detalle del Servicio No Conforme</div>
+        <div class="bg-gray-100 p-3 rounded-md text-gray-800">
+          {{ticket.detalle}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Línea divisora -->
+    <hr class="border-solid border-b border-gray-200 my-1">
+
+    <!-- Footer con botón de cerrar -->
+    <div class="flex justify-end p-4">
+      <button
+        type="button"
+        class="bg-[#e30512] hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+        (click)="close()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

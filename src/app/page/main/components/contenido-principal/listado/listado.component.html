@@ -115,3 +115,10 @@
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<app-ver-ticket
+  [visible]="modalVisible"
+  [ticket]="selectedTicket"
+  (btnCerrar)="closeModal()">
+</app-ver-ticket>
