@@ -1,6 +1,7 @@
 import { Component, effect, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainSharedService } from '@shared/services/main-shared.service';
+import { MainService } from '../../services/main.service';
 
 interface ProfessorData {
   name: string;
@@ -21,6 +22,7 @@ interface ProfessorData {
 })
 export class UsuarioInfoComponent {
   public _mainSharedService = inject(MainSharedService);
+  private _mainService = inject(MainService);
 
   @Input() public professorData: ProfessorData = {
     name: 'Juan Pérez Rodríguez',
@@ -33,10 +35,24 @@ export class UsuarioInfoComponent {
   };
 
   constructor() {
-    effect(() =>{
+    effect(() => {
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
-      console.log(cPerCodigoSignal);
+      this.post_ServiciosNoConformesDetallePersonal();
+      console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
     })
+  }
+
+  post_ServiciosNoConformesDetallePersonal(): void {
+    if (this._mainSharedService.cPerCodigo() !== '') {
+      this._mainService.post_ObtenerServicioDetallePersonal(this._mainSharedService.cPerCodigo()).subscribe({
+        next: (v) => {
+          // const cPerfiles = v.body?.item?.cPerfiles ?? null;
+          // const PerfilArray = cPerfiles.split(',').map((p: string) => Number(p.trim()));
+          //console.log(PerfilArray);
+          // this._GlobalSharedService.perfiles.set(PerfilArray);
+        }
+      })
+    }
   }
 
   public getInitials = (name: string): string => {

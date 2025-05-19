@@ -1,15 +1,14 @@
-import {Component, HostListener, effect, inject} from '@angular/core';
-import {MainService} from './services/main.service';
-import {AuthService} from '@auth/auth.service';
-import {SkeletonComponent} from '@shared/components/skeleon/skeleton.component';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
-import {CommonModule} from '@angular/common';
-import {PerfilesSharedService} from '@shared/services/perfiles-shared.service';
-import {EncryptionService} from '@auth/encryption.service';
-import {DatosBasicosComponent} from './components/datos-basicos/datos-basicos.component';
-import {MainSharedService} from '@shared/services/main-shared.service';
-import {ModuleService} from '@shared/services/module.service';
+import { Component, HostListener, effect, inject } from '@angular/core';
+import { MainService } from './services/main.service';
+import { AuthService } from '@auth/auth.service';
+import { SkeletonComponent } from '@shared/components/skeleon/skeleton.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { PerfilesSharedService } from '@shared/services/perfiles-shared.service';
+import { EncryptionService } from '@auth/encryption.service';
+import { MainSharedService } from '@shared/services/main-shared.service';
+import { ModuleService } from '@shared/services/module.service';
 import { ButtonModule } from 'primeng/button';
 import { UsuarioInfoComponent } from "./components/usuario-info/usuario-info.component";
 import { ContenidoPrincipalComponent } from "./components/contenido-principal/contenido-principal.component";
@@ -17,7 +16,7 @@ import { ContenidoPrincipalComponent } from "./components/contenido-principal/co
 @Component({
 	selector: 'app-main',
 	standalone: true,
-	imports: [CommonModule, SkeletonComponent, MatIconModule, MatButtonModule, DatosBasicosComponent, ButtonModule, UsuarioInfoComponent, ContenidoPrincipalComponent],
+	imports: [CommonModule, SkeletonComponent, MatIconModule, MatButtonModule, ButtonModule, UsuarioInfoComponent, ContenidoPrincipalComponent],
 	providers: [MainService],
 	templateUrl: './main.component.html',
 	styleUrl: './main.component.scss',
@@ -71,8 +70,8 @@ export class MainComponent {
 					console.log('v =>', v);
 					this._mainSharedService.datosPersonales.set(v.body?.lstItem[0] ?? null);
 				},
-				error: (e) => {},
-				complete: () => {},
+				error: (e) => { },
+				complete: () => { },
 			});
 		}
 	}
