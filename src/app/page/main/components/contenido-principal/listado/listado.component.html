@@ -96,7 +96,7 @@
                 (click)="verDetalles(ticket)">
               </p-button>
               <p-button icon="pi pi-pencil" severity="warn"
-                (click)="verDetalles(ticket)">
+                (click)="editarTicket(ticket)">
               </p-button>
               <p-button icon="pi pi-trash" severity="danger"
                 (click)="verDetalles(ticket)">
@@ -116,9 +116,17 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal para Ver Ticket -->
 <app-ver-ticket
   [visible]="modalVisible"
   [ticket]="selectedTicket"
   (btnCerrar)="closeModal()">
 </app-ver-ticket>
+
+<!-- Modal para Editar Ticket -->
+<app-editar-ticket
+  [visible]="modalEdicionVisible"
+  [ticket]="ticketEnEdicion"
+  (btnCerrar)="closeModalEdicion()"
+  (btnGuardar)="guardarCambios($event)">
+</app-editar-ticket>
