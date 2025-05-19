@@ -28,5 +28,19 @@ export const environment = {
 				},
 			},
 		},
+		ServicioNoConforme:{
+			token:{
+				name: 'ServicioNoConforme',
+				user: 'kcH5DQtpuWyRt9W1LD0jQ7wZlbCB',
+				pass: 'd65xRfD71x8UcfFYwcV06eyvd6ie',
+				tokenUrl: 'https://ucvapi.azure-api.net/jwttrilce/v1/api/Token/Login',
+			},
+			routes: {
+				servicionoconforme: {
+					url: 'https://ucvapi.azure-api.net/apinoconformidades/qa/api/',
+					...routes.ServicioNoConforme,
+				},
+			},
+		}
 	},
 };

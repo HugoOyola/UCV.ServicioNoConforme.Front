@@ -6,4 +6,9 @@ export const routes = {
 			Principal_ObtenerDatosPersonales: 'Principal/ObtenerDatosPersonales',
 		},
 	},
+	ServicioNoConforme: {
+		endpoints: {
+			Snc_DetallePersonal: 'IncidenciasNC/DetallePersonalNC',
+		}
+	}
 };
