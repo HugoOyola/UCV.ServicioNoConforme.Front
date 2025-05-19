@@ -36,7 +36,7 @@ export const environment = {
 				tokenUrl: 'https://ucvapi.azure-api.net/jwttrilce/v1/api/Token/Login',
 			},
 			routes: {
-				servicionoconforme: {
+				apinoconformidades: {
 					url: 'https://ucvapi.azure-api.net/apinoconformidades/qa/api/',
 					...routes.ServicioNoConforme,
 				},

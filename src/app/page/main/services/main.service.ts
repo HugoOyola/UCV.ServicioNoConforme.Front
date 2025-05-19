@@ -9,8 +9,7 @@ import { ObtenerDatosPersonales } from '../interface/principal';
 @Injectable()
 export class MainService extends GlobalService {
 	private TrilcePrincipal = environment.ls_apis.trilceapi2.routes.trilceprincipal2;
-	private ApiServicioNC = environment.ls_apis.ServicioNoConforme.routes.servicionoconforme;
-	private token = environment.ls_apis.ServicioNoConforme.token;
+	private ApiServicioNC = environment.ls_apis.ServicioNoConforme.routes.apinoconformidades;
 
 	constructor() {
 		super();

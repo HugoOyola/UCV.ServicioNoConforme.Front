@@ -50,6 +50,7 @@ export class UsuarioInfoComponent {
           // const PerfilArray = cPerfiles.split(',').map((p: string) => Number(p.trim()));
           //console.log(PerfilArray);
           // this._GlobalSharedService.perfiles.set(PerfilArray);
+          console.log('Datos del personal:', v.body?.lstItem[0].cCargo);
         }
       })
     }
