@@ -2,21 +2,21 @@
   <!-- Overlay de fondo -->
   <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
 
-  <!-- Modal -->
-  <div class="relative bg-white rounded-md shadow-lg w-full max-w-md mx-4 z-10">
+  <!-- Modal con ancho y alto personalizados -->
+  <div class="relative bg-white rounded-md shadow-lg w-[600px] max-h-[90vh] overflow-y-auto mx-4 z-10">
     <!-- Cabecera con título y botón de cerrar -->
-    <div class="flex bg-[#e30512] items-center justify-between p-4 border-b rounded-t-md">
+    <div class="flex bg-[#e30512] items-center justify-between px-6 py-4 border-b rounded-t-md sticky top-0 z-10">
       <h3 class="text-lg font-medium text-white">
-        Detalle del Servicio No Conforme
+        <strong>Detalle:</strong> Servicio no Conforme
       </h3>
-      <!-- Botón X para cerrar -->
-      <button type="button" class="text-white hover:text-gray-200" (click)="close()">
+      <!-- Botón X para cerrar (ajustado para centrar verticalmente) -->
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
         <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
       </button>
     </div>
 
     <!-- Contenido del modal -->
-    <div class="p-4" *ngIf="ticket">
+    <div class="px-8 py-4" *ngIf="ticket">
       <!-- ID y tipo de servicio -->
       <div class="text-gray-600 text-sm mb-4">
         ID: {{ticket.id}} - {{ticket.categoria}}
@@ -40,10 +40,12 @@
             <div class="text-sm text-gray-500">Prioridad</div>
             <div>
               <span [ngClass]="{
-                'bg-red-200 text-red-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Alta',
-                'bg-yellow-200 text-yellow-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Media',
-                'bg-green-200 text-green-600 px-4 py-0.5 rounded-full text-xs font-medium': ticket.prioridad === 'Baja'
-              }">{{ticket.prioridad}}</span>
+                'bg-red-200 text-red-600': ticket.prioridad === 'Alta',
+                'bg-yellow-100 text-yellow-600': ticket.prioridad === 'Media',
+                'bg-green-100 text-green-600': ticket.prioridad === 'Baja'
+              }" class="px-3 py-1 rounded-full text-xs font-medium">
+                {{ticket.prioridad}}
+              </span>
             </div>
           </div>
         </div>
@@ -64,11 +66,13 @@
             <div class="text-sm text-gray-500">Estado</div>
             <div>
               <span [ngClass]="{
-                'bg-gray-200 text-gray-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Pendiente',
-                'bg-blue-100 text-blue-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'En Proceso',
-                'bg-green-100 text-green-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Resuelto',
-                'bg-purple-100 text-purple-800 px-3 py-0.5 rounded-full text-xs font-medium': ticket.estado === 'Transferido'
-              }">{{ticket.estado}}</span>
+                'text-yellow-600 bg-yellow-100': ticket.estado === 'Pendiente',
+                'text-blue-600 bg-blue-100': ticket.estado === 'En Proceso',
+                'text-green-600 bg-green-100': ticket.estado === 'Resuelto',
+                'text-purple-600 bg-purple-100': ticket.estado === 'Transferido'
+              }" class="px-2 py-1 rounded text-xs font-medium">
+                {{ticket.estado}}
+              </span>
             </div>
           </div>
         </div>
@@ -87,7 +91,7 @@
     <hr class="border-solid border-b border-gray-200 my-1">
 
     <!-- Footer con botón de cerrar -->
-    <div class="flex justify-end p-4">
+    <div class="flex justify-end p-4 sticky bottom-0 bg-white z-10">
       <button
         type="button"
         class="bg-[#e30512] hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
