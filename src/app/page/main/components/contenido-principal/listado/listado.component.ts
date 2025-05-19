@@ -6,6 +6,7 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "./ver-ticket/ver-ticket.component";
 import { EditarTicketComponent } from './editar-ticket/editar-ticket.component';
+import { EliminarTicketComponent } from './eliminar-ticket/eliminar-ticket.component';
 
 interface Ticket {
   id: string;
@@ -24,7 +25,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transfe
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent],
   templateUrl: './listado.component.html',
   styleUrl: './listado.component.scss'
 })
@@ -44,6 +45,10 @@ export class ListadoComponent implements OnInit {
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
+
+  // Modal de eliminación
+  public modalEliminacionVisible: boolean = false;
+  public ticketAEliminar: Ticket | null = null;
 
   constructor() { }
 
@@ -396,6 +401,12 @@ export class ListadoComponent implements OnInit {
     this.modalEdicionVisible = true;
   }
 
+  // Método para mostrar modal de confirmación de eliminación
+  confirmarEliminarTicket(ticket: Ticket): void {
+    this.ticketAEliminar = ticket;
+    this.modalEliminacionVisible = true;
+  }
+
   // Método para cerrar modal de visualización
   closeModal(): void {
     this.modalVisible = false;
@@ -404,6 +415,11 @@ export class ListadoComponent implements OnInit {
   // Método para cerrar modal de edición
   closeModalEdicion(): void {
     this.modalEdicionVisible = false;
+  }
+
+  // Método para cerrar modal de eliminación
+  closeModalEliminacion(): void {
+    this.modalEliminacionVisible = false;
   }
 
   // Método para guardar cambios de un ticket
@@ -431,14 +447,13 @@ export class ListadoComponent implements OnInit {
     }
   }
 
-  // Método para eliminar un ticket
+  // Método para eliminar un ticket (ejecutado después de confirmar)
   eliminarTicket(ticket: Ticket): void {
-    if (confirm(`¿Está seguro que desea eliminar el ticket ${ticket.id}?`)) {
-      // Filtrar el ticket del array original
-      this.tickets = this.tickets.filter(t => t.id !== ticket.id);
-
-      // Actualizar tickets filtrados
-      this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
-    }
+    // Filtrar el ticket del array original
+    this.tickets = this.tickets.filter(t => t.id !== ticket.id);
+    // Actualizar tickets filtrados
+    this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
+    // Cerrar el modal de eliminación
+    this.modalEliminacionVisible = false;
   }
 }

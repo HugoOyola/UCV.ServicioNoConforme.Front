@@ -99,7 +99,7 @@
                 (click)="editarTicket(ticket)">
               </p-button>
               <p-button icon="pi pi-trash" severity="danger"
-                (click)="verDetalles(ticket)">
+                (click)="confirmarEliminarTicket(ticket)">
               </p-button>
             </td>
           </tr>
@@ -130,3 +130,11 @@
   (btnCerrar)="closeModalEdicion()"
   (btnGuardar)="guardarCambios($event)">
 </app-editar-ticket>
+
+<!-- Modal para Eliminar Ticket -->
+<app-eliminar-ticket
+  [visible]="modalEliminacionVisible"
+  [ticket]="ticketAEliminar"
+  (btnCerrar)="closeModalEliminacion()"
+  (btnConfirmar)="eliminarTicket($event)">
+</app-eliminar-ticket>
