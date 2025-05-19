@@ -20,11 +20,11 @@ export const environment = {
 				name: 'trilceapi2',
 				user: 'og5xgX458yx8pDVB5UpWgNabxL8a',
 				pass: '7RluNM9ox3T1UR7xOv0EONCo4Nka',
-				tokenUrl: 'https://trilceapi2.ucv.edu.pe:8243/token?grant_type=client_credentials',
+				tokenUrl: 'https://ucvapi.azure-api.net/jwttrilce/v1/api/Token/Login',
 			},
 			routes: {
-				TrilcePrincipalApi: {
-					...routes.TrilcePrincipalApi,
+				trilceprincipal2: {
+					...routes.trilceprincipal2,
 				},
 			},
 		},

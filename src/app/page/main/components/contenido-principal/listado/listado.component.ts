@@ -5,6 +5,7 @@ import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "./ver-ticket/ver-ticket.component";
+import { EditarTicketComponent } from './editar-ticket/editar-ticket.component';
 
 interface Ticket {
   id: string;
@@ -23,7 +24,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transfe
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent],
   templateUrl: './listado.component.html',
   styleUrl: './listado.component.scss'
 })
@@ -33,8 +34,13 @@ export class ListadoComponent implements OnInit {
   public searchTerm: string = '';
   public estadoFiltro: EstadoFiltro = 'Todos';
 
+  // Modal de vista
   public modalVisible: boolean = false;
-  public selectedTicket: any = null;
+  public selectedTicket: Ticket | null = null;
+
+  // Modal de edición
+  public modalEdicionVisible: boolean = false;
+  public ticketEnEdicion: Ticket | null = null;
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
@@ -378,12 +384,61 @@ export class ListadoComponent implements OnInit {
     this.filtrarTickets();
   }
 
+  // Método para ver detalles del ticket
   verDetalles(ticket: Ticket): void {
     this.selectedTicket = ticket;
     this.modalVisible = true;
   }
 
+  // Método para editar ticket
+  editarTicket(ticket: Ticket): void {
+    this.ticketEnEdicion = ticket;
+    this.modalEdicionVisible = true;
+  }
+
+  // Método para cerrar modal de visualización
   closeModal(): void {
     this.modalVisible = false;
+  }
+
+  // Método para cerrar modal de edición
+  closeModalEdicion(): void {
+    this.modalEdicionVisible = false;
+  }
+
+  // Método para guardar cambios de un ticket
+  guardarCambios(ticketEditado: Ticket): void {
+    // Encontrar el índice del ticket en el array original
+    const index = this.tickets.findIndex(t => t.id === ticketEditado.id);
+
+    if (index !== -1) {
+      // Actualizar el ticket en el array original
+      this.tickets[index] = ticketEditado;
+
+      // Actualizar también en tickets filtrados si existe
+      const indexFiltrado = this.ticketsFiltrados.findIndex(t => t.id === ticketEditado.id);
+      if (indexFiltrado !== -1) {
+        this.ticketsFiltrados[indexFiltrado] = ticketEditado;
+      }
+
+      // También actualizar selectedTicket si es el mismo ticket
+      if (this.selectedTicket && this.selectedTicket.id === ticketEditado.id) {
+        this.selectedTicket = ticketEditado;
+      }
+
+      // Cerrar el modal de edición
+      this.modalEdicionVisible = false;
+    }
+  }
+
+  // Método para eliminar un ticket
+  eliminarTicket(ticket: Ticket): void {
+    if (confirm(`¿Está seguro que desea eliminar el ticket ${ticket.id}?`)) {
+      // Filtrar el ticket del array original
+      this.tickets = this.tickets.filter(t => t.id !== ticket.id);
+
+      // Actualizar tickets filtrados
+      this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
+    }
   }
 }

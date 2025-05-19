@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, effect, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MainSharedService } from '@shared/services/main-shared.service';
 
 interface ProfessorData {
   name: string;
@@ -19,6 +20,8 @@ interface ProfessorData {
   styleUrl: './usuario-info.component.scss'
 })
 export class UsuarioInfoComponent {
+  public _mainSharedService = inject(MainSharedService);
+
   @Input() public professorData: ProfessorData = {
     name: 'Juan Pérez Rodríguez',
     foto: 'https://randomuser.me/api/portraits/men/28.jpg',
@@ -29,7 +32,12 @@ export class UsuarioInfoComponent {
     role: 'Coordinador Académico'
   };
 
-  constructor() { }
+  constructor() {
+    effect(() =>{
+      const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
+      console.log(cPerCodigoSignal);
+    })
+  }
 
   public getInitials = (name: string): string => {
     return name
