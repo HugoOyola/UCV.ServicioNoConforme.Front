@@ -2,17 +2,7 @@ import { Component, effect, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainSharedService } from '@shared/services/main-shared.service';
 import { MainService } from '../../services/main.service';
-
-interface ProfessorData {
-  name: string;
-  email: string;
-  foto: string;
-  position: string;
-  location: string;
-  faculty: string;
-  role: string;
-}
-
+import { PersonalData } from './interface/personalData';
 @Component({
   selector: 'app-usuario-info',
   standalone: true,
@@ -20,25 +10,19 @@ interface ProfessorData {
   templateUrl: './usuario-info.component.html',
   styleUrl: './usuario-info.component.scss'
 })
+
 export class UsuarioInfoComponent {
   public _mainSharedService = inject(MainSharedService);
   private _mainService = inject(MainService);
 
-  @Input() public professorData: ProfessorData = {
-    name: 'Juan Pérez Rodríguez',
-    foto: 'https://randomuser.me/api/portraits/men/28.jpg',
-    email: 'juan.perez@ucv.edu.pe',
-    position: 'Docente - Tiempo Completo',
-    location: 'Trujillo',
-    faculty: 'Facultad de Ingeniería',
-    role: 'Coordinador Académico'
-  };
+  // Use the interface for type safety
+  public personalData: PersonalData | null = null;
 
   constructor() {
     effect(() => {
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
       this.post_ServiciosNoConformesDetallePersonal();
-      console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
+      // console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
     })
   }
 
@@ -46,13 +30,22 @@ export class UsuarioInfoComponent {
     if (this._mainSharedService.cPerCodigo() !== '') {
       this._mainService.post_ObtenerServicioDetallePersonal(this._mainSharedService.cPerCodigo()).subscribe({
         next: (v) => {
+          if (v.body?.lstItem.length && v.body?.lstItem.length > 0) {
+            // Tipo de Respuesta en caso de que el servicio no retorne un valor
+            this.personalData = v.body?.lstItem[0] as PersonalData;
+            console.log('Datos del personal:', v.body?.lstItem[0].cCargo);
+
           // const cPerfiles = v.body?.item?.cPerfiles ?? null;
           // const PerfilArray = cPerfiles.split(',').map((p: string) => Number(p.trim()));
           //console.log(PerfilArray);
           // this._GlobalSharedService.perfiles.set(PerfilArray);
-          console.log('Datos del personal:', v.body?.lstItem[0].cCargo);
         }
-      })
+      },
+        error: (e) => {
+          console.error('Error al obtener los datos del personal:', e);
+          this.personalData = null;
+        }
+      });
     }
   }
 
