@@ -9,6 +9,7 @@ export const routes = {
 	ServicioNoConforme: {
 		endpoints: {
 			Snc_DetallePersonal: 'IncidenciasNC/DetallePersonalNC',
+			Snc_ListadoEscuelas: 'IncidenciasNC/UnidadAcademicaNC',
 		}
 	}
 };

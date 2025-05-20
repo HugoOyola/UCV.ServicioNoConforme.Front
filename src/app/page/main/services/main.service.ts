@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environment/environment';
-import { ResponseResultLst, ResponseResultItem } from '@interface/responseResult.interface';
+import { ResponseResultLst } from '@interface/responseResult.interface';
 import { GlobalService } from '@shared/services/global.service';
 import { Observable } from 'rxjs';
 import { ObtenerDatosPersonales } from '../interface/principal';
@@ -30,6 +30,18 @@ export class MainService extends GlobalService {
 		};
 
 		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_DetallePersonal;
+		return this._http.post<ResponseResultLst<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
+
+	post_ObtenerServicioListadoEscuelas(cperjuridica: string): Observable<HttpResponse<ResponseResultLst<any>>> {
+		const param = {
+			cPerJuridica: cperjuridica,
+		};
+
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_ListadoEscuelas;
 		return this._http.post<ResponseResultLst<any>>(ling, param, {
 			headers: this.headers_a_json,
 			observe: 'response',
