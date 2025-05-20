@@ -47,4 +47,19 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	post_ObtenerServicioListadoCategoria(nintcodigo: number, nintclase: number, ninttipo: number, cintjeraquia: string): Observable<HttpResponse<ResponseResultLst<any>>> {
+		const param = {
+			nIntCodigo: nintcodigo,
+			nIntClase: nintclase,
+			nIntTipo: ninttipo,
+			cIntJerarquia: cintjeraquia
+		};
+
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_ListadoCategoria;
+		return this._http.post<ResponseResultLst<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }

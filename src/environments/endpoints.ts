@@ -10,6 +10,7 @@ export const routes = {
 		endpoints: {
 			Snc_DetallePersonal: 'IncidenciasNC/DetallePersonalNC',
 			Snc_ListadoEscuelas: 'IncidenciasNC/UnidadAcademicaNC',
+			Snc_ListadoCategoria: 'IncidenciasNC/CategoriasNC',
 		}
 	}
 };

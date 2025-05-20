@@ -27,6 +27,21 @@ interface AreaOption {
   value: number;
 }
 
+// Interfaz para las categorías tal como vienen de la API
+interface Categoria {
+  codigo: number;
+  categoria: number;
+  jerarquia: string | null;
+  nombre: string;
+  descripcion: string;
+  tipo: number;
+}
+
+// Interfaz para las opciones del select de categorías
+interface CategoriaOption {
+  name: string;
+  value: number;
+}
 
 @Component({
   selector: 'app-registro',
@@ -53,18 +68,8 @@ export class RegistroComponent implements OnInit {
     { label: 'Alta', color: 'bg-red-500' },
   ];
 
-  public categorias = [
-    { name: 'Infraestructura', value: 'Infraestructura' },
-    { name: 'Servicios académicos', value: 'Servicios académicos' },
-    { name: 'Atención al estudiante', value: 'Atención al estudiante' },
-    { name: 'Docencia', value: 'Docencia' },
-    { name: 'Administrativo', value: 'Administrativo' },
-    { name: 'Biblioteca', value: 'Biblioteca' },
-    { name: 'Laboratorios', value: 'Laboratorios' },
-    { name: 'Tecnología', value: 'Tecnología' },
-    { name: 'Seguridad', value: 'Seguridad' },
-    { name: 'Otros', value: 'Otros' },
-  ];
+  // En el componente, actualizar la definición de categorias
+  public categorias: CategoriaOption[] = [];
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -89,6 +94,8 @@ export class RegistroComponent implements OnInit {
     if (this._mainSharedService.cPerCodigo() !== '') {
       this.cargarUnidadesAcademicas();
     }
+    // Cargar las categorías
+    this.cargarCategorias();
   }
 
   cargarUnidadesAcademicas(): void {
@@ -144,6 +151,49 @@ export class RegistroComponent implements OnInit {
       error: (e) => {
         console.error('Error al obtener el listado de escuelas:', e);
         this.areas = [];
+      }
+    });
+  }
+
+  // Agregar función para cargar categorías
+  cargarCategorias(): void {
+    // Parámetros según lo indicado
+    const params = {
+      nIntCodigo: 0,
+      nIntClase: 1001,
+      nIntTipo: 0,
+      cIntJerarquia: ""
+    };
+
+    // Llamar al servicio con los parámetros especificados
+    this._mainService.post_ObtenerServicioListadoCategoria(
+      params.nIntCodigo,
+      params.nIntClase,
+      params.nIntTipo,
+      params.cIntJerarquia
+    ).subscribe({
+      next: (response) => {
+        if (response.body?.lstItem && response.body.lstItem.length > 0) {
+          const categoriasResponse: Categoria[] = response.body.lstItem;
+
+          // Mapear a la estructura necesaria para el select
+          this.categorias = categoriasResponse.map(item => ({
+            name: item.descripcion,
+            value: item.codigo
+          }));
+
+          // Ordenar alfabéticamente las categorías
+          this.categorias.sort((a, b) => a.name.localeCompare(b.name));
+
+          console.log('Categorías cargadas:', this.categorias.length);
+        } else {
+          console.warn('No se encontraron categorías en la respuesta');
+          this.categorias = [];
+        }
+      },
+      error: (e) => {
+        console.error('Error al obtener las categorías:', e);
+        this.categorias = [];
       }
     });
   }
