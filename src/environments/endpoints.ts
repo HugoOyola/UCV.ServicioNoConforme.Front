@@ -11,6 +11,7 @@ export const routes = {
 			Snc_DetallePersonal: 'IncidenciasNC/DetallePersonalNC',
 			Snc_ListadoEscuelas: 'IncidenciasNC/UnidadAcademicaNC',
 			Snc_ListadoCategoria: 'IncidenciasNC/CategoriasNC',
+			Snc_GuardarServicio: 'IncidenciasNC/GuardarServicioNC',
 		}
 	}
 };

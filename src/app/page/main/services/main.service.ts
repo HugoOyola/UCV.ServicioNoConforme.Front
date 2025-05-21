@@ -62,4 +62,25 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	post_GuardarServicioNC(
+		datos: {
+			cPerCodigo: string,
+			nUniOrgCodigo: number,
+			idCategoria: number,
+			dfechaIncidente: string,
+			cLugarIncidente: string,
+			idPrioridad: string,
+			cDetalleServicio: string,
+			cPerJuridica: string,
+			cUsuarioCorreo: string,
+			cIpUsuario: string
+		}
+	): Observable<HttpResponse<ResponseResultLst<any>>> {
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_GuardarServicio;
+		return this._http.post<ResponseResultLst<any>>(ling, datos, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }

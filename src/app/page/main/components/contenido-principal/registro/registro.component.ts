@@ -242,17 +242,135 @@ export class RegistroComponent implements OnInit {
   onSubmit(): void {
     if (this.form.valid) {
       const formData = this.form.getRawValue();
-      console.log('Formulario completo:', formData);
 
-      const fechaValue = this.form.get('fecha')?.value;
-      console.log('Valor de fecha:', fechaValue);
-      console.log('Tipo de fecha:', typeof fechaValue);
+      // Obtener datos del usuario del servicio compartido
+      const datosPersonales = this._mainSharedService.datosPersonales();
+      const cPerCodigo = this._mainSharedService.cPerCodigo();
 
-      if (fechaValue instanceof Date) {
-        console.log('Fecha como string local:', fechaValue.toLocaleDateString());
+      console.log('datosPersonales completo:', datosPersonales);
+      if (datosPersonales) {
+        // Listar todas las propiedades para verificar el nombre exacto
+        console.log('Propiedades disponibles:', Object.keys(datosPersonales));
+      }
+
+      // Formato de fecha usando toLocaleDateString si hay fecha, o cadena vacía si no hay
+      let fechaFormateada = '';
+      if (formData.fecha instanceof Date) {
+        fechaFormateada = formData.fecha.toLocaleDateString();
+        console.log('Fecha formateada:', fechaFormateada);
+      }
+
+      // Mapear la prioridad textual al valor numérico requerido
+      const prioridadValor = this.obtenerValorPrioridad(formData.prioridad);
+
+      // Obtener el cPerJuridica adecuadamente
+      let cPerJuridica = '';
+
+      // Verificar si existe en el shared service (comprobar diferentes posibles nombres de propiedad)
+      if (datosPersonales) {
+        // Intentar varias posibles claves para cPerJuridica
+        cPerJuridica = datosPersonales.cperjuridica;
+
+        if (cPerJuridica) {
+          this.enviarDatosIncidencia(cPerCodigo, formData, fechaFormateada, prioridadValor, cPerJuridica);
+        } else {
+          // Si no encontramos cPerJuridica en datosPersonales, intentamos obtenerlo del servicio
+          this.obtenerCPerJuridicaYEnviar(cPerCodigo, formData, fechaFormateada, prioridadValor);
+        }
+      } else {
+        // Si no hay datosPersonales, intentamos obtener cPerJuridica del servicio
+        this.obtenerCPerJuridicaYEnviar(cPerCodigo, formData, fechaFormateada, prioridadValor);
       }
     } else {
+      // Marcar todos los campos como tocados para mostrar errores
       this.form.markAllAsTouched();
+    }
+  }
+
+  // Método para obtener cPerJuridica del servicio y luego enviar los datos
+  private obtenerCPerJuridicaYEnviar(
+    cPerCodigo: string,
+    formData: any,
+    fechaFormateada: string,
+    prioridadValor: string
+  ): void {
+    this._mainService.post_ObtenerServicioDetallePersonal(cPerCodigo).subscribe({
+      next: (response) => {
+        if (response.body?.lstItem && response.body.lstItem.length > 0) {
+          const cPerJuridica = response.body.lstItem[0].cPerJuridica;
+          console.log('cPerJuridica obtenido del servicio:', cPerJuridica);
+          this.enviarDatosIncidencia(cPerCodigo, formData, fechaFormateada, prioridadValor, cPerJuridica);
+        } else {
+          console.error('No se pudo obtener cPerJuridica del servicio');
+          // Mostrar mensaje de error
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener datos del personal:', error);
+        // Mostrar mensaje de error
+      }
+    });
+  }
+
+  // Método para enviar los datos una vez que tengamos el cPerJuridica
+  private enviarDatosIncidencia(
+    cPerCodigo: string,
+    formData: any,
+    fechaFormateada: string,
+    prioridadValor: string,
+    cPerJuridica: string
+  ): void {
+    // Obtener email del usuario
+    const datosPersonales = this._mainSharedService.datosPersonales();
+    const cUsuarioCorreo = datosPersonales?.cPerMaiNombre || '';
+
+    // Usar la función existente para obtener la IP
+    const ipUsuario = this.getIp();
+
+    // Preparar datos para el servicio
+    const incidenciaData = {
+      cPerCodigo: cPerCodigo,
+      nUniOrgCodigo: formData.area,
+      idCategoria: formData.categoria,
+      dfechaIncidente: fechaFormateada,
+      cLugarIncidente: formData.lugar || '',
+      idPrioridad: prioridadValor,
+      cDetalleServicio: formData.detalle,
+      cPerJuridica: cPerJuridica,
+      cUsuarioCorreo: cUsuarioCorreo,
+      cIpUsuario: ipUsuario
+    };
+
+    console.log('Datos a enviar:', incidenciaData);
+
+    // Llamar al servicio para guardar la incidencia
+    this._mainService.post_GuardarServicioNC(incidenciaData).subscribe({
+      next: (response) => {
+        console.log('Incidencia guardada exitosamente:', response);
+        // Agregar mensaje de éxito (si tienes un servicio de mensajes)
+        // this._messageService.add({severity:'success', summary: 'Éxito', detail: 'La incidencia ha sido registrada correctamente'});
+
+        // Limpiar formulario
+        this.form.reset();
+      },
+      error: (error) => {
+        console.error('Error al guardar la incidencia:', error);
+        if (error.error && error.error.message) {
+          console.error('Mensaje de error del servidor:', error.error.message);
+        }
+        // Mostrar mensaje de error (si tienes un servicio de mensajes)
+        // this._messageService.add({severity:'error', summary: 'Error', detail: 'No se pudo registrar la incidencia'});
+      }
+    });
+  }
+
+  // Método auxiliar para convertir la etiqueta de prioridad a su valor numérico
+  obtenerValorPrioridad(etiquetaPrioridad: string): string {
+    switch (etiquetaPrioridad) {
+      case 'Baja': return '1';
+      case 'Media': return '2';
+      case 'Alta': return '3';
+      default: return '1'; // Valor por defecto
     }
   }
 }
