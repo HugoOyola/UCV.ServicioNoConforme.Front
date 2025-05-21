@@ -333,7 +333,7 @@ export class RegistroComponent implements OnInit {
       nUniOrgCodigo: formData.area,
       idCategoria: formData.categoria,
       dfechaIncidente: fechaFormateada,
-      cLugarIncidente: formData.lugar || '',
+      cLugarIncidente: formData.lugar,
       idPrioridad: prioridadValor,
       cDetalleServicio: formData.detalle,
       cPerJuridica: cPerJuridica,
