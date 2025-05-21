@@ -4,9 +4,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
-import { VerTicketComponent } from "./ver-ticket/ver-ticket.component";
-import { EditarTicketComponent } from './editar-ticket/editar-ticket.component';
-import { EliminarTicketComponent } from './eliminar-ticket/eliminar-ticket.component';
+import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
+import { EditarTicketComponent } from '../../../shared/modales/editar-ticket/editar-ticket.component';
+import { EliminarTicketComponent } from '../../../shared/modales/eliminar-ticket/eliminar-ticket.component';
 
 interface Ticket {
   id: string;
