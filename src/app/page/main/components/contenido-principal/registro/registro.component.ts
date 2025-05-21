@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -9,6 +9,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { MainSharedService } from '@shared/services/main-shared.service';
 import { MainService } from '../../../services/main.service';
+import { lastValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 // Interfaz para las unidades académicas exactamente como vienen de la API
 interface UnidadAcademica {
@@ -51,6 +53,7 @@ interface CategoriaOption {
   styleUrl: './registro.component.scss'
 })
 export class RegistroComponent implements OnInit {
+  private _http = inject(HttpClient);
   private _mainService = inject(MainService);
   private _mainSharedService = inject(MainSharedService);
 
@@ -68,10 +71,14 @@ export class RegistroComponent implements OnInit {
     { label: 'Alta', color: 'bg-red-500' },
   ];
 
+  public ipUsuario = signal<string>('0.0.0.0');
+
   // En el componente, actualizar la definición de categorias
   public categorias: CategoriaOption[] = [];
 
   constructor(private fb: FormBuilder) {
+    this.loadIpAddress();
+
     this.form = this.fb.group({
       area: ['', Validators.required],
       categoria: ['', Validators.required],
@@ -86,6 +93,7 @@ export class RegistroComponent implements OnInit {
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
       this.cargarUnidadesAcademicas();
       console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
+      console.log('El IP: ',this.getIp());
     });
   }
 
@@ -96,6 +104,20 @@ export class RegistroComponent implements OnInit {
     }
     // Cargar las categorías
     this.cargarCategorias();
+  }
+
+  private async loadIpAddress(): Promise<void> {
+    try {
+      const response = await lastValueFrom(this._http.get<{ ip: string }>('https://api64.ipify.org?format=json'));
+      this.ipUsuario.set(response.ip || '0.0.0.0'); // Guardamos la IP en la variable reactiva
+    } catch (error) {
+      console.error('Error obteniendo la IP:', error);
+      this.ipUsuario.set('0.0.0.0'); // Fallback en caso de error
+    }
+  }
+
+  getIp(): string {
+    return this.ipUsuario(); // Método para obtener la IP en cualquier parte del código
   }
 
   cargarUnidadesAcademicas(): void {
@@ -209,9 +231,26 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  // onSubmit(): void {
+  //   if (this.form.valid) {
+  //     console.log(this.form.getRawValue());
+  //   } else {
+  //     this.form.markAllAsTouched();
+  //   }
+  // }
+
   onSubmit(): void {
     if (this.form.valid) {
-      console.log(this.form.getRawValue());
+      const formData = this.form.getRawValue();
+      console.log('Formulario completo:', formData);
+
+      const fechaValue = this.form.get('fecha')?.value;
+      console.log('Valor de fecha:', fechaValue);
+      console.log('Tipo de fecha:', typeof fechaValue);
+
+      if (fechaValue instanceof Date) {
+        console.log('Fecha como string local:', fechaValue.toLocaleDateString());
+      }
     } else {
       this.form.markAllAsTouched();
     }
