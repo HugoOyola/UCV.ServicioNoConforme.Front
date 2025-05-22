@@ -5,8 +5,6 @@ import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
-import { EditarTicketComponent } from '../../../shared/modales/editar-ticket/editar-ticket.component';
-import { EliminarTicketComponent } from '../../../shared/modales/eliminar-ticket/eliminar-ticket.component';
 
 interface Ticket {
   id: string;
@@ -25,7 +23,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.scss'
 })
@@ -39,16 +37,8 @@ export class GestionComponent implements OnInit {
   public modalVisible: boolean = false;
   public selectedTicket: Ticket | null = null;
 
-  // Modal de edición
-  public modalEdicionVisible: boolean = false;
-  public ticketEnEdicion: Ticket | null = null;
-
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
-
-  // Modal de eliminación
-  public modalEliminacionVisible: boolean = false;
-  public ticketAEliminar: Ticket | null = null;
 
   constructor() { }
 
@@ -395,65 +385,8 @@ export class GestionComponent implements OnInit {
     this.modalVisible = true;
   }
 
-  // Método para editar ticket
-  editarTicket(ticket: Ticket): void {
-    this.ticketEnEdicion = ticket;
-    this.modalEdicionVisible = true;
-  }
-
-  // Método para mostrar modal de confirmación de eliminación
-  confirmarEliminarTicket(ticket: Ticket): void {
-    this.ticketAEliminar = ticket;
-    this.modalEliminacionVisible = true;
-  }
-
   // Método para cerrar modal de visualización
   closeModal(): void {
     this.modalVisible = false;
-  }
-
-  // Método para cerrar modal de edición
-  closeModalEdicion(): void {
-    this.modalEdicionVisible = false;
-  }
-
-  // Método para cerrar modal de eliminación
-  closeModalEliminacion(): void {
-    this.modalEliminacionVisible = false;
-  }
-
-  // Método para guardar cambios de un ticket
-  guardarCambios(ticketEditado: Ticket): void {
-    // Encontrar el índice del ticket en el array original
-    const index = this.tickets.findIndex(t => t.id === ticketEditado.id);
-
-    if (index !== -1) {
-      // Actualizar el ticket en el array original
-      this.tickets[index] = ticketEditado;
-
-      // Actualizar también en tickets filtrados si existe
-      const indexFiltrado = this.ticketsFiltrados.findIndex(t => t.id === ticketEditado.id);
-      if (indexFiltrado !== -1) {
-        this.ticketsFiltrados[indexFiltrado] = ticketEditado;
-      }
-
-      // También actualizar selectedTicket si es el mismo ticket
-      if (this.selectedTicket && this.selectedTicket.id === ticketEditado.id) {
-        this.selectedTicket = ticketEditado;
-      }
-
-      // Cerrar el modal de edición
-      this.modalEdicionVisible = false;
-    }
-  }
-
-  // Método para eliminar un ticket (ejecutado después de confirmar)
-  eliminarTicket(ticket: Ticket): void {
-    // Filtrar el ticket del array original
-    this.tickets = this.tickets.filter(t => t.id !== ticket.id);
-    // Actualizar tickets filtrados
-    this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
-    // Cerrar el modal de eliminación
-    this.modalEliminacionVisible = false;
   }
 }

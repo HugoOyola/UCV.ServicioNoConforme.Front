@@ -95,11 +95,8 @@
             <p-button icon="pi pi-eye" severity="info"
               (click)="verDetalles(ticket)">
             </p-button>
-            <p-button icon="pi pi-pencil" severity="warn"
-              (click)="editarTicket(ticket)">
-            </p-button>
-            <p-button icon="pi pi-trash" severity="danger"
-              (click)="confirmarEliminarTicket(ticket)">
+            <p-button icon="pi pi-sitemap" severity="help"
+              >
             </p-button>
           </td>
         </tr>
@@ -122,19 +119,3 @@
 [ticket]="selectedTicket"
 (btnCerrar)="closeModal()">
 </app-ver-ticket>
-
-<!-- Modal para Editar Ticket -->
-<app-editar-ticket
-[visible]="modalEdicionVisible"
-[ticket]="ticketEnEdicion"
-(btnCerrar)="closeModalEdicion()"
-(btnGuardar)="guardarCambios($event)">
-</app-editar-ticket>
-
-<!-- Modal para Eliminar Ticket -->
-<app-eliminar-ticket
-[visible]="modalEliminacionVisible"
-[ticket]="ticketAEliminar"
-(btnCerrar)="closeModalEliminacion()"
-(btnConfirmar)="eliminarTicket($event)">
-</app-eliminar-ticket>
