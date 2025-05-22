@@ -336,29 +336,6 @@ export class ListadoComponent implements OnInit {
     this.ticketsFiltrados = [...this.tickets];
   }
 
-  // Método que se ejecuta cuando se escribe en el campo de búsqueda
-  buscarPorTermino(): void {
-    this.filtrarTickets();
-  }
-
-  // Método para limpiar la búsqueda
-  limpiarBusqueda(): void {
-    this.searchTerm = '';
-    this.estadoFiltro = 'Todos';
-    this.ticketsFiltrados = [...this.tickets];
-  }
-
-  buscarTicket(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.toLowerCase();
-
-    this.filteredTicket = this.listadoTicket.filter(ticket =>
-      ticket.areaDestino.toLowerCase().includes(value) ||
-      ticket.categoria.toLowerCase().includes(value) ||
-      ticket.estado.toLowerCase().includes(value)
-    );
-  }
-
   // Método principal para filtrar tickets
   filtrarTickets(): void {
     // Primero filtramos por el estado
@@ -382,11 +359,6 @@ export class ListadoComponent implements OnInit {
     }
 
     this.ticketsFiltrados = resultados;
-  }
-
-  cambiarFiltroEstado(estado: EstadoFiltro): void {
-    this.estadoFiltro = estado;
-    this.filtrarTickets();
   }
 
   // Método para ver detalles del ticket
