@@ -1,7 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environment/environment';
-import { ResponseResultLst } from '@interface/responseResult.interface';
+import { ResponseResultLst, ResponseResultItem } from '@interface/responseResult.interface';
 import { GlobalService } from '@shared/services/global.service';
 import { Observable } from 'rxjs';
 import { ObtenerDatosPersonales } from '../interface/principal';
@@ -10,6 +10,7 @@ import { ObtenerDatosPersonales } from '../interface/principal';
 export class MainService extends GlobalService {
 	private TrilcePrincipal = environment.ls_apis.trilceapi2.routes.trilceprincipal2;
 	private ApiServicioNC = environment.ls_apis.ServicioNoConforme.routes.apinoconformidades;
+	private ApiPerfilGlobal = environment.ls_apis.ConfiguracionCalidad.routes.gestorconfiguracioncalidad;
 
 	constructor() {
 		super();
@@ -83,4 +84,18 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	post_Global_ObtenerPerfilesCalidad(cPerCodigo: string, nSisGruCodigo: number, nSisGruTipo: number, nObjTipo: number): Observable<HttpResponse<ResponseResultItem<any>>>{
+    const param = {
+      cPerCodigo : cPerCodigo,
+      nSisGruCodigo: nSisGruCodigo,
+      nSisGruTipo: nSisGruTipo,
+      nObjTipo: nObjTipo
+    };
+    const ling =  this.ApiPerfilGlobal.url + this.ApiPerfilGlobal.endpoints.Calidad_Perfiles;
+    return this._http.post<ResponseResultItem<any>>(ling, param, {
+      headers: this.headers_a_json,
+      observe: 'response',
+    });
+  }
 }

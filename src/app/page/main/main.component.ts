@@ -69,10 +69,27 @@ export class MainComponent {
 				next: (v) => {
 					console.log('v =>', v);
 					this._mainSharedService.datosPersonales.set(v.body?.lstItem[0] ?? null);
+					this.post_Global_LR_ObtenerPerfiles();
 				},
 				error: (e) => { },
 				complete: () => { },
 			});
 		}
 	}
+
+	post_Global_LR_ObtenerPerfiles():void{
+    const nSisGruCodigo = 117;
+    const nSisGruTipo = 1063;
+    const nObjTipo = 1061;
+    if (this._mainSharedService.cPerCodigo() !== '') {
+      this._mainService.post_Global_ObtenerPerfilesCalidad(this._mainSharedService.cPerCodigo(),nSisGruCodigo,nSisGruTipo,nObjTipo).subscribe({
+        next: (v) => {
+          const cPerfiles = v.body?.item?.cPerfiles ?? null;
+          const PerfilArray = cPerfiles.split(',').map((p: string) => Number(p.trim()));
+					console.log(PerfilArray);
+          this._mainSharedService.perfiles.set(PerfilArray);
+        }
+      })
+    }
+  }
 }

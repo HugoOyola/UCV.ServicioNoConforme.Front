@@ -1,4 +1,4 @@
-import {routes} from './endpoints';
+import { routes } from './endpoints';
 export const environment = {
 	production: false,
 	local: false,
@@ -28,8 +28,23 @@ export const environment = {
 				},
 			},
 		},
-		ServicioNoConforme:{
-			token:{
+		ConfiguracionCalidad: {
+			token: {
+				name: 'ConfiguracionCalidad',
+				user: 'kcH5DQtpuWyRt9W1LD0jQ7wZlbCB',
+				pass: 'd65xRfD71x8UcfFYwcV06eyvd6ie',
+				tokenUrl: 'https://ucvapi.azure-api.net/jwttrilce/v1/api/Token/Login',
+			},
+			routes: {
+				gestorconfiguracioncalidad: {
+					url: 'https://ucvapi.azure-api.net/gestorconfiguracioncalidad/v2/api/',
+					//url: 'http://localhost/Api_Calidad/api/',
+					...routes.ConfiguracionCalidad,
+				}
+			}
+		},
+		ServicioNoConforme: {
+			token: {
 				name: 'ServicioNoConforme',
 				user: 'kcH5DQtpuWyRt9W1LD0jQ7wZlbCB',
 				pass: 'd65xRfD71x8UcfFYwcV06eyvd6ie',

@@ -7,6 +7,8 @@ import {ObtenerDatosPersonales} from '../../../page/main/interface/principal';
 export class MainSharedService {
 	public cPerCodigo = signal<string>('');
 
+	public perfiles = signal<number[]>([]);
+
 	// % datos personales
 	public datosPersonales = signal<ObtenerDatosPersonales | null>(null);
 }

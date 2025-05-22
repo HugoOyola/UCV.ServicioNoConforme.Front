@@ -6,6 +6,11 @@ export const routes = {
 			Principal_ObtenerDatosPersonales: 'Principal/ObtenerDatosPersonales',
 		},
 	},
+	ConfiguracionCalidad: {
+		endpoints: {
+			Calidad_Perfiles: 'ControlConfiguracion/PerfilCalidad',
+		}
+	},
 	ServicioNoConforme: {
 		endpoints: {
 			Snc_DetallePersonal: 'IncidenciasNC/DetallePersonalNC',
