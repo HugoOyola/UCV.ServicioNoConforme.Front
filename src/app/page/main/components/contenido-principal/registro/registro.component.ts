@@ -130,7 +130,7 @@ export class RegistroComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al obtener datos del campus:', error);
-          this.campusNombre = 'Campus'; // Fallback
+          this.campusNombre = '-'; // Fallback
         }
       });
     } else if (this._mainSharedService.cPerCodigo() !== '') {
@@ -145,7 +145,7 @@ export class RegistroComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al obtener datos del campus:', error);
-          this.campusNombre = 'Campus'; // Fallback
+          this.campusNombre = '-'; //
         }
       });
     }
