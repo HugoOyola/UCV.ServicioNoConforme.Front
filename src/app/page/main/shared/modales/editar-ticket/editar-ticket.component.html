@@ -103,9 +103,9 @@
                 <div *ngIf="ticketEditado.estado">
                   <span [ngClass]="{
                     'text-yellow-600 bg-yellow-100': ticketEditado.estado === 'Pendiente',
-                    'text-blue-600 bg-blue-100': ticketEditado.estado === 'En Proceso',
-                    'text-green-600 bg-green-100': ticketEditado.estado === 'Resuelto',
-                    'text-purple-600 bg-purple-100': ticketEditado.estado === 'Transferido'
+                    'text-blue-600 bg-blue-100': ticketEditado.estado === 'En Revisión',
+                    'text-green-600 bg-green-100': ticketEditado.estado === 'Cerrado',
+                    'text-purple-600 bg-purple-100': ticketEditado.estado === 'Derivado'
                   }" class="px-2 py-1 rounded text-xs font-medium">
                     {{ticketEditado.estado}}
                   </span>
@@ -114,9 +114,9 @@
               <ng-template let-item pTemplate="item">
                 <span [ngClass]="{
                   'text-yellow-600 bg-yellow-100': item.value === 'Pendiente',
-                  'text-blue-600 bg-blue-100': item.value === 'En Proceso',
-                  'text-green-600 bg-green-100': item.value === 'Resuelto',
-                  'text-purple-600 bg-purple-100': item.value === 'Transferido'
+                  'text-blue-600 bg-blue-100': item.value === 'En Revisión',
+                  'text-green-600 bg-green-100': item.value === 'Cerrado',
+                  'text-purple-600 bg-purple-100': item.value === 'Derivado'
                 }" class="px-2 py-1 rounded text-xs font-medium">
                   {{item.label}}
                 </span>

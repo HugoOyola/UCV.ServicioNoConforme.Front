@@ -14,13 +14,13 @@ interface Ticket {
   areaDestino: string;
   categoria: string;
   prioridad: 'Alta' | 'Media' | 'Baja';
-  estado: 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transferido';
+  estado: 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
   detalle: string;
   lugar: string;
   fechaRegistro: string;
 }
 
-type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transferido';
+type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
 
 @Component({
   selector: 'app-gestion',
@@ -72,7 +72,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Infraestructura",
         categoria: "Infraestructura",
         prioridad: "Media",
-        estado: "En Proceso",
+        estado: "En Revisión",
         detalle: "Fallas en el sistema de aire acondicionado del aula 302.",
         lugar: "Aula 302",
         fechaRegistro: "08/05/2025 10:15",
@@ -83,7 +83,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Bienestar Universitario",
         categoria: "Atención al Usuario",
         prioridad: "Baja",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Demora excesiva en la atención de trámites de bienestar estudiantil.",
         lugar: "Oficina de Bienestar",
         fechaRegistro: "05/05/2025 14:20",
@@ -94,7 +94,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área Administrativa",
         categoria: "Trámites Documentarios",
         prioridad: "Alta",
-        estado: "Transferido",
+        estado: "Derivado",
         detalle: "Documentos extraviados en el proceso de transferencia entre departamentos.",
         lugar: "Oficina de Trámite Documentario",
         fechaRegistro: "01/05/2025 09:45",
@@ -105,7 +105,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área de Investigación",
         categoria: "Otros",
         prioridad: "Media",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Retraso en la aprobación de proyectos de investigación.",
         lugar: "Dirección de Investigación",
         fechaRegistro: "28/04/2025 11:30",
@@ -127,7 +127,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Infraestructura",
         categoria: "Infraestructura",
         prioridad: "Media",
-        estado: "En Proceso",
+        estado: "En Revisión",
         detalle: "Fugas de agua en los baños del segundo piso.",
         lugar: "Edificio Principal",
         fechaRegistro: "12/05/2025 10:30"
@@ -138,7 +138,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Bienestar Universitario",
         categoria: "Atención al Usuario",
         prioridad: "Baja",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de ampliación del horario de atención médica.",
         lugar: "Centro de Salud Universitario",
         fechaRegistro: "13/05/2025 11:15"
@@ -149,7 +149,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área Administrativa",
         categoria: "Trámites Documentarios",
         prioridad: "Alta",
-        estado: "Transferido",
+        estado: "Derivado",
         detalle: "Demora en la emisión de certificados de estudios.",
         lugar: "Oficina de Secretaría General",
         fechaRegistro: "14/05/2025 08:45"
@@ -160,7 +160,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área de Investigación",
         categoria: "Otros",
         prioridad: "Media",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Falta de insumos para laboratorios de investigación.",
         lugar: "Laboratorio de Ciencias",
         fechaRegistro: "15/05/2025 09:30"
@@ -182,7 +182,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Infraestructura",
         categoria: "Infraestructura",
         prioridad: "Media",
-        estado: "En Proceso",
+        estado: "En Revisión",
         detalle: "Reparación de ventanas rotas en el aula 105.",
         lugar: "Aula 105",
         fechaRegistro: "17/05/2025 11:20"
@@ -193,7 +193,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Bienestar Universitario",
         categoria: "Atención al Usuario",
         prioridad: "Baja",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de actividades recreativas para estudiantes.",
         lugar: "Patio Central",
         fechaRegistro: "18/05/2025 12:10"
@@ -204,7 +204,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área Administrativa",
         categoria: "Trámites Documentarios",
         prioridad: "Alta",
-        estado: "Transferido",
+        estado: "Derivado",
         detalle: "Errores en la transcripción de notas finales.",
         lugar: "Oficina de Registro Académico",
         fechaRegistro: "19/05/2025 09:50"
@@ -215,7 +215,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área de Investigación",
         categoria: "Otros",
         prioridad: "Media",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de acceso a bases de datos científicas.",
         lugar: "Biblioteca Central",
         fechaRegistro: "20/05/2025 10:40"
@@ -237,7 +237,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Infraestructura",
         categoria: "Infraestructura",
         prioridad: "Media",
-        estado: "En Proceso",
+        estado: "En Revisión",
         detalle: "Mantenimiento de ascensores en el edificio B.",
         lugar: "Edificio B",
         fechaRegistro: "22/05/2025 12:20"
@@ -248,7 +248,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Bienestar Universitario",
         categoria: "Atención al Usuario",
         prioridad: "Baja",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de charlas sobre salud mental.",
         lugar: "Auditorio Principal",
         fechaRegistro: "23/05/2025 13:10"
@@ -259,7 +259,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área Administrativa",
         categoria: "Trámites Documentarios",
         prioridad: "Alta",
-        estado: "Transferido",
+        estado: "Derivado",
         detalle: "Problemas con la emisión de constancias de estudios.",
         lugar: "Oficina de Secretaría Académica",
         fechaRegistro: "24/05/2025 09:15"
@@ -270,7 +270,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área de Investigación",
         categoria: "Otros",
         prioridad: "Media",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de financiamiento para proyecto de tesis.",
         lugar: "Oficina de Investigación",
         fechaRegistro: "25/05/2025 10:05"
@@ -292,7 +292,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Infraestructura",
         categoria: "Infraestructura",
         prioridad: "Media",
-        estado: "En Proceso",
+        estado: "En Revisión",
         detalle: "Reparación de techos en el pabellón C.",
         lugar: "Pabellón C",
         fechaRegistro: "27/05/2025 12:45"
@@ -303,7 +303,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Bienestar Universitario",
         categoria: "Atención al Usuario",
         prioridad: "Baja",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de implementación de áreas verdes.",
         lugar: "Campus Universitario",
         fechaRegistro: "28/05/2025 13:30"
@@ -314,7 +314,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área Administrativa",
         categoria: "Trámites Documentarios",
         prioridad: "Alta",
-        estado: "Transferido",
+        estado: "Derivado",
         detalle: "Retrasos en la entrega de diplomas de grado.",
         lugar: "Oficina de Grados y Títulos",
         fechaRegistro: "29/05/2025 09:40"
@@ -325,7 +325,7 @@ export class GestionComponent implements OnInit {
         areaDestino: "Área de Investigación",
         categoria: "Otros",
         prioridad: "Media",
-        estado: "Resuelto",
+        estado: "Cerrado",
         detalle: "Solicitud de asesoría para publicación en revistas científicas.",
         lugar: "Centro de Publicaciones",
         fechaRegistro: "30/05/2025 10:25"

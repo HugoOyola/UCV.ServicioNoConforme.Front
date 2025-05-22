@@ -9,7 +9,7 @@ interface Ticket {
   areaDestino: string;
   categoria: string;
   prioridad: 'Alta' | 'Media' | 'Baja';
-  estado: 'Pendiente' | 'En Proceso' | 'Resuelto' | 'Transferido';
+  estado: 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
   detalle: string;
   lugar: string;
   fechaRegistro: string;
