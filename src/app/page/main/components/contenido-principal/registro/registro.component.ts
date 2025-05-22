@@ -76,6 +76,9 @@ export class RegistroComponent implements OnInit {
   // En el componente, actualizar la definición de categorias
   public categorias: CategoriaOption[] = [];
 
+  // Agregar propiedad para el nombre del campus
+  public campusNombre: string = '';
+
   constructor(private fb: FormBuilder) {
     this.loadIpAddress();
 
@@ -92,6 +95,7 @@ export class RegistroComponent implements OnInit {
     effect(() => {
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
       this.cargarUnidadesAcademicas();
+      this.obtenerNombreCampus();
       console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
       console.log('El IP: ',this.getIp());
     });
@@ -104,6 +108,58 @@ export class RegistroComponent implements OnInit {
     }
     // Cargar las categorías
     this.cargarCategorias();
+
+    // Obtener el nombre del campus
+    this.obtenerNombreCampus();
+  }
+
+  // Nuevo método para obtener el nombre del campus
+  obtenerNombreCampus(): void {
+    // Primero intentar obtener de datosPersonales si está disponible
+    const datosPersonales = this._mainSharedService.datosPersonales();
+
+    if (datosPersonales && datosPersonales.cperjuridica) {
+      // Si tenemos datosPersonales, obtener el cPerApellido directamente del servicio de detalle
+      this._mainService.post_ObtenerServicioDetallePersonal(this._mainSharedService.cPerCodigo()).subscribe({
+        next: (response) => {
+          if (response.body?.lstItem && response.body.lstItem.length > 0) {
+            const cPerApellido = response.body.lstItem[0].cPerApellido;
+            this.campusNombre = this.formatearNombreCampus(cPerApellido);
+            console.log('Campus obtenido:', this.campusNombre);
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener datos del campus:', error);
+          this.campusNombre = 'Campus'; // Fallback
+        }
+      });
+    } else if (this._mainSharedService.cPerCodigo() !== '') {
+      // Si no tenemos datosPersonales pero sí cPerCodigo, obtener del servicio
+      this._mainService.post_ObtenerServicioDetallePersonal(this._mainSharedService.cPerCodigo()).subscribe({
+        next: (response) => {
+          if (response.body?.lstItem && response.body.lstItem.length > 0) {
+            const cPerApellido = response.body.lstItem[0].cPerApellido;
+            this.campusNombre = this.formatearNombreCampus(cPerApellido);
+            console.log('Campus obtenido:', this.campusNombre);
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener datos del campus:', error);
+          this.campusNombre = 'Campus'; // Fallback
+        }
+      });
+    }
+  }
+
+  // Método auxiliar para formatear el nombre del campus
+  private formatearNombreCampus(apellido: string | undefined): string {
+    if (!apellido || apellido.trim() === '') {
+      return 'Campus';
+    }
+
+    // Capitalizar primera letra y resto en minúsculas
+    const formatted = apellido.charAt(0).toUpperCase() + apellido.slice(1).toLowerCase();
+    return formatted;
   }
 
   private async loadIpAddress(): Promise<void> {
@@ -230,14 +286,6 @@ export class RegistroComponent implements OnInit {
       default: return 'gray';
     }
   }
-
-  // onSubmit(): void {
-  //   if (this.form.valid) {
-  //     console.log(this.form.getRawValue());
-  //   } else {
-  //     this.form.markAllAsTouched();
-  //   }
-  // }
 
   onSubmit(): void {
     if (this.form.valid) {
@@ -367,9 +415,9 @@ export class RegistroComponent implements OnInit {
   // Método auxiliar para convertir la etiqueta de prioridad a su valor numérico
   obtenerValorPrioridad(etiquetaPrioridad: string): string {
     switch (etiquetaPrioridad) {
-      case 'Baja': return '1';
+      case 'Alta': return '1';
       case 'Media': return '2';
-      case 'Alta': return '3';
+      case 'Baja': return '3';
       default: return '1'; // Valor por defecto
     }
   }

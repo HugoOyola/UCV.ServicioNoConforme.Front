@@ -38,15 +38,15 @@
         </button>
         <button (click)="cambiarFiltroEstado('En Proceso')" class="px-3 py-1 text-sm rounded-md transition-colors"
           [ngClass]="estadoFiltro === 'En Proceso' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          En Proceso
+          En Revisión
         </button>
         <button (click)="cambiarFiltroEstado('Resuelto')" class="px-3 py-1 text-sm rounded-md transition-colors"
           [ngClass]="estadoFiltro === 'Resuelto' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Resueltos
+          Cerrados
         </button>
         <button (click)="cambiarFiltroEstado('Transferido')" class="px-3 py-1 text-sm rounded-md transition-colors"
           [ngClass]="estadoFiltro === 'Transferido' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Transferidos
+          Derivados
         </button>
       </div>
     </div>
