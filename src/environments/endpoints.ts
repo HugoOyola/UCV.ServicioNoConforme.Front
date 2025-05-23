@@ -17,6 +17,7 @@ export const routes = {
 			Snc_ListadoEscuelas: 'IncidenciasNC/UnidadAcademicaNC',
 			Snc_ListadoCategoria: 'IncidenciasNC/CategoriasNC',
 			Snc_GuardarServicio: 'IncidenciasNC/GuardarServicioNC',
+			Snc_ListadoIncidencias: 'IncidenciasNC/ListadoServicioNC'
 		}
 	}
 };

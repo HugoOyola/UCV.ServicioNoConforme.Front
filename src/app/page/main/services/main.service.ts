@@ -98,4 +98,16 @@ export class MainService extends GlobalService {
       observe: 'response',
     });
   }
+
+	post_ObtenerListadoServiciosNC(cPerCodigo: string): Observable<HttpResponse<ResponseResultLst<any>>> {
+		const param = {
+			cPerCodigo: cPerCodigo,
+		};
+
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_ListadoIncidencias;
+		return this._http.post<ResponseResultLst<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }
