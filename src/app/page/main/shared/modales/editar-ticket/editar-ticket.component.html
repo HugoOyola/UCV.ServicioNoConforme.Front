@@ -3,12 +3,12 @@
   <!-- Overlay de fondo -->
   <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
 
-  <!-- Modal -->
-  <div class="relative bg-white rounded-md shadow-lg w-[700px] max-h-[90vh] overflow-y-auto mx-4 z-10">
+  <!-- Modal con ancho y alto personalizados -->
+  <div class="relative bg-white rounded-md shadow-lg w-[600px] max-h-[90vh] overflow-y-auto mx-4 z-10">
     <!-- Cabecera con título y botón de cerrar -->
-    <div class="flex bg-[#1a2a47] items-center justify-between p-4 border-b rounded-t-md sticky top-0 z-10">
+    <div class="flex bg-[#1a2a47] items-center justify-between px-6 py-4 border-b rounded-t-md sticky top-0 z-10">
       <h3 class="text-lg font-medium text-white">
-        Editar Servicio No Conforme
+        <strong>Editar:</strong> Servicio no Conforme
       </h3>
       <!-- Botón X para cerrar -->
       <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
@@ -17,39 +17,43 @@
     </div>
 
     <!-- Contenido del modal -->
-    <div class="p-6" *ngIf="ticketEditado">
-      <!-- ID y tipo de servicio (no editables) -->
-      <div class="text-gray-600 text-sm mb-6 pb-2 border-b border-gray-200">
+    <div class="px-8 py-4" *ngIf="ticketEditado">
+      <!-- ID (solo lectura) -->
+      <div class="text-gray-600 text-sm mb-4">
         ID: {{ticketEditado.id}}
       </div>
 
-      <!-- Formulario de edición en 2 columnas -->
-      <div class="grid grid-cols-2 gap-6 mb-6">
+      <!-- Formulario de edición en dos columnas -->
+      <div class="grid grid-cols-2 gap-4 mb-4">
         <!-- Columna izquierda -->
         <div>
-          <div class="mb-4">
+          <!-- Fecha del Incidente (editable) -->
+          <div class="mb-3">
             <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha del Incidente</label>
-            <div class="w-full">
-              <input type="text" id="fecha" name="fecha" pInputText [(ngModel)]="ticketEditado.fecha"
-                class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
+            <input type="text" id="fecha" name="fecha" pInputText [(ngModel)]="ticketEditado.fecha"
+              class="w-full p-2 border border-gray-300 rounded-md">
           </div>
 
-          <div class="mb-4">
-            <label for="areaDestino" class="block text-sm font-medium text-gray-700 mb-1">Área Destino</label>
-            <p-dropdown id="areaDestino" [options]="areasOptions" [(ngModel)]="ticketEditado.areaDestino"
-              optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione un área">
-            </p-dropdown>
-          </div>
-
-          <div class="mb-4">
+          <!-- Categoría (editable) -->
+          <div class="mb-3">
             <label for="categoria" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
             <p-dropdown id="categoria" [options]="categoriasOptions" [(ngModel)]="ticketEditado.categoria"
               optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione una categoría">
             </p-dropdown>
           </div>
+        </div>
 
-          <div class="mb-4">
+        <!-- Columna derecha -->
+        <div>
+          <!-- Fecha de Registro (desactivado) -->
+          <div class="mb-3">
+            <label for="fechaRegistro" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Registro</label>
+            <input type="text" id="fechaRegistro" name="fechaRegistro" pInputText [(ngModel)]="ticketEditado.fechaRegistro"
+              class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed" disabled>
+          </div>
+
+          <!-- Prioridad (editable) -->
+          <div class="mb-3">
             <label for="prioridad" class="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
             <p-dropdown id="prioridad" [options]="prioridadOptions" [(ngModel)]="ticketEditado.prioridad"
               optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione una prioridad">
@@ -59,7 +63,7 @@
                     'bg-red-200 text-red-600': ticketEditado.prioridad === 'Alta',
                     'bg-yellow-100 text-yellow-600': ticketEditado.prioridad === 'Media',
                     'bg-green-100 text-green-600': ticketEditado.prioridad === 'Baja'
-                  }" class="px-2 py-1 rounded-full text-xs font-medium">
+                  }" class="px-3 py-1 rounded-full text-xs font-medium">
                     {{ticketEditado.prioridad}}
                   </span>
                 </div>
@@ -69,55 +73,7 @@
                   'bg-red-200 text-red-600': item.value === 'Alta',
                   'bg-yellow-100 text-yellow-600': item.value === 'Media',
                   'bg-green-100 text-green-600': item.value === 'Baja'
-                }" class="px-2 py-1 rounded-full text-xs font-medium">
-                  {{item.label}}
-                </span>
-              </ng-template>
-            </p-dropdown>
-          </div>
-        </div>
-
-        <!-- Columna derecha -->
-        <div>
-          <div class="mb-4">
-            <label for="fechaRegistro" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Registro</label>
-            <div class="w-full">
-              <input type="text" id="fechaRegistro" name="fechaRegistro" pInputText [(ngModel)]="ticketEditado.fechaRegistro"
-                class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label for="lugar" class="block text-sm font-medium text-gray-700 mb-1">Lugar</label>
-            <div class="w-full">
-              <input type="text" id="lugar" name="lugar" pInputText [(ngModel)]="ticketEditado.lugar"
-                class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-            <p-dropdown id="estado" [options]="estadoOptions" [(ngModel)]="ticketEditado.estado"
-              optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione un estado">
-              <ng-template pTemplate="selectedItem">
-                <div *ngIf="ticketEditado.estado">
-                  <span [ngClass]="{
-                    'text-yellow-600 bg-yellow-100': ticketEditado.estado === 'Pendiente',
-                    'text-blue-600 bg-blue-100': ticketEditado.estado === 'En Revisión',
-                    'text-green-600 bg-green-100': ticketEditado.estado === 'Cerrado',
-                    'text-purple-600 bg-purple-100': ticketEditado.estado === 'Derivado'
-                  }" class="px-2 py-1 rounded text-xs font-medium">
-                    {{ticketEditado.estado}}
-                  </span>
-                </div>
-              </ng-template>
-              <ng-template let-item pTemplate="item">
-                <span [ngClass]="{
-                  'text-yellow-600 bg-yellow-100': item.value === 'Pendiente',
-                  'text-blue-600 bg-blue-100': item.value === 'En Revisión',
-                  'text-green-600 bg-green-100': item.value === 'Cerrado',
-                  'text-purple-600 bg-purple-100': item.value === 'Derivado'
-                }" class="px-2 py-1 rounded text-xs font-medium">
+                }" class="px-3 py-1 rounded-full text-xs font-medium">
                   {{item.label}}
                 </span>
               </ng-template>
@@ -126,11 +82,11 @@
         </div>
       </div>
 
-      <!-- Detalle del problema (textarea completo) -->
-      <div class="w-full mb-4">
+      <!-- Detalle del problema (editable) - ancho completo -->
+      <div class="mt-4">
         <label for="detalle" class="block text-sm font-medium text-gray-700 mb-1">Detalle del Servicio No Conforme</label>
         <textarea pInputTextarea [(ngModel)]="ticketEditado.detalle" id="detalle" rows="4"
-          class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+          class="w-full p-3 border border-gray-300 rounded-md"></textarea>
       </div>
     </div>
 
