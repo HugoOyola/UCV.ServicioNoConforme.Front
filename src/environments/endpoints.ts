@@ -18,6 +18,7 @@ export const routes = {
 			Snc_ListadoCategoria: 'IncidenciasNC/CategoriasNC',
 			Snc_GuardarServicio: 'IncidenciasNC/GuardarServicioNC',
 			Snc_ListadoIncidencias: 'IncidenciasNC/ListadoServicioNC',
+			Snc_EditarIncidencias: 'IncidenciasNC/ModificarServicioNC',
 			Snc_EliminarServicio: 'IncidenciasNC/EliminarServicioNC',
 		}
 	}

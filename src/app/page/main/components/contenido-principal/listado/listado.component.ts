@@ -157,15 +157,15 @@ export class ListadoComponent implements OnInit {
   private mapearServiciosATickets(servicios: ServicioNoConforme[]): Ticket[] {
     return servicios.map(servicio => ({
       id: servicio.cCodigoServ,
-      idNoConformidad: servicio.idNoConformidad, // Agregar esta propiedad para facilitar la eliminación
-      fecha: this.formatearFecha(servicio.fechaIncidente || servicio.dFechaFinal),
+      idNoConformidad: servicio.idNoConformidad,
+      fecha: this.formatearSoloFecha(servicio.dFechaFinal), // Cambiar para usar solo dFechaFinal
       areaDestino: servicio.cAreaDestino || servicio.cUniOrgNombre,
       categoria: servicio.descripcionCat,
       prioridad: this.mapearPrioridad(servicio.cPrioridad),
       estado: this.mapearEstado(servicio.cEstado),
       detalle: servicio.detalleServicioNC || servicio.descripcionNC || '',
       lugar: servicio.cAreaDestino || 'No especificado',
-      fechaRegistro: this.formatearFecha(servicio.fechaRegistro || servicio.dFechaFinal)
+      fechaRegistro: this.formatearSoloFecha(servicio.fechaRegistro || servicio.dFechaFinal)
     }));
   }
 
@@ -192,7 +192,6 @@ export class ListadoComponent implements OnInit {
     switch (estado?.toLowerCase()) {
       case 'pendiente':
         return 'Pendiente';
-      case 'en revisión':
       case 'en revision':
         return 'En Revisión';
       case 'cerrado':
@@ -205,29 +204,30 @@ export class ListadoComponent implements OnInit {
   }
 
   /**
-   * Método para formatear fechas de la API
+   * Método específico para formatear solo la fecha (sin hora) para el listado
    */
-  private formatearFecha(fecha: string | null): string {
+  private formatearSoloFecha(fecha: string | null): string {
     if (!fecha) return '';
 
     try {
-      // Manejar diferentes formatos de fecha que pueden venir de la API
       let fechaObj: Date;
 
       // Si la fecha viene como "22/05/2025 11:14:13 AM" o "05/22/2025 11:14:13"
       if (fecha.includes('/')) {
-        // Si incluye AM/PM, remover la parte AM/PM para el parsing
-        const fechaLimpia = fecha.replace(/\s+(AM|PM)$/i, '');
-        fechaObj = new Date(fechaLimpia);
+        // Remover la parte de hora y AM/PM para obtener solo la fecha
+        const soloFecha = fecha.split(' ')[0]; // Obtiene solo la parte de fecha
+        fechaObj = new Date(soloFecha);
       } else {
         fechaObj = new Date(fecha);
       }
 
       // Verificar si la fecha es válida
       if (isNaN(fechaObj.getTime())) {
-        return fecha; // Devolver la fecha original si no se puede parsear
+        // Si no se puede parsear, intentar extraer solo la parte de fecha del string original
+        return fecha.split(' ')[0] || fecha;
       }
 
+      // Devolver solo la fecha en formato dd/mm/yyyy
       return fechaObj.toLocaleDateString('es-ES', {
         day: '2-digit',
         month: '2-digit',
@@ -235,7 +235,7 @@ export class ListadoComponent implements OnInit {
       });
     } catch (error) {
       console.warn('Error al formatear fecha:', fecha, error);
-      // Si hay error en el formato, devolver la fecha original o la parte de fecha
+      // Si hay error, devolver solo la parte de fecha del string original
       return fecha.split(' ')[0] || fecha;
     }
   }
