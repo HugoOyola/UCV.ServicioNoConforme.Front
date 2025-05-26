@@ -12,6 +12,7 @@ import { MainSharedService } from '@shared/services/main-shared.service';
 
 interface Ticket {
   id: string;
+  idNoConformidad?: number;
   fecha: string;
   areaDestino: string;
   categoria: string;
@@ -155,7 +156,8 @@ export class ListadoComponent implements OnInit {
    */
   private mapearServiciosATickets(servicios: ServicioNoConforme[]): Ticket[] {
     return servicios.map(servicio => ({
-      id: servicio.idCodigoNC || servicio.cCodigoServ,
+      id: servicio.cCodigoServ,
+      idNoConformidad: servicio.idNoConformidad, // Agregar esta propiedad para facilitar la eliminación
       fecha: this.formatearFecha(servicio.fechaIncidente || servicio.dFechaFinal),
       areaDestino: servicio.cAreaDestino || servicio.cUniOrgNombre,
       categoria: servicio.descripcionCat,
@@ -330,11 +332,55 @@ export class ListadoComponent implements OnInit {
 
   // Método para eliminar un ticket (ejecutado después de confirmar)
   eliminarTicket(ticket: Ticket): void {
-    // Filtrar el ticket del array original
-    this.tickets = this.tickets.filter(t => t.id !== ticket.id);
-    // Actualizar tickets filtrados
-    this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
-    // Cerrar el modal de eliminación
-    this.modalEliminacionVisible = false;
+    const cPerCodigo = this._mainSharedService.cPerCodigo();
+
+    if (!cPerCodigo) {
+      console.error('No se ha identificado el usuario');
+      this.modalEliminacionVisible = false;
+      return;
+    }
+
+    // Usar el idNoConformidad si está disponible, sino intentar convertir el ID
+    let idNoConformidad: number;
+
+    if (ticket.idNoConformidad) {
+      idNoConformidad = ticket.idNoConformidad;
+    } else {
+      // Intentar convertir el ID del ticket a número
+      idNoConformidad = parseInt(ticket.id);
+      if (isNaN(idNoConformidad)) {
+        console.error('No se pudo determinar el ID de no conformidad para el ticket:', ticket.id);
+        this.modalEliminacionVisible = false;
+        return;
+      }
+    }
+
+    // Llamar al servicio de eliminación
+    this._mainService.put_EliminarServicioNC(cPerCodigo, idNoConformidad).subscribe({
+      next: (response) => {
+        console.log('Respuesta de eliminación:', response);
+
+        // Verificar si la eliminación fue exitosa
+        if (response.status === 200) {
+          // Eliminar de los arrays locales
+          this.tickets = this.tickets.filter(t => t.id !== ticket.id);
+          this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.id !== ticket.id);
+
+          console.log('Ticket eliminado exitosamente');
+        } else {
+          console.error('Error en la eliminación:', response.body);
+        }
+
+        // Cerrar modal
+        this.modalEliminacionVisible = false;
+      },
+      error: (error) => {
+        console.error('Error al eliminar ticket:', error);
+        this.modalEliminacionVisible = false;
+
+        // Opcional: Mostrar mensaje de error al usuario
+        // this.mostrarNotificacionError('No se pudo eliminar el ticket');
+      }
+    });
   }
 }

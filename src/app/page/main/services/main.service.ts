@@ -110,4 +110,18 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	// Agregar este método al MainService (reemplazar el método vacío)
+	put_EliminarServicioNC(cPerCodigo: string, idNoConformidad: number): Observable<HttpResponse<ResponseResultItem<any>>> {
+		const param = {
+			cPerCodigo: cPerCodigo,
+			idNoConformidad: idNoConformidad
+		};
+
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_EliminarServicio; // Asumiendo que existe este endpoint
+		return this._http.put<ResponseResultItem<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }
