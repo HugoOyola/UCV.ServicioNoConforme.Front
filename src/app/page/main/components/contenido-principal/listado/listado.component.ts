@@ -306,28 +306,10 @@ export class ListadoComponent implements OnInit {
   }
 
   // Método para guardar cambios de un ticket
-  guardarCambios(ticketEditado: Ticket): void {
-    // Encontrar el índice del ticket en el array original
-    const index = this.tickets.findIndex(t => t.id === ticketEditado.id);
-
-    if (index !== -1) {
-      // Actualizar el ticket en el array original
-      this.tickets[index] = ticketEditado;
-
-      // Actualizar también en tickets filtrados si existe
-      const indexFiltrado = this.ticketsFiltrados.findIndex(t => t.id === ticketEditado.id);
-      if (indexFiltrado !== -1) {
-        this.ticketsFiltrados[indexFiltrado] = ticketEditado;
-      }
-
-      // También actualizar selectedTicket si es el mismo ticket
-      if (this.selectedTicket && this.selectedTicket.id === ticketEditado.id) {
-        this.selectedTicket = ticketEditado;
-      }
-
+  guardarCambios(): void {
       // Cerrar el modal de edición
       this.modalEdicionVisible = false;
-    }
+
   }
 
   // Método para eliminar un ticket (ejecutado después de confirmar)

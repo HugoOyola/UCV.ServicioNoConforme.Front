@@ -17,7 +17,7 @@
       responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr class="bg-gray-300 text-gray-700 uppercase text-md font-semibold">
-          <th class="text-center p-3">ID</th>
+          <th class="text-center p-3">Código</th>
           <th class="text-center p-3">Fecha</th>
           <th class="text-center p-3">Área Destino</th>
           <th class="text-center p-3">Categoría</th>
@@ -78,7 +78,7 @@
 
 <!-- Modal para Editar Ticket -->
 <app-editar-ticket [visible]="modalEdicionVisible" [ticket]="ticketEnEdicion" (btnCerrar)="closeModalEdicion()"
-  (btnGuardar)="guardarCambios($event)">
+  (btnGuardar)="guardarCambios()">
 </app-editar-ticket>
 
 <!-- Modal para Eliminar Ticket -->

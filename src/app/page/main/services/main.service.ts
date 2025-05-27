@@ -111,6 +111,25 @@ export class MainService extends GlobalService {
 		});
 	}
 
+	put_EditarServicioNC(
+		datos: {
+			cPerCodigo: string,
+			idNoConformidad: number,
+			idCategoria: number,
+			dfechaIncidente: string,
+			cLugarIncidente: string,
+			idPrioridad: string,
+			cDetalleServicio: string,
+			idCodigoNC: string
+		}
+	): Observable<HttpResponse<ResponseResultItem<any>>> {
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_EditarIncidencias; // Endpoint para editar
+		return this._http.put<ResponseResultItem<any>>(ling, datos, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
+
 	// Agregar este método al MainService (reemplazar el método vacío)
 	put_EliminarServicioNC(cPerCodigo: string, idNoConformidad: number): Observable<HttpResponse<ResponseResultItem<any>>> {
 		const param = {

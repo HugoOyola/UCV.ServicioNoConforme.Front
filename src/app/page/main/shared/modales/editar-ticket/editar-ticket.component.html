@@ -11,78 +11,228 @@
         <strong>Editar:</strong> Servicio no Conforme
       </h3>
       <!-- Botón X para cerrar -->
-      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6"
+        (click)="close()">
         <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
       </button>
     </div>
 
+    <!-- Indicador de carga -->
+    <div *ngIf="loading" class="flex justify-center items-center py-8">
+      <div class="text-gray-600">
+        <i class="pi pi-spin pi-spinner mr-2"></i>
+        Cargando datos...
+      </div>
+    </div>
+
     <!-- Contenido del modal -->
-    <div class="px-8 py-4" *ngIf="ticketEditado">
+    <form [formGroup]="editForm" *ngIf="!loading" class="px-8 py-4">
       <!-- ID (solo lectura) -->
       <div class="text-gray-600 text-sm mb-4">
-        ID: {{ticketEditado.id}}
+        <strong>ID:</strong> {{ servicioCompleto?.cCodigoServ || ticket?.id }}
       </div>
 
       <!-- Formulario de edición en dos columnas -->
       <div class="grid grid-cols-2 gap-4 mb-4">
         <!-- Columna izquierda -->
         <div>
-          <!-- Fecha del Incidente (editable) -->
+          <!-- Fecha del Incidente (fechaIncidente - puede ser null) -->
           <div class="mb-3">
-            <label for="fecha" class="block text-sm font-medium text-gray-700 mb-1">Fecha del Incidente</label>
-            <input type="text" id="fecha" name="fecha" pInputText [(ngModel)]="ticketEditado.fecha"
-              class="w-full p-2 border border-gray-300 rounded-md">
+            <label for="fechaIncidente" class="block text-sm font-medium text-gray-700 mb-1">
+              Fecha del Incidente
+            </label>
+            <p-datepicker
+              id="fechaIncidente"
+              formControlName="fechaIncidente"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              inputId="fechaIncidente-input"
+              [maxDate]="maxDate"
+              styleClass="w-full"
+              placeholder="Seleccione una fecha (opcional)"
+              [class.ng-invalid]="hasError('fechaIncidente')"
+              [class.ng-dirty]="editForm.get('fechaIncidente')?.dirty">
+            </p-datepicker>
+            <small *ngIf="hasError('fechaIncidente')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('fechaIncidente') }}
+            </small>
+            <small class="text-gray-500 text-xs mt-1">
+              Campo opcional - puede dejarse vacío
+            </small>
           </div>
 
-          <!-- Prioridad (editable) -->
+          <!-- Prioridad (cPrioridad) -->
           <div class="mb-3">
-            <label for="prioridad" class="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
-            <p-dropdown id="prioridad" [options]="prioridadOptions" [(ngModel)]="ticketEditado.prioridad"
-              optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione una prioridad">
-              <ng-template pTemplate="selectedItem">
-                <div *ngIf="ticketEditado.prioridad">
-                  <span [ngClass]="{
-                    'bg-red-200 text-red-600': ticketEditado.prioridad === 'Alta',
-                    'bg-yellow-100 text-yellow-600': ticketEditado.prioridad === 'Media',
-                    'bg-green-100 text-green-600': ticketEditado.prioridad === 'Baja'
-                  }" class="px-3 py-1 rounded-full text-xs font-medium">
-                    {{ticketEditado.prioridad}}
-                  </span>
-                </div>
-              </ng-template>
-              <ng-template let-item pTemplate="item">
-                <span [ngClass]="{
-                  'bg-red-200 text-red-600': item.value === 'Alta',
-                  'bg-yellow-100 text-yellow-600': item.value === 'Media',
-                  'bg-green-100 text-green-600': item.value === 'Baja'
-                }" class="px-3 py-1 rounded-full text-xs font-medium">
-                  {{item.label}}
-                </span>
-              </ng-template>
-            </p-dropdown>
+            <label for="prioridad" class="block text-sm font-medium text-gray-700 mb-1">
+              Prioridad <span class="text-red-500">*</span>
+            </label>
+            <p-select
+              id="prioridad"
+              formControlName="prioridad"
+              [options]="prioridadOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleccione una prioridad"
+              styleClass="w-full"
+              [class.ng-invalid]="hasError('prioridad')"
+              [class.ng-dirty]="editForm.get('prioridad')?.dirty">
+            </p-select>
+            <small *ngIf="hasError('prioridad')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('prioridad') }}
+            </small>
           </div>
         </div>
 
         <!-- Columna derecha -->
         <div>
-          <!-- Categoría (editable) -->
+          <!-- Categoría (idCategoria -> descripcionCat) -->
           <div class="mb-3">
-            <label for="categoria" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-            <p-dropdown id="categoria" [options]="categoriasOptions" [(ngModel)]="ticketEditado.categoria"
-              optionLabel="label" optionValue="value" [style]="{'width':'100%'}" placeholder="Seleccione una categoría">
-            </p-dropdown>
+            <label for="idCategoria" class="block text-sm font-medium text-gray-700 mb-1">
+              Categoría <span class="text-red-500">*</span>
+            </label>
+            <p-select
+              id="idCategoria"
+              formControlName="idCategoria"
+              [options]="categoriasOptions"
+              [loading]="loadingCategorias"
+              optionLabel="name"
+              optionValue="value"
+              placeholder="Seleccione una categoría"
+              styleClass="w-full"
+              [class.ng-invalid]="hasError('idCategoria')"
+              [class.ng-dirty]="editForm.get('idCategoria')?.dirty">
+            </p-select>
+            <small *ngIf="hasError('idCategoria')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('idCategoria') }}
+            </small>
+            <small *ngIf="loadingCategorias" class="text-gray-500 text-xs mt-1">
+              <i class="pi pi-spin pi-spinner mr-1"></i>
+              Cargando categorías...
+            </small>
           </div>
 
+          <!-- Lugar (descripcionNC) -->
+          <div class="mb-3">
+            <label for="descripcionNC" class="block text-sm font-medium text-gray-700 mb-1">
+              Lugar <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="descripcionNC"
+              type="text"
+              pInputText
+              formControlName="descripcionNC"
+              class="w-full"
+              placeholder="Ingrese el lugar del incidente"
+              [class.ng-invalid]="hasError('descripcionNC')"
+              [class.ng-dirty]="editForm.get('descripcionNC')?.dirty" />
+            <small *ngIf="hasError('descripcionNC')" class="text-red-500 text-xs mt-1">
+              {{ getErrorMessage('descripcionNC') }}
+            </small>
+          </div>
         </div>
       </div>
 
-      <!-- Detalle del problema (editable) - ancho completo -->
+      <!-- Detalle del problema (detalleServicioNC) - ancho completo -->
       <div class="mt-4">
-        <label for="detalle" class="block text-sm font-medium text-gray-700 mb-1">Detalle del Servicio No Conforme</label>
-        <textarea pInputTextarea [(ngModel)]="ticketEditado.detalle" id="detalle" rows="4"
-          class="w-full p-3 border border-gray-300 rounded-md"></textarea>
+        <label for="detalleServicioNC" class="block text-sm font-medium text-gray-700 mb-1">
+          Detalle del Servicio No Conforme <span class="text-red-500">*</span>
+        </label>
+        <textarea
+          id="detalleServicioNC"
+          pTextarea
+          formControlName="detalleServicioNC"
+          rows="5"
+          [autoResize]="true"
+          class="w-full"
+          maxlength="2000"
+          placeholder="Describa detalladamente su servicio no conforme..."
+          [class.ng-invalid]="hasError('detalleServicioNC')"
+          [class.ng-dirty]="editForm.get('detalleServicioNC')?.dirty">
+        </textarea>
+        <div class="flex justify-between items-center mt-1">
+          <small *ngIf="hasError('detalleServicioNC')" class="text-red-500 text-xs">
+            {{ getErrorMessage('detalleServicioNC') }}
+          </small>
+          <small class="text-gray-500 text-xs">
+            {{ editForm.get('detalleServicioNC')?.value?.length || 0 }}/2000 caracteres
+          </small>
+        </div>
       </div>
-    </div>
+
+      <!-- Información adicional del servicio (solo lectura) -->
+      <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
+        <h4 class="text-sm font-medium text-gray-700 mb-2">Información del Registro</h4>
+        <div class="grid grid-cols-2 gap-4 text-xs text-gray-600">
+          <div>
+            <strong>Área Destino:</strong> {{ servicioCompleto.cAreaDestino }}
+          </div>
+          <div>
+            <strong>Estado:</strong> {{ servicioCompleto.cEstado }}
+          </div>
+          <div>
+            <strong>Fecha Registro:</strong> {{ servicioCompleto.fechaRegistro }}
+          </div>
+          <div>
+            <strong>Usuario:</strong> {{ servicioCompleto.cNombreUsuario }}
+          </div>
+          <div>
+            <strong>Código Servicio:</strong> {{ servicioCompleto.cCodigoServ }}
+          </div>
+          <div>
+            <strong>ID No Conformidad:</strong> {{ servicioCompleto.idNoConformidad }}
+          </div>
+        </div>
+
+        <!-- Mostrar datos originales para referencia y debugging -->
+        <div class="mt-3 pt-3 border-t border-gray-200">
+          <h5 class="text-xs font-medium text-gray-600 mb-1">Datos Originales de la API (Debug):</h5>
+          <div class="grid grid-cols-1 gap-1 text-xs text-gray-500">
+            <div><strong>fechaIncidente (raw):</strong> "{{ servicioCompleto.fechaIncidente || 'null' }}"</div>
+            <div><strong>fechaIncidente (limpia):</strong> "{{ servicioCompleto.fechaIncidente ? (servicioCompleto.fechaIncidente.split(' ')[0]) : 'null' }}"</div>
+            <div><strong>idCategoria:</strong> {{ servicioCompleto.idCategoria }} ({{ servicioCompleto.descripcionCat }})</div>
+            <div><strong>cPrioridad:</strong> "{{ servicioCompleto.cPrioridad }}"</div>
+            <div><strong>descripcionNC (lugar):</strong> "{{ servicioCompleto.descripcionNC }}"</div>
+            <div><strong>detalleServicioNC:</strong> "{{ servicioCompleto.detalleServicioNC }}"</div>
+          </div>
+
+          <!-- Valores actuales del formulario -->
+          <div class="mt-2">
+            <h6 class="text-xs font-medium text-blue-600 mb-1">Valores Actuales del Formulario:</h6>
+            <div class="grid grid-cols-1 gap-1 text-xs text-blue-500">
+              <div><strong>fechaIncidente (Date obj):</strong>
+                <span *ngIf="editForm.get('fechaIncidente')?.value; else noDate">
+                  {{ editForm.get('fechaIncidente')?.value | date:'MM/dd/yyyy' }}
+                </span>
+                <ng-template #noDate>vacío/null</ng-template>
+              </div>
+              <div><strong>fechaIncidente (raw):</strong> {{ editForm.get('fechaIncidente')?.value }}</div>
+              <div><strong>idCategoria:</strong> {{ editForm.get('idCategoria')?.value }}</div>
+              <div><strong>prioridad:</strong> "{{ editForm.get('prioridad')?.value }}"</div>
+              <div><strong>descripcionNC:</strong> "{{ editForm.get('descripcionNC')?.value }}"</div>
+              <div><strong>detalleServicioNC:</strong> "{{ editForm.get('detalleServicioNC')?.value }}"</div>
+            </div>
+          </div>
+          <!-- Información adicional del servicio (solo lectura) -->
+          <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Información del Registro</h4>
+            <div class="grid grid-cols-2 gap-4 text-xs text-gray-600">
+              <div>
+                <strong>Área Destino:</strong> {{ servicioCompleto.cAreaDestino }}
+              </div>
+              <div>
+                <strong>Estado:</strong> {{ servicioCompleto.cEstado }}
+              </div>
+              <div>
+                <strong>Fecha Registro:</strong> {{ servicioCompleto.fechaRegistro }}
+              </div>
+              <div>
+                <strong>Usuario:</strong> {{ servicioCompleto.cNombreUsuario }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
 
     <!-- Línea divisora -->
     <hr class="border-solid border-b border-gray-200 my-1">
@@ -97,8 +247,12 @@
       </button>
       <button
         type="button"
-        class="bg-[#1a2a47] hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+        class="bg-[#1a2a47] hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="editForm.invalid || loading"
         (click)="guardar()">
+        <span *ngIf="loading">
+          <i class="pi pi-spin pi-spinner mr-2"></i>
+        </span>
         Guardar Cambios
       </button>
     </div>
