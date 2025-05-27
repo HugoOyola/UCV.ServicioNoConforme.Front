@@ -39,7 +39,7 @@
           <!-- Fecha del Incidente (fechaIncidente - OPCIONAL) -->
           <div class="mb-3">
             <label for="fechaIncidente" class="block text-sm font-medium text-gray-700 mb-1">
-              Fecha del Incidente <small class="text-gray-500 text-xs mt-1">(Opcional)</small>
+              Fecha del Incidente <small class="text-red-500 text-xs mt-1">(Opcional)</small>
             </label>
             <p-datepicker id="fechaIncidente" formControlName="fechaIncidente" [iconDisplay]="'input'" [showIcon]="true"
               inputId="fechaIncidente-input" [maxDate]="maxDate" styleClass="w-full"
@@ -90,7 +90,7 @@
           <!-- Lugar (descripcionNC - OPCIONAL) -->
           <div class="mb-3">
             <label for="descripcionNC" class="block text-sm font-medium text-gray-700 mb-1">
-              Lugar <small class="text-gray-500 text-xs mt-1">(Opcional)</small>
+              Lugar <small class="text-red-500 text-xs mt-1">(Opcional)</small>
             </label>
             <input id="descripcionNC" type="text" pInputText formControlName="descripcionNC" class="w-full"
               placeholder="Ingrese el lugar del incidente (opcional)" [class.ng-invalid]="hasError('descripcionNC')"
