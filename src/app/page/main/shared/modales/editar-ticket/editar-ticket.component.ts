@@ -392,20 +392,45 @@ export class EditarTicketComponent implements OnChanges, OnInit {
   }
 
   /**
-   * Formatear fecha para envío - Sin hora, solo fecha
+   * Formatear fecha para envío replicando exactamente el comportamiento del registro
    */
   private formatearFecha(fecha: Date): string {
-    // Asegurar que solo se envíe la fecha sin hora
-    const año = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-    const dia = String(fecha.getDate()).padStart(2, '0');
+    try {
+      console.log('Fecha original para formatear:', fecha);
 
-    // Formato mm/dd/yyyy (común en APIs) o dd/mm/yyyy según tu preferencia
-    // Cambiar el orden si necesitas dd/mm/yyyy
-    const fechaFormateada = `${mes}/${dia}/${año}`;
+      // OPCIÓN 1: Si en el registro usas simplemente toLocaleDateString()
+      const fechaFormateada = fecha.toLocaleDateString();
 
-    console.log('Fecha formateada para envío:', fechaFormateada);
-    return fechaFormateada;
+      // OPCIÓN 2: Si en el registro usas toLocaleDateString() con configuración específica
+      // Descomenta estas líneas si es necesario:
+      // fechaFormateada = fecha.toLocaleDateString('es-ES', {
+      //   day: '2-digit',
+      //   month: '2-digit',
+      //   year: 'numeric'
+      // });
+
+      console.log('Fecha formateada:', fechaFormateada);
+      console.log('Tipo de fecha formateada:', typeof fechaFormateada);
+
+      // Debug: Mostrar cómo se vería la fecha en diferentes formatos
+      console.log('=== COMPARACIÓN DE FORMATOS ===');
+      console.log('toLocaleDateString():', fecha.toLocaleDateString());
+      console.log('toLocaleDateString("es-ES"):', fecha.toLocaleDateString('es-ES'));
+      console.log('toISOString():', fecha.toISOString());
+      console.log('toString():', fecha.toString());
+      console.log('===============================');
+
+      // Validar que la fecha formateada no esté vacía
+      if (!fechaFormateada || fechaFormateada === 'Invalid Date') {
+        console.warn('Fecha inválida después del formateo:', fechaFormateada);
+        return '';
+      }
+
+      return fechaFormateada;
+    } catch (error) {
+      console.error('Error al formatear fecha:', fecha, error);
+      return '';
+    }
   }
 
   /**
@@ -422,31 +447,189 @@ export class EditarTicketComponent implements OnChanges, OnInit {
   }
 
   guardar(): void {
-    if (this.editForm.valid && this.ticket) {
-      const formValues = this.editForm.value;
-
-      // Crear el ticket actualizado con los datos correctos del formulario
-      const ticketActualizado: Ticket = {
-        ...this.ticket,
-        // Mapear los campos de la API a la interfaz Ticket
-        fecha: formValues.fechaIncidente ? this.formatearFecha(formValues.fechaIncidente) : '',
-        categoria: this.obtenerDescripcionCategoria(formValues.idCategoria),
-        prioridad: formValues.prioridad,
-        detalle: formValues.detalleServicioNC, // detalleServicioNC es el detalle
-        lugar: formValues.descripcionNC // descripcionNC es el lugar
-      };
-
-      console.log('Ticket actualizado enviado:', ticketActualizado);
-      console.log('Datos del formulario:', formValues);
-
-      this.btnGuardar.emit(ticketActualizado);
-      this.close();
-    } else {
-      // Marcar campos como tocados para mostrar errores
+    // Validaciones iniciales
+    if (!this.editForm.valid) {
+      console.log('Formulario inválido');
       Object.keys(this.editForm.controls).forEach(key => {
         this.editForm.get(key)?.markAsTouched();
       });
+      return;
     }
+
+    if (!this.ticket) {
+      console.error('No hay ticket para editar');
+      return;
+    }
+
+    if (!this.servicioCompleto) {
+      console.error('No se han cargado los datos completos del servicio');
+      return;
+    }
+
+    if (!this.ticket.id) {
+      console.error('El ticket no tiene ID válido');
+      return;
+    }
+
+    // En este punto, TypeScript sabe que this.ticket no es null
+    const ticketActual: Ticket = this.ticket;
+
+    const formValues = this.editForm.value;
+
+    console.log('Iniciando proceso de guardado...');
+    console.log('Valores del formulario:', formValues);
+
+    // Preparar datos para la API según el formato requerido
+    const fechaFormateada = formValues.fechaIncidente ? this.formatearFecha(formValues.fechaIncidente) : '';
+
+    const datosParaAPI = {
+      cPerCodigo: this._mainSharedService.cPerCodigo(),
+      idNoConformidad: this.servicioCompleto.idNoConformidad,
+      idCategoria: formValues.idCategoria,
+      dfechaIncidente: fechaFormateada,
+      cLugarIncidente: formValues.descripcionNC || '',
+      idPrioridad: this.obtenerValorPrioridad(formValues.prioridad),
+      cDetalleServicio: formValues.detalleServicioNC || '',
+      idCodigoNC: this.servicioCompleto.cCodigoServ
+    };
+
+    console.log('=== DEBUG FECHA ESPECÍFICO ===');
+    console.log('Fecha del formulario (Date object):', formValues.fechaIncidente);
+    console.log('Fecha formateada para API:', fechaFormateada);
+    console.log('Tipo de fecha formateada:', typeof fechaFormateada);
+    console.log('dfechaIncidente en datos API:', datosParaAPI.dfechaIncidente);
+    console.log('===============================');
+
+    console.log('Datos preparados para la API:', datosParaAPI);
+
+    // Validaciones exhaustivas antes del envío
+    console.log('=== VALIDACIONES PREVIAS ===');
+
+    // Validar datos requeridos
+    const validaciones = {
+      cPerCodigo: !!datosParaAPI.cPerCodigo,
+      idNoConformidad: !!datosParaAPI.idNoConformidad && datosParaAPI.idNoConformidad > 0,
+      idCategoria: !!datosParaAPI.idCategoria && datosParaAPI.idCategoria > 0,
+      idPrioridad: !!datosParaAPI.idPrioridad && ['1', '2', '3'].includes(datosParaAPI.idPrioridad),
+      idCodigoNC: !!datosParaAPI.idCodigoNC,
+      cDetalleServicio: !!datosParaAPI.cDetalleServicio && datosParaAPI.cDetalleServicio.length > 0
+    };
+
+    console.log('Resultados de validación:', validaciones);
+
+    // Verificar si alguna validación falló
+    const validacionesFallidas = Object.entries(validaciones)
+      .filter(([key, valid]) => !valid)
+      .map(([key]) => key);
+
+    if (validacionesFallidas.length > 0) {
+      console.error('Validaciones fallidas:', validacionesFallidas);
+      console.error('Datos que causaron el fallo:',
+        validacionesFallidas.reduce((obj, key) => {
+          obj[key] = datosParaAPI[key as keyof typeof datosParaAPI];
+          return obj;
+        }, {} as any)
+      );
+      this.loading = false;
+      return;
+    }
+
+    console.log('Todas las validaciones pasaron correctamente');
+    console.log('============================');
+
+    // Verificar configuración del endpoint
+    if (!this.verificarConfiguracionEndpoint()) {
+      console.error('Error en la configuración del endpoint');
+      this.loading = false;
+      return;
+    }
+
+    // Llamar al servicio para actualizar
+    this.loading = true;
+
+    console.log('=== ENVIANDO DATOS A LA API ===');
+    console.log('URL del endpoint:', this._mainService['ApiServicioNC']?.url);
+    console.log('Datos completos:', JSON.stringify(datosParaAPI, null, 2));
+    console.log('=================================');
+
+    this._mainService.put_EditarServicioNC(datosParaAPI).subscribe({
+      next: (response) => {
+        console.log('=== RESPUESTA EXITOSA ===');
+        console.log('Status:', response.status);
+        console.log('Response body:', response.body);
+        console.log('========================');
+
+        if (response.status === 200) {
+          console.log('Servicio actualizado exitosamente');
+
+          // Verificar que ticketActual esté definido (ya validado arriba)
+          console.log('Usando ticket actual para crear ticket actualizado:', ticketActual.id);
+
+          // Crear el ticket actualizado usando la función auxiliar
+          const ticketActualizado = this.crearTicketCompleto(ticketActual, datosParaAPI, formValues);
+
+          // Validar que el ticket esté completo
+          if (!this.validarTicketCompleto(ticketActualizado)) {
+            console.warn('El ticket actualizado puede tener propiedades faltantes:', ticketActualizado);
+          }
+
+          console.log('Ticket actualizado para emisión:', ticketActualizado);
+
+          // Emitir el ticket actualizado
+          this.btnGuardar.emit(ticketActualizado);
+
+          // Cerrar modal
+          this.close();
+        } else {
+          console.error('Error en la actualización:', response.body);
+          // Aquí podrías mostrar un mensaje de error al usuario
+        }
+
+        this.loading = false;
+      },
+      error: (error) => {
+        console.log('=== ERROR DE LA API ===');
+        console.log('Status:', error.status);
+        console.log('Status Text:', error.statusText);
+        console.log('URL:', error.url);
+        console.log('Error completo:', error);
+
+        if (error.error) {
+          console.log('Detalle del error:', error.error);
+          if (typeof error.error === 'string') {
+            console.log('Mensaje de error:', error.error);
+          } else if (error.error.message) {
+            console.log('Mensaje específico:', error.error.message);
+          }
+        }
+
+        // Mostrar información específica para error 409
+        if (error.status === 409) {
+          console.log('=== ANÁLISIS ERROR 409 (CONFLICT) ===');
+          console.log('Posibles causas:');
+          console.log('1. El servicio ya fue modificado por otro usuario');
+          console.log('2. Los datos enviados no cumplen alguna validación del backend');
+          console.log('3. Conflicto de concurrencia en la base de datos');
+          console.log('4. El idNoConformidad o idCodigoNC no coinciden');
+          console.log('=====================================');
+
+          // Verificar datos específicos que podrían causar conflicto
+          console.log('Verificación de datos críticos:');
+          console.log('- cPerCodigo:', datosParaAPI.cPerCodigo);
+          console.log('- idNoConformidad:', datosParaAPI.idNoConformidad);
+          console.log('- idCodigoNC:', datosParaAPI.idCodigoNC);
+          console.log('- idCategoria:', datosParaAPI.idCategoria);
+          console.log('- idPrioridad:', datosParaAPI.idPrioridad);
+        }
+
+        console.log('======================');
+
+        this.loading = false;
+
+        // Aquí podrías mostrar un mensaje de error específico al usuario
+        // Por ejemplo: this._messageService.add({severity:'error', summary: 'Error', detail: 'No se pudo actualizar el servicio'});
+      }
+    });
   }
 
   /**
@@ -471,5 +654,103 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       }
     }
     return '';
+  }
+
+  /**
+   * Convertir la etiqueta de prioridad a su valor numérico para la API
+   */
+  private obtenerValorPrioridad(etiquetaPrioridad: string): string {
+    switch (etiquetaPrioridad) {
+      case 'Alta': return '1';
+      case 'Media': return '2';
+      case 'Baja': return '3';
+      default: return '2'; // Valor por defecto: Media
+    }
+  }
+
+  /**
+   * Validar y asegurar que el ticket tenga todas las propiedades requeridas
+   */
+  private validarTicketCompleto(ticket: Ticket | null): ticket is Ticket {
+    if (!ticket) {
+      console.error('Ticket es null o undefined');
+      return false;
+    }
+
+    const validaciones = {
+      id: !!ticket.id,
+      areaDestino: !!ticket.areaDestino,
+      estado: !!ticket.estado,
+      fechaRegistro: !!ticket.fechaRegistro,
+      categoria: !!ticket.categoria,
+      prioridad: !!ticket.prioridad,
+      detalle: !!ticket.detalle
+    };
+
+    const camposFaltantes = Object.entries(validaciones)
+      .filter(([key, valid]) => !valid)
+      .map(([key]) => key);
+
+    if (camposFaltantes.length > 0) {
+      console.warn('Campos faltantes en el ticket:', camposFaltantes);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Crear un ticket completo con valores por defecto para propiedades faltantes
+   */
+  private crearTicketCompleto(ticketBase: Ticket, datosAPI: any, formValues: any): Ticket {
+    // Asegurar que ticketBase no sea null
+    if (!ticketBase) {
+      throw new Error('ticketBase no puede ser null');
+    }
+
+    return {
+      id: ticketBase.id || '',
+      idNoConformidad: ticketBase.idNoConformidad || 0,
+      fecha: datosAPI.dfechaIncidente || '',
+      areaDestino: ticketBase.areaDestino || 'Sin especificar',
+      categoria: this.obtenerDescripcionCategoria(datosAPI.idCategoria),
+      prioridad: formValues.prioridad || 'Media',
+      estado: ticketBase.estado || 'Pendiente',
+      detalle: datosAPI.cDetalleServicio || '',
+      lugar: datosAPI.cLugarIncidente || '',
+      fechaRegistro: ticketBase.fechaRegistro || new Date().toLocaleDateString()
+    };
+  }
+
+  /**
+   * Verificar la configuración del endpoint
+   */
+  private verificarConfiguracionEndpoint(): boolean {
+    try {
+      const apiConfig = (this._mainService as any)['ApiServicioNC'];
+      if (!apiConfig) {
+        console.error('Configuración ApiServicioNC no encontrada');
+        return false;
+      }
+
+      if (!apiConfig.url) {
+        console.error('URL base de ApiServicioNC no configurada');
+        return false;
+      }
+
+      if (!apiConfig.endpoints || !apiConfig.endpoints.Snc_EditarIncidencias) {
+        console.error('Endpoint Snc_EditarIncidencias no configurado');
+        console.log('Endpoints disponibles:', Object.keys(apiConfig.endpoints || {}));
+        return false;
+      }
+
+      const urlCompleta = apiConfig.url + apiConfig.endpoints.Snc_EditarIncidencias;
+      console.log('URL completa del endpoint:', urlCompleta);
+
+      return true;
+    } catch (error) {
+      console.error('Error al verificar configuración del endpoint:', error);
+      return false;
+    }
   }
 }

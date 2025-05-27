@@ -77,8 +77,11 @@
 </app-ver-ticket>
 
 <!-- Modal para Editar Ticket -->
-<app-editar-ticket [visible]="modalEdicionVisible" [ticket]="ticketEnEdicion" (btnCerrar)="closeModalEdicion()"
-  (btnGuardar)="guardarCambios()">
+<app-editar-ticket
+  [visible]="modalEdicionVisible"
+  [ticket]="ticketEnEdicion"
+  (btnCerrar)="closeModalEdicion()"
+  (btnGuardar)="guardarCambios($event)">
 </app-editar-ticket>
 
 <!-- Modal para Eliminar Ticket -->

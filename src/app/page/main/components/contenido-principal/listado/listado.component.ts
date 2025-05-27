@@ -278,12 +278,6 @@ export class ListadoComponent implements OnInit {
     this.modalVisible = true;
   }
 
-  // Método para editar ticket
-  editarTicket(ticket: Ticket): void {
-    this.ticketEnEdicion = ticket;
-    this.modalEdicionVisible = true;
-  }
-
   // Método para mostrar modal de confirmación de eliminación
   confirmarEliminarTicket(ticket: Ticket): void {
     this.ticketAEliminar = ticket;
@@ -305,11 +299,71 @@ export class ListadoComponent implements OnInit {
     this.modalEliminacionVisible = false;
   }
 
-  // Método para guardar cambios de un ticket
-  guardarCambios(): void {
-      // Cerrar el modal de edición
-      this.modalEdicionVisible = false;
+  // Método para guardar cambios de un ticket - VERSIÓN MEJORADA
+  guardarCambios(ticketEditado: Ticket): void {
+    console.log('Guardando cambios del ticket editado:', ticketEditado);
 
+    // Actualizar los arrays locales con el ticket editado
+    const index = this.tickets.findIndex(t => t.id === ticketEditado.id);
+
+    if (index !== -1) {
+      // Actualizar el ticket en el array original
+      this.tickets[index] = { ...ticketEditado };
+
+      // Actualizar también en tickets filtrados si existe
+      const indexFiltrado = this.ticketsFiltrados.findIndex(t => t.id === ticketEditado.id);
+      if (indexFiltrado !== -1) {
+        this.ticketsFiltrados[indexFiltrado] = { ...ticketEditado };
+      }
+
+      // También actualizar selectedTicket si es el mismo ticket
+      if (this.selectedTicket && this.selectedTicket.id === ticketEditado.id) {
+        this.selectedTicket = { ...ticketEditado };
+      }
+
+      console.log('Ticket actualizado exitosamente en arrays locales');
+
+      // Opcional: Recargar datos desde el servidor para asegurar consistencia
+      // Descomenta la siguiente línea si quieres recargar los datos después de editar
+      // this.cargarServiciosNoConformes();
+    } else {
+      console.error('No se encontró el ticket para actualizar:', ticketEditado.id);
+    }
+
+    // Cerrar el modal de edición
+    this.modalEdicionVisible = false;
+
+    // Opcional: Mostrar mensaje de éxito
+    // this._messageService.add({severity:'success', summary: 'Éxito', detail: 'Servicio actualizado correctamente'});
+  }
+
+  // Método auxiliar para debug - verificar datos del ticket
+  private debugTicketData(ticket: Ticket): void {
+    console.log('=== DEBUG TICKET DATA ===');
+    console.log('ID:', ticket.id);
+    console.log('idNoConformidad:', ticket.idNoConformidad);
+    console.log('fecha:', ticket.fecha);
+    console.log('categoria:', ticket.categoria);
+    console.log('prioridad:', ticket.prioridad);
+    console.log('detalle:', ticket.detalle);
+    console.log('lugar:', ticket.lugar);
+    console.log('=========================');
+  }
+
+  // Método mejorado para editar ticket con más validaciones
+  editarTicket(ticket: Ticket): void {
+    console.log('Editando ticket:', ticket);
+    this.debugTicketData(ticket);
+
+    // Asegurar que el ticket tenga el idNoConformidad
+    if (!ticket.idNoConformidad) {
+      console.error('No se puede editar: falta idNoConformidad');
+      // Opcional: Mostrar mensaje de error al usuario
+      return;
+    }
+
+    this.ticketEnEdicion = { ...ticket }; // Crear copia para evitar referencias
+    this.modalEdicionVisible = true;
   }
 
   // Método para eliminar un ticket (ejecutado después de confirmar)
