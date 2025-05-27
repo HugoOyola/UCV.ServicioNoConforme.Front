@@ -39,7 +39,7 @@
           <!-- Fecha del Incidente (fechaIncidente - OPCIONAL) -->
           <div class="mb-3">
             <label for="fechaIncidente" class="block text-sm font-medium text-gray-700 mb-1">
-              Fecha del Incidente <small class="text-red-500 text-xs mt-1">(Opcional)</small>
+              Fecha del Incidente
             </label>
             <p-datepicker id="fechaIncidente" formControlName="fechaIncidente" [iconDisplay]="'input'" [showIcon]="true"
               inputId="fechaIncidente-input" [maxDate]="maxDate" styleClass="w-full"
@@ -48,6 +48,9 @@
             </p-datepicker>
             <small *ngIf="hasError('fechaIncidente')" class="text-red-500 text-xs mt-1">
               {{ getErrorMessage('fechaIncidente') }}
+            </small>
+            <small class="text-gray-500 text-xs mt-1">
+              Campo opcional - puede dejarse vacío
             </small>
           </div>
 
@@ -76,7 +79,7 @@
             <p-select id="idCategoria" formControlName="idCategoria" [options]="categoriasOptions"
               [loading]="loadingCategorias" optionLabel="name" optionValue="value"
               placeholder="Seleccione una categoría" styleClass="w-full" [class.ng-invalid]="hasError('idCategoria')"
-              [class.ng-dirty]="editForm.get('idCategoria')?.dirty">
+              [class.ng-dirty]="editForm.get('idCategoria')?.dirty" [disabled]="categoriasOptions.length === 0 && !loadingCategorias">
             </p-select>
             <small *ngIf="hasError('idCategoria')" class="text-red-500 text-xs mt-1">
               {{ getErrorMessage('idCategoria') }}
@@ -85,18 +88,29 @@
               <i class="pi pi-spin pi-spinner mr-1"></i>
               Cargando categorías...
             </small>
+            <small *ngIf="categoriasOptions.length === 0 && !loadingCategorias" class="text-red-500 text-xs mt-1 flex items-center">
+              <i class="pi pi-exclamation-triangle mr-1"></i>
+              Error al cargar categorías.
+              <button type="button" class="ml-2 text-blue-600 hover:text-blue-800 underline text-xs"
+                      (click)="reintentarCargaCategorias()">
+                Reintentar
+              </button>
+            </small>
           </div>
 
           <!-- Lugar (descripcionNC - OPCIONAL) -->
           <div class="mb-3">
             <label for="descripcionNC" class="block text-sm font-medium text-gray-700 mb-1">
-              Lugar <small class="text-red-500 text-xs mt-1">(Opcional)</small>
+              Lugar
             </label>
             <input id="descripcionNC" type="text" pInputText formControlName="descripcionNC" class="w-full"
               placeholder="Ingrese el lugar del incidente (opcional)" [class.ng-invalid]="hasError('descripcionNC')"
               [class.ng-dirty]="editForm.get('descripcionNC')?.dirty" />
             <small *ngIf="hasError('descripcionNC')" class="text-red-500 text-xs mt-1">
               {{ getErrorMessage('descripcionNC') }}
+            </small>
+            <small class="text-gray-500 text-xs mt-1">
+              Campo opcional - puede dejarse vacío
             </small>
           </div>
         </div>
@@ -154,7 +168,7 @@
       </button>
       <button type="button"
         class="bg-[#1a2a47] hover:bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        [disabled]="editForm.invalid || loading" (click)="guardar()">
+        [disabled]="editForm.invalid || loading || (categoriasOptions.length === 0 && !loadingCategorias)" (click)="guardar()">
         <span *ngIf="loading" class="flex items-center">
           <i class="pi pi-spin pi-spinner mr-2"></i>
           Guardando...

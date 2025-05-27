@@ -235,12 +235,15 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       error: (error) => {
         console.error('Error al cargar categorías:', error);
         this.loadingCategorias = false;
-        // Fallback con categorías básicas
-        this.categoriasOptions = [
-          { name: 'SEGURIDAD', value: 9 },
-          { name: 'SERVICIO', value: 1 },
-          { name: 'INFRAESTRUCTURA', value: 2 }
-        ];
+        // No usar fallback hardcodeado - dejar vacío y mostrar el error al usuario
+        this.categoriasOptions = [];
+
+        // Aquí podrías mostrar un mensaje de error al usuario
+        // Por ejemplo: this._messageService.add({
+        //   severity: 'error',
+        //   summary: 'Error',
+        //   detail: 'No se pudieron cargar las categorías. Por favor, recargue la página o contacte al administrador.'
+        // });
       }
     });
   }
@@ -450,6 +453,18 @@ export class EditarTicketComponent implements OnChanges, OnInit {
   }
 
   guardar(): void {
+    // Validar que las categorías estén cargadas
+    if (this.categoriasOptions.length === 0 && !this.loadingCategorias) {
+      console.error('No se pueden guardar cambios: categorías no disponibles');
+      // Aquí podrías mostrar un mensaje específico al usuario
+      // Por ejemplo: this._messageService.add({
+      //   severity: 'error',
+      //   summary: 'Error',
+      //   detail: 'No se pueden guardar los cambios porque las categorías no están disponibles. Recargue la página.'
+      // });
+      return;
+    }
+
     // Validaciones iniciales
     if (!this.editForm.valid) {
       console.log('Formulario inválido');
@@ -726,6 +741,16 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       lugar: datosAPI.cLugarIncidente || '', // Puede ser cadena vacía
       fechaRegistro: ticketBase.fechaRegistro || new Date().toLocaleDateString()
     };
+  }
+
+  /**
+   * Reintentar la carga de categorías (útil si falló la primera vez)
+   */
+  reintentarCargaCategorias(): void {
+    if (!this.loadingCategorias) {
+      console.log('Reintentando carga de categorías...');
+      this.cargarCategorias();
+    }
   }
 
   /**
