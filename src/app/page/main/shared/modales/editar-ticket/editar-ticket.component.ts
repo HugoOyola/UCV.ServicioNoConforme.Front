@@ -1,3 +1,4 @@
+// editar-ticket.component.ts
 import { Component, EventEmitter, Input, Output, OnChanges, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
@@ -126,12 +127,13 @@ export class EditarTicketComponent implements OnChanges, OnInit {
 
   constructor() {
     // Inicializar el formulario con los campos correctos de la API
+    // CAMBIO: Hacer fechaIncidente y descripcionNC opcionales
     this.editForm = this._formBuilder.group({
-      fechaIncidente: [null], // Campo correcto para fecha del incidente
-      idCategoria: [null, Validators.required], // Campo correcto para categoría
-      prioridad: ['Media', Validators.required],
-      descripcionNC: ['', Validators.required], // Campo correcto para lugar (descripcionNC)
-      detalleServicioNC: ['', [Validators.required, Validators.maxLength(2000)]] // Campo correcto para detalle
+      fechaIncidente: [null], // Campo opcional (sin validadores)
+      idCategoria: [null, Validators.required], // Campo requerido para categoría
+      prioridad: ['Media', Validators.required], // Campo requerido para prioridad
+      descripcionNC: [''], // Campo opcional para lugar (sin Validators.required)
+      detalleServicioNC: ['', [Validators.required, Validators.maxLength(2000)]] // Campo requerido para detalle
     });
   }
 
@@ -266,12 +268,13 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       console.log('fechaIncidente es null o vacío');
     }
 
-    // Llenar el formulario con los campos correctos de la API
+    // Llenar el formulario with los campos correctos de la API
+    // CAMBIO: descripcionNC puede ser vacío (campo opcional)
     this.editForm.patchValue({
       fechaIncidente: fechaIncidente, // fechaIncidente (puede ser null)
       idCategoria: this.servicioCompleto.idCategoria, // idCategoria
       prioridad: this.mapearPrioridad(this.servicioCompleto.cPrioridad), // cPrioridad
-      descripcionNC: this.servicioCompleto.descripcionNC || '', // descripcionNC (lugar)
+      descripcionNC: this.servicioCompleto.descripcionNC || '', // descripcionNC (lugar) - opcional
       detalleServicioNC: this.servicioCompleto.detalleServicioNC || '' // detalleServicioNC (detalle)
     });
 
@@ -362,7 +365,7 @@ export class EditarTicketComponent implements OnChanges, OnInit {
         }
       }
 
-      // Intentar parseo directo si no es formato mm/dd/yyyy o dd/mm/yyyy
+      // Intentar parseo directo si no es formato mm/dd/yyyy or dd/mm/yyyy
       const fechaParsed = new Date(fechaLimpia);
       if (!isNaN(fechaParsed.getTime())) {
         return fechaParsed;
@@ -480,24 +483,25 @@ export class EditarTicketComponent implements OnChanges, OnInit {
     console.log('Valores del formulario:', formValues);
 
     // Preparar datos para la API según el formato requerido
+    // CAMBIO: Manejar campos opcionales correctamente
     const fechaFormateada = formValues.fechaIncidente ? this.formatearFecha(formValues.fechaIncidente) : '';
 
     const datosParaAPI = {
       cPerCodigo: this._mainSharedService.cPerCodigo(),
       idNoConformidad: this.servicioCompleto.idNoConformidad,
       idCategoria: formValues.idCategoria,
-      dfechaIncidente: fechaFormateada,
-      cLugarIncidente: formValues.descripcionNC || '',
+      dfechaIncidente: fechaFormateada, // Puede ser cadena vacía si no hay fecha
+      cLugarIncidente: formValues.descripcionNC || '', // Puede ser cadena vacía
       idPrioridad: this.obtenerValorPrioridad(formValues.prioridad),
       cDetalleServicio: formValues.detalleServicioNC || '',
       idCodigoNC: this.servicioCompleto.cCodigoServ
     };
 
-    console.log('=== DEBUG FECHA ESPECÍFICO ===');
+    console.log('=== DEBUG CAMPOS OPCIONALES ===');
     console.log('Fecha del formulario (Date object):', formValues.fechaIncidente);
     console.log('Fecha formateada para API:', fechaFormateada);
-    console.log('Tipo de fecha formateada:', typeof fechaFormateada);
-    console.log('dfechaIncidente en datos API:', datosParaAPI.dfechaIncidente);
+    console.log('Lugar del formulario:', formValues.descripcionNC);
+    console.log('Lugar para API:', datosParaAPI.cLugarIncidente);
     console.log('===============================');
 
     console.log('Datos preparados para la API:', datosParaAPI);
@@ -505,7 +509,7 @@ export class EditarTicketComponent implements OnChanges, OnInit {
     // Validaciones exhaustivas antes del envío
     console.log('=== VALIDACIONES PREVIAS ===');
 
-    // Validar datos requeridos
+    // Validar datos requeridos (sin incluir campos opcionales)
     const validaciones = {
       cPerCodigo: !!datosParaAPI.cPerCodigo,
       idNoConformidad: !!datosParaAPI.idNoConformidad && datosParaAPI.idNoConformidad > 0,
@@ -513,6 +517,7 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       idPrioridad: !!datosParaAPI.idPrioridad && ['1', '2', '3'].includes(datosParaAPI.idPrioridad),
       idCodigoNC: !!datosParaAPI.idCodigoNC,
       cDetalleServicio: !!datosParaAPI.cDetalleServicio && datosParaAPI.cDetalleServicio.length > 0
+      // CAMBIO: No validar dfechaIncidente y cLugarIncidente como requeridos
     };
 
     console.log('Resultados de validación:', validaciones);
@@ -685,6 +690,7 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       categoria: !!ticket.categoria,
       prioridad: !!ticket.prioridad,
       detalle: !!ticket.detalle
+      // CAMBIO: No validamos fecha y lugar como requeridos ya que son opcionales
     };
 
     const camposFaltantes = Object.entries(validaciones)
@@ -711,13 +717,13 @@ export class EditarTicketComponent implements OnChanges, OnInit {
     return {
       id: ticketBase.id || '',
       idNoConformidad: ticketBase.idNoConformidad || 0,
-      fecha: datosAPI.dfechaIncidente || '',
+      fecha: datosAPI.dfechaIncidente || '', // Puede ser cadena vacía
       areaDestino: ticketBase.areaDestino || 'Sin especificar',
       categoria: this.obtenerDescripcionCategoria(datosAPI.idCategoria),
       prioridad: formValues.prioridad || 'Media',
       estado: ticketBase.estado || 'Pendiente',
       detalle: datosAPI.cDetalleServicio || '',
-      lugar: datosAPI.cLugarIncidente || '',
+      lugar: datosAPI.cLugarIncidente || '', // Puede ser cadena vacía
       fechaRegistro: ticketBase.fechaRegistro || new Date().toLocaleDateString()
     };
   }
