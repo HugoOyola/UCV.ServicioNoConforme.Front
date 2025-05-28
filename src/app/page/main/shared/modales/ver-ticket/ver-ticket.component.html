@@ -17,9 +17,9 @@
 
     <!-- Contenido del modal -->
     <div class="px-8 py-4" *ngIf="ticket">
-      <!-- ID y tipo de servicio -->
-      <div class="text-gray-600 text-sm mb-4">
-        ID: {{ticket.id}} - {{ticket.categoria}}
+      <!-- Código y tipo de servicio -->
+      <div class="bg-gray-100 border-solid border rounded border-gray-400 p-2 text-center text-gray-600 text-[16px] mb-4">
+        <strong>Código:</strong> {{ticket.id}} - {{ticket.categoria}}
       </div>
 
       <!-- Grid de información en dos columnas -->
@@ -81,7 +81,7 @@
       <!-- Detalle del problema -->
       <div class="mt-4">
         <div class="text-sm text-gray-500 mb-1">Detalle del Servicio No Conforme</div>
-        <div class="bg-gray-100 p-3 rounded-md text-gray-800">
+        <div class="bg-gray-100 border-solid border border-gray-300 p-3 rounded-md text-gray-800">
           {{ticket.detalle}}
         </div>
       </div>
