@@ -28,7 +28,7 @@
     <!-- Contenido del modal -->
     <form [formGroup]="editForm" *ngIf="!loading" class="px-8 py-4">
       <!-- ID (solo lectura) -->
-      <div class="text-gray-600 text-sm mb-4">
+      <div class="bg-gray-200 rounded p-2 text-center text-gray-600 text-[16px] mb-4">
         <strong>Código:</strong> {{ servicioCompleto?.cCodigoServ || ticket?.id }}
       </div>
 
@@ -40,6 +40,7 @@
           <div class="mb-3">
             <label for="fechaIncidente" class="block text-sm font-medium text-gray-700 mb-1">
               Fecha del Incidente
+              <small class="text-red-500 text-[9px] mt-1"> (Opcional)</small>
             </label>
             <p-datepicker id="fechaIncidente" formControlName="fechaIncidente" [iconDisplay]="'input'" [showIcon]="true"
               inputId="fechaIncidente-input" [maxDate]="maxDate" styleClass="w-full"
@@ -48,9 +49,6 @@
             </p-datepicker>
             <small *ngIf="hasError('fechaIncidente')" class="text-red-500 text-xs mt-1">
               {{ getErrorMessage('fechaIncidente') }}
-            </small>
-            <small class="text-gray-500 text-xs mt-1">
-              Campo opcional - puede dejarse vacío
             </small>
           </div>
 
@@ -102,15 +100,13 @@
           <div class="mb-3">
             <label for="descripcionNC" class="block text-sm font-medium text-gray-700 mb-1">
               Lugar
+              <small class="text-red-500 text-[9px] mt-1"> (Opcional)</small>
             </label>
             <input id="descripcionNC" type="text" pInputText formControlName="descripcionNC" class="w-full"
               placeholder="Ingrese el lugar del incidente (opcional)" [class.ng-invalid]="hasError('descripcionNC')"
               [class.ng-dirty]="editForm.get('descripcionNC')?.dirty" />
             <small *ngIf="hasError('descripcionNC')" class="text-red-500 text-xs mt-1">
               {{ getErrorMessage('descripcionNC') }}
-            </small>
-            <small class="text-gray-500 text-xs mt-1">
-              Campo opcional - puede dejarse vacío
             </small>
           </div>
         </div>
@@ -137,7 +133,7 @@
       </div>
 
       <!-- Información adicional del servicio (solo lectura) -->
-      <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
+      <!-- <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
         <h4 class="text-md font-medium text-gray-700 mb-2 uppercase">Información del Registro</h4>
         <div class="grid grid-cols-2 gap-4 text-[12px] text-gray-600">
           <div>
@@ -153,7 +149,7 @@
             <strong>Usuario:</strong> {{ servicioCompleto.cNombreUsuario }}
           </div>
         </div>
-      </div>
+      </div> -->
     </form>
 
     <!-- Línea divisora -->
