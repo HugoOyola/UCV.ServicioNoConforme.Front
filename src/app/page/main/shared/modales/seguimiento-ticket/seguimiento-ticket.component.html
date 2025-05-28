@@ -144,15 +144,15 @@
     </div>
 
     <!-- Footer -->
-    <div class="flex justify-between items-center p-4 bg-gray-50">
+    <div class="flex justify-between items-center p-4 bg-gray-50 border-solid border-0 border-t border-gray-300 z-10">
       <div class="text-sm text-gray-500">
         Última actualización: {{ getUltimaActualizacion() }}
       </div>
       <div class="flex gap-3">
-        <p-button label="Exportar PDF" icon="pi pi-file-pdf" severity="secondary" size="small"
+        <p-button label="Exportar PDF" [raised]="true" icon="pi pi-file-pdf" severity="secondary" size="small"
           (onClick)="exportarPDF()">
         </p-button>
-        <p-button label="Cerrar" icon="pi pi-times" severity="secondary" size="small" (onClick)="close()">
+        <p-button label="Cerrar" [raised]="true" icon="pi pi-times" severity="secondary" size="small" (onClick)="close()">
         </p-button>
       </div>
     </div>

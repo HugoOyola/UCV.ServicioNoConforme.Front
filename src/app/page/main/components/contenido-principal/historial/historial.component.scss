@@ -1,0 +1,11 @@
+/* Estilos para el encabezado de la tabla */
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: #1a2a47;
+  color: white;
+  border: none;
+}
+
+/* Personalizar el hover de las filas */
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background-color: var(--blue-50);
+}
