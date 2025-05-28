@@ -1,5 +1,6 @@
+<!-- eliminar-ticket.component.html -->
 <div *ngIf="visible" class="fixed inset-0 z-50 flex items-center justify-center">
-  <!-- Fondo oscurecido -->
+  <!-- Overlay de fondo -->
   <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
 
   <!-- Modal -->
@@ -7,8 +8,10 @@
     <!-- Cabecera -->
     <div class="flex items-center justify-between bg-red-600 text-white p-4 rounded-t-md">
       <h3 class="text-lg font-semibold">Eliminar Ticket</h3>
-      <button type="button" (click)="close()" class="hover:text-gray-200">
-        <span class="material-symbols-outlined">close</span>
+      <!-- Botón X para cerrar (ajustado para centrar verticalmente) -->
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6"
+        (click)="close()">
+        <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
       </button>
     </div>
 
@@ -22,16 +25,20 @@
         </div>
       </div>
 
-      <div class="flex justify-center items-center gap-2 bg-gray-100 p-4 rounded-md border-solid border border-gray-400">
+      <div
+        class="flex justify-center items-center gap-2 bg-gray-100 p-4 rounded-md border-solid border border-gray-400">
         <p class="text-md text-gray-600">Código:</p>
         <p class="text-lg font-bold text-gray-800">{{ ticket.id }}</p>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="flex justify-end gap-3 p-4 border-t">
-      <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm" (click)="close()">Cancelar</button>
-      <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm" (click)="confirmarEliminacion()">Eliminar</button>
+    <div class="flex justify-end gap-3 p-4 sticky bottom-0 bg-gray-50 border-solid border-0 border-t border-gray-300 z-10">
+      <p-button label="Cerrar" [raised]="true" severity="secondary" size="small" class="bg-white" (click)="close()">
+      </p-button>
+      <p-button label="Eliminar" [raised]="true" severity="danger" size="small" icon="pi pi-times"
+        (click)="confirmarEliminacion()">
+      </p-button>
     </div>
   </div>
 </div>

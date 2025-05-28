@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Button } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 
 interface Ticket {
@@ -25,7 +26,7 @@ interface ProcesoItem {
 @Component({
   selector: 'app-proceso-ticket',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Button],
   templateUrl: './proceso-ticket.component.html',
   styleUrl: './proceso-ticket.component.scss'
 })

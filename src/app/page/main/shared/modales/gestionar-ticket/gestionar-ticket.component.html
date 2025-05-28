@@ -1,9 +1,9 @@
 <!-- gestionar-ticket.component.html -->
 <div *ngIf="visible" class="fixed inset-0 z-50 flex items-center justify-center">
-  <!-- Fondo oscurecido -->
+  <!-- Overlay de fondo -->
   <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
 
-  <!-- Modal -->
+  <!-- Modal con ancho y alto personalizados -->
   <div class="relative bg-white rounded-md shadow-lg w-[600px] max-h-[90vh] overflow-y-auto mx-4 z-10">
     <!-- Cabecera -->
     <div class="flex bg-[#1a2a47] items-center justify-between px-6 py-4 border-b rounded-t-md sticky top-0 z-10">
@@ -12,9 +12,8 @@
           <strong>Gestionar Servicio No Conforme</strong>
         </h3>
       </div>
-      <!-- Botón X para cerrar -->
-      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6"
-        (click)="close()">
+      <!-- Botón X para cerrar (ajustado para centrar verticalmente) -->
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
         <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
       </button>
     </div>
@@ -54,22 +53,12 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Seleccione una acción:
-            <span
-              class="text-blue-500 text-[14px] ml-1 cursor-help"
-              [pTooltip]="tooltipContent"
-              tooltipPosition="top">
+            <span class="text-blue-500 text-[14px] ml-1 cursor-help" [pTooltip]="tooltipContent" tooltipPosition="top">
               ⓘ
             </span>
           </label>
-          <p-select
-            size="small"
-            [options]="acciones"
-            [(ngModel)]="selectedAction"
-            (onChange)="onActionChange()"
-            optionLabel="nombre"
-            optionValue="value"
-            placeholder="Seleccione una acción"
-            class="w-full"
+          <p-select size="small" [options]="acciones" [(ngModel)]="selectedAction" (onChange)="onActionChange()"
+            optionLabel="nombre" optionValue="value" placeholder="Seleccione una acción" class="w-full"
             styleClass="w-full" />
         </div>
 
@@ -79,24 +68,28 @@
             <div class="flex items-start">
               <div class="flex items-center justify-center w-6 h-6 rounded-full mr-3 mt-0.5">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
               <div>
                 <span class="font-semibold text-green-200">Atender:</span>
-                <p class="text-sm text-white mt-1">Procesar y resolver el servicio no conforme directamente desde el área actual.</p>
+                <p class="text-sm text-white mt-1">Procesar y resolver el servicio no conforme directamente desde el
+                  área actual.</p>
               </div>
             </div>
 
             <div class="flex items-start">
               <div class="flex items-center justify-center w-6 h-6 rounded-full mr-3 mt-0.5">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke="#3b82f6" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
               <div>
                 <span class="font-semibold text-blue-200">Derivar:</span>
-                <p class="text-sm text-white mt-1">Transferir el caso a otra área cuando el área actual no puede atender la solicitud.</p>
+                <p class="text-sm text-white mt-1">Transferir el caso a otra área cuando el área actual no puede atender
+                  la solicitud.</p>
               </div>
             </div>
           </div>
@@ -105,15 +98,8 @@
         <!-- Campo de transferir a (solo visible cuando se selecciona "derivar") -->
         <div *ngIf="selectedAction === 'derivar'">
           <label class="block text-sm font-medium text-gray-700 mb-2">Transferir a:</label>
-          <p-select
-            size="small"
-            [options]="areas"
-            [(ngModel)]="selectedArea"
-            optionLabel="nombre"
-            optionValue="value"
-            placeholder="Seleccione un área"
-            class="w-full"
-            styleClass="w-full" />
+          <p-select size="small" [options]="areas" [(ngModel)]="selectedArea" optionLabel="nombre" optionValue="value"
+            placeholder="Seleccione un área" class="w-full" styleClass="w-full" />
         </div>
 
         <!-- Comentario -->
@@ -121,10 +107,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Comentario:</label>
           <textarea
             class="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-1 focus:ring-green-300 focus:border-green-300 resize-none"
-            rows="4"
-            cols="30"
-            pTextarea
-            [(ngModel)]="comentario"
+            rows="4" cols="30" pTextarea [(ngModel)]="comentario"
             [placeholder]="selectedAction === 'derivar' ? 'Explique el motivo de la transferencia...' : 'Agregue un comentario sobre la acción tomada...'">
           </textarea>
         </div>
@@ -133,21 +116,11 @@
     </div>
 
     <!-- Footer -->
-    <div class="flex justify-end gap-3 p-4 border-t bg-gray-50">
-      <p-button
-      label="Cancelar"
-      class="border-solid border border-gray-300 rounded-md"
-      severity="secondary"
-      size="small"
-      (onClick)="close()" />
+    <div class="flex justify-end gap-3 p-4 sticky bottom-0 bg-gray-50 border-solid border-0 border-t border-gray-300 z-10">
+      <p-button label="Cancelar" [raised]="true" severity="secondary" size="small"
+        size="small" (onClick)="close()" />
 
-      <p-button
-        [label]="getProcessButtonLabel()"
-        [icon]="getProcessButtonIcon()"
-        [severity]="getProcessButtonSeverity()"
-        [disabled]="!canProcess()"
-        size="small"
-        (onClick)="gestionar()" />
+      <p-button [label]="getProcessButtonLabel()" [raised]="true" [icon]="getProcessButtonIcon()" [severity]="getProcessButtonSeverity()" [disabled]="!canProcess()" size="small" (onClick)="gestionar()" />
     </div>
   </div>
 </div>
