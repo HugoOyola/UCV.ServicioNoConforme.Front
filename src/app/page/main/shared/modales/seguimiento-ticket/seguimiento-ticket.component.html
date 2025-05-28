@@ -1,0 +1,160 @@
+<!-- seguimiento-caso.component.html -->
+<div *ngIf="visible" class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Fondo oscurecido -->
+  <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
+
+  <!-- Modal -->
+  <div class="relative bg-white rounded-md shadow-lg w-[800px] h-[90vh] mx-4 z-10 flex flex-col">
+    <!-- Cabecera -->
+    <div class="flex bg-[#f59e0b] items-center justify-between px-6 py-4 rounded-t-md flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <i class="pi pi-history text-white text-xl"></i>
+        <div>
+          <h3 class="text-lg font-medium text-white">
+            <strong>Seguimiento del Caso</strong>
+          </h3>
+          <p class="text-sm text-amber-100 mt-1">{{ ticket?.id }} - Historial de Actividades</p>
+        </div>
+      </div>
+      <!-- Botón X para cerrar -->
+      <button type="button" class="text-white hover:text-amber-200 flex items-center justify-center h-6 w-6"
+        (click)="close()">
+        <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
+      </button>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12 flex-1">
+      <div class="text-gray-600">
+        <i class="pi pi-spin pi-spinner mr-2"></i>
+        Cargando historial...
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="flex-1 overflow-y-auto p-6" *ngIf="!loading">
+      <!-- Información del ticket -->
+      <div class="bg-gray-50 border-solid border border-gray-300 rounded-lg p-4 mb-6">
+        <div class="grid grid-cols-2 gap-4 mb-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Código del
+              Caso</label>
+            <p class="text-sm font-medium text-gray-900">{{ ticket?.id }}</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Estado Actual</label>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              [ngClass]="getEstadoBadgeClass(ticket?.estado)">
+              {{ ticket?.estado }}
+            </span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Descripción</label>
+          <p class="text-sm text-gray-700">{{ ticket?.detalle }}</p>
+        </div>
+      </div>
+
+      <!-- Timeline de seguimiento -->
+      <div class="space-y-4">
+        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="pi pi-clock text-amber-600"></i>
+          Cronología de Actividades
+        </h4>
+
+        <!-- Timeline -->
+        <div class="relative">
+          <!-- Línea vertical del timeline -->
+          <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+          <!-- Items del timeline -->
+          <div *ngFor="let actividad of actividades; let i = index" class="relative flex items-start space-x-4 pb-6">
+
+            <!-- Icono del timeline -->
+            <div
+              class="relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-solid border-4 border-white shadow-md"
+              [ngClass]="getActividadIconClass(actividad.tipo)">
+              <i [class]="getActividadIcon(actividad.tipo)" class="text-white text-md"></i>
+            </div>
+
+            <!-- Contenido de la actividad -->
+            <div class="flex-1 min-w-0">
+              <div class="bg-white border-solid border border-gray-200 rounded-lg p-4 shadow-md">
+                <!-- Header de la actividad -->
+                <div class="flex items-center justify-between mb-2">
+                  <h5 class="text-sm font-semibold text-gray-900">
+                    {{ actividad.titulo }}
+                  </h5>
+                  <span class="text-xs text-gray-500">
+                    {{ actividad.fecha }}
+                  </span>
+                </div>
+
+                <!-- Detalles de la actividad -->
+                <div class="space-y-2">
+                  <p class="text-sm text-gray-600">{{ actividad.descripcion }}</p>
+
+                  <!-- Información adicional -->
+                  <div *ngIf="actividad.area || actividad.usuario" class="flex flex-wrap gap-4 text-xs text-gray-500">
+                    <span *ngIf="actividad.area" class="flex items-center gap-1">
+                      <i class="pi pi-building"></i>
+                      Área: {{ actividad.area }}
+                    </span>
+                    <span *ngIf="actividad.usuario" class="flex items-center gap-1">
+                      <i class="pi pi-user"></i>
+                      Usuario: {{ actividad.usuario }}
+                    </span>
+                    <span *ngIf="actividad.duracion" class="flex items-center gap-1">
+                      <i class="pi pi-stopwatch"></i>
+                      Duración: {{ actividad.duracion }}
+                    </span>
+                  </div>
+
+                  <!-- Comentarios -->
+                  <div *ngIf="actividad.comentario"
+                    class="mt-3 p-3 bg-gray-50 border-solid border rounded border-l-4 border-gray-300">
+
+                    <p class="text-sm text-gray-700 italic">
+                      <i class="pi pi-comment mr-1"></i>
+                      "{{ actividad.comentario }}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas del caso -->
+      <div class="mt-8 grid grid-cols-3 gap-4">
+        <div class="bg-blue-50 rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-blue-600">{{ getEstadisticas().totalActividades }}</div>
+          <div class="text-sm text-blue-800">Total Actividades</div>
+        </div>
+        <div class="bg-green-50 rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-green-600">{{ getEstadisticas().areasInvolucradas }}</div>
+          <div class="text-sm text-green-800">Áreas Involucradas</div>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-purple-600">{{ getEstadisticas().tiempoTotal }}</div>
+          <div class="text-sm text-purple-800">Tiempo Total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-between items-center p-4 bg-gray-50">
+      <div class="text-sm text-gray-500">
+        Última actualización: {{ getUltimaActualizacion() }}
+      </div>
+      <div class="flex gap-3">
+        <p-button label="Exportar PDF" icon="pi pi-file-pdf" severity="secondary" size="small"
+          (onClick)="exportarPDF()">
+        </p-button>
+        <p-button label="Cerrar" icon="pi pi-times" severity="secondary" size="small" (onClick)="close()">
+        </p-button>
+      </div>
+    </div>
+  </div>
+</div>

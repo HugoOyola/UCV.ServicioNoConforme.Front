@@ -6,6 +6,7 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
 import { GestionarTicketComponent } from '../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
+import { SeguimientoTicketComponent } from '../../../shared/modales/seguimiento-ticket/seguimiento-ticket.component';
 interface Ticket {
   id: string;
   fecha: string;
@@ -23,7 +24,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, SeguimientoTicketComponent],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.scss'
 })
@@ -404,5 +405,18 @@ export class GestionComponent implements OnInit {
   closeGestionModal(): void {
     this.modalGestionVisible = false;
     this.selectedTicketGestion = null;
+  }
+
+  // En tu componente padre
+  public mostrarSeguimiento = false;
+  public ticketSeleccionado: Ticket | null = null;
+
+  abrirSeguimiento(ticket: Ticket): void {
+    this.ticketSeleccionado = ticket;
+    this.mostrarSeguimiento = true;
+  }
+
+  cerrarSeguimiento(): void {
+    this.mostrarSeguimiento = false;
   }
 }

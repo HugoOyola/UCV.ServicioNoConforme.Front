@@ -95,8 +95,13 @@
             <p-button icon="pi pi-eye" severity="info"
               (click)="verDetalles(ticket)">
             </p-button>
-            <p-button icon="pi pi-sitemap" severity="help"
+            <p-button icon="pi pi-cog" severity="help"
               (click)="gestionarTicket(ticket)">
+            </p-button>
+            <p-button
+              icon="pi pi-history"
+              severity="warn"
+              (onClick)="abrirSeguimiento(ticket)">
             </p-button>
           </td>
         </tr>
@@ -126,3 +131,10 @@
   [ticket]="selectedTicketGestion"
   (btnCerrar)="closeGestionModal()">
 </app-gestionar-ticket>
+
+<!-- Modal para Seguimiento Ticket -->
+<app-seguimiento-ticket
+  [visible]="mostrarSeguimiento"
+  [ticket]="ticketSeleccionado"
+  (btnCerrar)="cerrarSeguimiento()">
+</app-seguimiento-ticket>
