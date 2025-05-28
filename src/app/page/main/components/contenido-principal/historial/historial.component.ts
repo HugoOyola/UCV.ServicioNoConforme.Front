@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
 import { GestionarTicketComponent } from '../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
 import { SeguimientoTicketComponent } from '../../../shared/modales/seguimiento-ticket/seguimiento-ticket.component';
+import { ProcesoTicketComponent } from "../../../shared/modales/proceso-ticket/proceso-ticket.component";
 interface Ticket {
   id: string;
   fecha: string;
@@ -24,7 +25,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-historial',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, SeguimientoTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, SeguimientoTicketComponent, ProcesoTicketComponent],
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.scss'
 })

@@ -100,8 +100,10 @@
             </p-button>
             <p-button
               icon="pi pi-history"
-              severity="warn"
-              (onClick)="abrirSeguimiento(ticket)">
+              severity="secondary"
+              (click)="abrirModalProceso(ticket)"
+              pTooltip="Ver Proceso"
+              tooltipPosition="top">
             </p-button>
           </td>
         </tr>
@@ -115,7 +117,6 @@
       </ng-template>
     </p-table>
   </div>
-</div>
 </div>
 
 <!-- Modal para Ver Ticket -->
@@ -132,9 +133,9 @@
   (btnCerrar)="closeGestionModal()">
 </app-gestionar-ticket>
 
-<!-- Modal para Seguimiento Ticket -->
-<app-seguimiento-ticket
-  [visible]="mostrarSeguimiento"
-  [ticket]="ticketSeleccionado"
-  (btnCerrar)="cerrarSeguimiento()">
-</app-seguimiento-ticket>
+<!-- Modal para Proceso Ticket -->
+<app-proceso-ticket
+  [visible]="modalProcesoVisible"
+  [ticket]="selectedTicketProceso"
+  (btnCerrar)="cerrarModalProceso()">
+</app-proceso-ticket>

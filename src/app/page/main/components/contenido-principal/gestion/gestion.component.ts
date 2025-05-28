@@ -6,7 +6,7 @@ import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
 import { GestionarTicketComponent } from '../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
-import { SeguimientoTicketComponent } from '../../../shared/modales/seguimiento-ticket/seguimiento-ticket.component';
+import { ProcesoTicketComponent } from '../../../shared/modales/proceso-ticket/proceso-ticket.component';
 interface Ticket {
   id: string;
   fecha: string;
@@ -24,7 +24,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, SeguimientoTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, ProcesoTicketComponent],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.scss'
 })
@@ -41,6 +41,10 @@ export class GestionComponent implements OnInit {
   // Modal de gestión
   public modalGestionVisible: boolean = false;
   public selectedTicketGestion: Ticket | null = null;
+
+  // Modal de proceso
+  public modalProcesoVisible: boolean = false;
+  public selectedTicketProceso: Ticket | null = null;
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
@@ -407,16 +411,14 @@ export class GestionComponent implements OnInit {
     this.selectedTicketGestion = null;
   }
 
-  // En tu componente padre
-  public mostrarSeguimiento = false;
-  public ticketSeleccionado: Ticket | null = null;
-
-  abrirSeguimiento(ticket: Ticket): void {
-    this.ticketSeleccionado = ticket;
-    this.mostrarSeguimiento = true;
+  // Método para abrir modal de proceso
+  abrirModalProceso(ticket: Ticket): void {
+    this.selectedTicketProceso = ticket;
+    this.modalProcesoVisible = true;
   }
 
-  cerrarSeguimiento(): void {
-    this.mostrarSeguimiento = false;
+  cerrarModalProceso(): void {
+    this.modalProcesoVisible = false;
+    this.selectedTicketProceso = null;
   }
 }

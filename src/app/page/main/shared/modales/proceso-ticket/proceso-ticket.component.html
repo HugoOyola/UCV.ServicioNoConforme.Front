@@ -1,0 +1,82 @@
+<div *ngIf="visible" class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Overlay de fondo -->
+  <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
+
+  <!-- Modal con ancho y alto personalizados -->
+  <div class="relative bg-white rounded-md shadow-lg w-[500px] max-h-[90vh] overflow-y-auto mx-4 z-10">
+    <!-- Cabecera con título y botón de cerrar -->
+    <div class="flex bg-[#2563eb] items-center justify-between px-6 py-4 border-b rounded-t-md sticky top-0 z-10">
+      <h3 class="text-lg font-medium text-white">
+        <strong>Proceso:</strong> Seguimiento
+      </h3>
+      <!-- Botón X para cerrar -->
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <!-- Contenido del modal -->
+    <div class="px-6 py-4" *ngIf="ticket">
+      <!-- ID y estado actual -->
+      <div class="text-gray-600 text-sm mb-4 text-center">
+        <strong>ID:</strong> {{ ticket.id }} -
+        <span [ngClass]="getEstadoClass(ticket.estado)" class="px-2 py-1 rounded text-xs font-medium ml-1">
+          {{ ticket.estado }}
+        </span>
+      </div>
+
+      <!-- Timeline del proceso -->
+      <div class="space-y-4">
+        <div *ngFor="let item of procesoHistorial; let i = index" class="flex items-start space-x-3">
+          <!-- Icono y línea -->
+          <div class="flex flex-col items-center">
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200">
+              <i [class]="getIconoAccion(item.accion)" [ngClass]="getColorIcono(item.accion)" class="text-sm"></i>
+            </div>
+            <!-- Línea conectora (no mostrar en el último elemento) -->
+            <div *ngIf="i < procesoHistorial.length - 1" class="w-0.5 h-12 bg-gray-200 mt-2"></div>
+          </div>
+
+          <!-- Contenido -->
+          <div class="flex-1 min-w-0 pb-4">
+            <!-- Fecha y hora -->
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-sm font-medium text-gray-900">{{ item.accion }}</p>
+              <p class="text-xs text-gray-500">{{ item.fecha }} {{ item.hora }}</p>
+            </div>
+
+            <!-- Usuario -->
+            <p class="text-xs text-gray-600 mb-2">
+              <i class="pi pi-user mr-1"></i>{{ item.usuario }}
+            </p>
+
+            <!-- Comentario -->
+            <div *ngIf="item.comentario" class="bg-gray-50 p-2 rounded-md">
+              <p class="text-xs text-gray-700 leading-relaxed">{{ item.comentario }}</p>
+            </div>
+
+            <!-- Estado -->
+            <div class="mt-2">
+              <span [ngClass]="getEstadoClass(item.estado)" class="px-2 py-1 rounded text-xs font-medium">
+                {{ item.estado }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Línea divisora -->
+    <hr class="border-solid border-b border-gray-200 my-1">
+
+    <!-- Footer con botón de cerrar -->
+    <div class="flex justify-end p-4 sticky bottom-0 bg-white z-10">
+      <button
+        type="button"
+        class="bg-[#2563eb] hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+        (click)="close()">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
