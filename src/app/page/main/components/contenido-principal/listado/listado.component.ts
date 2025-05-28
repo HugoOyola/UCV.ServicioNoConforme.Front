@@ -164,7 +164,7 @@ export class ListadoComponent implements OnInit {
       prioridad: this.mapearPrioridad(servicio.cPrioridad),
       estado: this.mapearEstado(servicio.cEstado),
       detalle: servicio.detalleServicioNC || servicio.descripcionNC || '',
-      lugar: servicio.cAreaDestino || 'No especificado',
+      lugar: servicio.descripcionNC || 'No especificado',
       fechaRegistro: this.formatearSoloFecha(servicio.fechaRegistro || servicio.dFechaFinal)
     }));
   }
