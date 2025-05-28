@@ -4,10 +4,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
-import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
-import { GestionarTicketComponent } from '../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
 import { SeguimientoTicketComponent } from '../../../shared/modales/seguimiento-ticket/seguimiento-ticket.component';
-import { ProcesoTicketComponent } from "../../../shared/modales/proceso-ticket/proceso-ticket.component";
+
 interface Ticket {
   id: string;
   fecha: string;
@@ -25,7 +23,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-historial',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, SeguimientoTicketComponent, ProcesoTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, SeguimientoTicketComponent],
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.scss'
 })
@@ -35,13 +33,9 @@ export class HistorialComponent implements OnInit {
   public searchTerm: string = '';
   public estadoFiltro: EstadoFiltro = 'Todos';
 
-  // Modal de vista
-  public modalVisible: boolean = false;
-  public selectedTicket: Ticket | null = null;
-
-  // Modal de gestión
-  public modalGestionVisible: boolean = false;
-  public selectedTicketGestion: Ticket | null = null;
+  // Modal de Seguimiento
+  public mostrarSeguimiento = false;
+  public ticketSeleccionado: Ticket | null = null;
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
@@ -384,33 +378,6 @@ export class HistorialComponent implements OnInit {
     this.estadoFiltro = estado;
     this.filtrarTickets();
   }
-
-  // Método para ver detalles del ticket
-  verDetalles(ticket: Ticket): void {
-    this.selectedTicket = ticket;
-    this.modalVisible = true;
-  }
-
-  // Método para ver gestion del ticket
-  gestionarTicket(ticket: Ticket): void {
-    this.selectedTicketGestion = ticket;
-    this.modalGestionVisible = true;
-  }
-
-  // Método para cerrar modal de visualización
-  closeModal(): void {
-    this.modalVisible = false;
-  }
-
-  // Método para cerrar modal de gestión
-  closeGestionModal(): void {
-    this.modalGestionVisible = false;
-    this.selectedTicketGestion = null;
-  }
-
-  // En tu componente padre
-  public mostrarSeguimiento = false;
-  public ticketSeleccionado: Ticket | null = null;
 
   abrirSeguimiento(ticket: Ticket): void {
     this.ticketSeleccionado = ticket;
