@@ -96,7 +96,7 @@
               (click)="verDetalles(ticket)">
             </p-button>
             <p-button icon="pi pi-sitemap" severity="help"
-              >
+              (click)="gestionarTicket(ticket)">
             </p-button>
           </td>
         </tr>
@@ -119,3 +119,10 @@
 [ticket]="selectedTicket"
 (btnCerrar)="closeModal()">
 </app-ver-ticket>
+
+<!-- Modal para Gestionar Ticket -->
+<app-gestionar-ticket
+  [visible]="modalGestionVisible"
+  [ticket]="selectedTicketGestion"
+  (btnCerrar)="closeGestionModal()">
+</app-gestionar-ticket>

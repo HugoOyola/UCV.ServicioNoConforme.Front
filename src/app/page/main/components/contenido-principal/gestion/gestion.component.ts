@@ -5,7 +5,7 @@ import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
-
+import { GestionarTicketComponent } from '../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
 interface Ticket {
   id: string;
   fecha: string;
@@ -23,7 +23,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent],
   templateUrl: './gestion.component.html',
   styleUrl: './gestion.component.scss'
 })
@@ -36,6 +36,10 @@ export class GestionComponent implements OnInit {
   // Modal de vista
   public modalVisible: boolean = false;
   public selectedTicket: Ticket | null = null;
+
+  // Modal de gestión
+  public modalGestionVisible: boolean = false;
+  public selectedTicketGestion: Ticket | null = null;
 
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
@@ -385,8 +389,20 @@ export class GestionComponent implements OnInit {
     this.modalVisible = true;
   }
 
+  // Método para ver gestion del ticket
+  gestionarTicket(ticket: Ticket): void {
+    this.selectedTicketGestion = ticket;
+    this.modalGestionVisible = true;
+  }
+
   // Método para cerrar modal de visualización
   closeModal(): void {
     this.modalVisible = false;
+  }
+
+  // Método para cerrar modal de gestión
+  closeGestionModal(): void {
+    this.modalGestionVisible = false;
+    this.selectedTicketGestion = null;
   }
 }
