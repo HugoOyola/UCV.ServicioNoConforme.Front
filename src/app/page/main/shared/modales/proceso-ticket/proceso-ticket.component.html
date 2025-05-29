@@ -3,67 +3,85 @@
   <!-- Overlay de fondo -->
   <div class="fixed inset-0 bg-black bg-opacity-30" (click)="close()"></div>
 
-    <!-- Modal con ancho y alto personalizados -->
-    <div class="relative bg-white rounded-md shadow-lg w-[600px] max-h-[90vh] overflow-y-auto mx-4 z-10">
+  <!-- Modal con ancho y alto personalizados -->
+  <div class="relative bg-white rounded-md shadow-lg w-[600px] max-h-[90vh] overflow-y-auto mx-4 z-10">
     <!-- Cabecera con título y botón de cerrar -->
     <div class="flex bg-[#1a2a47] items-center justify-between px-6 py-4 border-b rounded-t-md sticky top-0 z-10">
       <h3 class="text-lg font-medium text-white">
         <strong>Proceso:</strong> Seguimiento
       </h3>
-      <!-- Botón X para cerrar (ajustado para centrar verticalmente) -->
-      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
+      <!-- Botón X para cerrar -->
+      <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6"
+        (click)="close()">
         <span class="material-symbols-outlined flex items-center justify-center leading-none">close</span>
       </button>
     </div>
 
     <!-- Contenido del modal -->
     <div class="px-6 py-4" *ngIf="ticket">
-      <!-- ID y estado actual -->
-      <div class="text-gray-600 text-sm mb-4 text-center">
-        <strong>ID:</strong> {{ ticket.id }} -
-        <span [ngClass]="getEstadoClass(ticket.estado)" class="px-2 py-1 rounded text-xs font-medium ml-1">
-          {{ ticket.estado }}
-        </span>
+      <!-- Detalle del Servicio No Conforme -->
+      <div class="mb-6">
+        <h4 class="font-semibold text-gray-900 mb-3">Detalle del Servicio No Conforme:</h4>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+          <p class="text-sm text-gray-700">{{ ticket.detalle }}</p>
+          <div class="flex items-center mt-3">
+            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium mr-2">Alta</span>
+            <span class="text-xs text-gray-600">Resuelto</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Timeline del proceso -->
-      <div class="space-y-4">
-        <div *ngFor="let item of procesoHistorial; let i = index" class="flex items-start space-x-3">
-          <!-- Icono y línea -->
-          <div class="flex flex-col items-center">
-            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-gray-200">
-              <i [class]="getIconoAccion(item.accion)" [ngClass]="getColorIcono(item.accion)" class="text-sm"></i>
-            </div>
-            <!-- Línea conectora (no mostrar en el último elemento) -->
-            <div *ngIf="i < procesoHistorial.length - 1" class="w-0.5 h-12 bg-gray-200 mt-2"></div>
-          </div>
+      <!-- Seguimiento del Proceso -->
+      <div class="mb-4">
+        <h4 class="font-semibold text-gray-900 mb-4">Seguimiento del Proceso:</h4>
 
-          <!-- Contenido -->
-          <div class="flex-1 min-w-0 pb-4">
-            <!-- Fecha y hora -->
-            <div class="flex items-center justify-between mb-1">
-              <p class="text-sm font-medium text-gray-900">{{ item.accion }}</p>
-              <p class="text-xs text-gray-500">{{ item.fecha }} {{ item.hora }}</p>
+        <!-- Timeline del proceso -->
+        <div class="space-y-4">
+          <div *ngFor="let item of procesoHistorial; let i = index" class="flex items-start space-x-3">
+            <!-- Icono con número de paso -->
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-medium"
+                   [ngClass]="getStepBackgroundColor(item.paso)">
+                {{ item.paso }}
+              </div>
+              <!-- Línea conectora (no mostrar en el último elemento) -->
+              <div *ngIf="i < procesoHistorial.length - 1" class="w-0.5 h-12 bg-gray-200 mt-2"></div>
             </div>
 
-            <!-- Usuario -->
-            <p class="text-xs text-gray-600 mb-2">
-              <i class="pi pi-user mr-1"></i>{{ item.usuario }}
-            </p>
+            <!-- Contenido -->
+            <div class="flex-1 min-w-0 pb-4">
+              <!-- Título del paso y fecha -->
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-sm font-medium text-gray-900">{{ item.titulo }}</p>
+                <p class="text-xs text-gray-500">{{ item.fecha }} {{ item.hora }}</p>
+              </div>
 
-            <!-- Comentario -->
-            <div *ngIf="item.comentario" class="bg-gray-50 p-2 rounded-md">
-              <p class="text-xs text-gray-700 leading-relaxed">{{ item.comentario }}</p>
-            </div>
+              <!-- Descripción -->
+              <p class="text-sm text-gray-600 mb-2">{{ item.descripcion }}</p>
 
-            <!-- Estado -->
-            <div class="mt-2">
-              <span [ngClass]="getEstadoClass(item.estado)" class="px-2 py-1 rounded text-xs font-medium">
-                {{ item.estado }}
-              </span>
+              <!-- Usuario -->
+              <div class="flex items-center text-xs text-gray-500 mb-2">
+                <i class="pi pi-user mr-1"></i>
+                <span>{{ item.usuario }}</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Estado final del proceso -->
+      <div class="bg-green-50 border border-green-200 rounded-md p-4 mt-6">
+        <div class="flex items-center">
+          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+          <span class="font-semibold text-green-800">Proceso Completado</span>
+        </div>
+        <p class="text-sm text-green-700 mt-2">
+          El servicio no conforme ha sido procesado exitosamente a través de 4 etapas, desde el
+          registro inicial hasta su resolución final.
+        </p>
+        <p class="text-xs text-green-600 mt-1">
+          <strong>Tiempo total de resolución:</strong> 31 días
+        </p>
       </div>
     </div>
 

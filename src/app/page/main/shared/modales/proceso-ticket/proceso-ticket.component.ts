@@ -15,12 +15,13 @@ interface Ticket {
 }
 
 interface ProcesoItem {
+  paso: number;
   fecha: string;
   hora: string;
-  accion: string;
+  titulo: string;
+  descripcion: string;
   usuario: string;
-  comentario?: string;
-  estado: 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
+  estado: 'Registro' | 'Asignación' | 'En Proceso' | 'Resolución';
 }
 
 @Component({
@@ -35,39 +36,43 @@ export class ProcesoTicketComponent {
   @Input() public ticket: Ticket | null = null;
   @Output() public btnCerrar: EventEmitter<void> = new EventEmitter<void>();
 
-  // Datos de ejemplo del proceso (en un caso real vendrían de un servicio)
+  // Datos del seguimiento del proceso basados en la imagen
   public procesoHistorial: ProcesoItem[] = [
     {
+      paso: 1,
       fecha: '10/05/2025',
-      hora: '08:30',
-      accion: 'Creación del ticket',
-      usuario: 'Sistema',
-      comentario: 'Ticket creado automáticamente desde el formulario web',
-      estado: 'Pendiente'
-    },
-    {
-      fecha: '10/05/2025',
-      hora: '09:15',
-      accion: 'Asignación',
-      usuario: 'Ana García (Coordinadora)',
-      comentario: 'Asignado al área de Servicios Académicos para revisión',
-      estado: 'En Revisión'
-    },
-    {
-      fecha: '10/05/2025',
-      hora: '14:20',
-      accion: 'En proceso',
-      usuario: 'Carlos López (Técnico)',
-      comentario: 'Iniciando revisión del sistema de matrícula. Se detectaron problemas en el servidor',
-      estado: 'En Revisión'
-    },
-    {
-      fecha: '11/05/2025',
       hora: '10:30',
-      accion: 'Actualización',
-      usuario: 'Carlos López (Técnico)',
-      comentario: 'Servidor reparado. Realizando pruebas de funcionalidad',
-      estado: 'En Revisión'
+      titulo: 'Registro',
+      descripcion: 'Se registró el servicio no conforme por problemas en el sistema de matrícula.',
+      usuario: 'Juan Pérez',
+      estado: 'Registro'
+    },
+    {
+      paso: 2,
+      fecha: '10/05/2025',
+      hora: '14:15',
+      titulo: 'Asignación',
+      descripcion: 'Asignado a Dirección Académica para revisión técnica.',
+      usuario: 'María López',
+      estado: 'Asignación'
+    },
+    {
+      paso: 3,
+      fecha: '10/05/2025',
+      hora: '16:30',
+      titulo: 'En Proceso',
+      descripcion: 'Se inició la revisión del sistema. Identificado problema en la base de datos.',
+      usuario: 'Carlos Rodríguez',
+      estado: 'En Proceso'
+    },
+    {
+      paso: 4,
+      fecha: '11/05/2025',
+      hora: '09:00',
+      titulo: 'Resolución',
+      descripcion: 'Se solucionó el problema con el sistema de matrícula. Se reinició el servicio y se actualizó la base de datos. Sistema funcionando correctamente.',
+      usuario: 'Carlos Rodríguez',
+      estado: 'Resolución'
     }
   ];
 
@@ -90,41 +95,18 @@ export class ProcesoTicketComponent {
     }
   }
 
-  getIconoAccion(accion: string): string {
-    switch (accion.toLowerCase()) {
-      case 'creación del ticket':
-        return 'pi pi-plus-circle';
-      case 'asignación':
-        return 'pi pi-user';
-      case 'en proceso':
-        return 'pi pi-cog';
-      case 'actualización':
-        return 'pi pi-refresh';
-      case 'derivación':
-        return 'pi pi-send';
-      case 'cierre':
-        return 'pi pi-check-circle';
+  getStepBackgroundColor(paso: number): string {
+    switch (paso) {
+      case 1:
+        return 'bg-blue-500'; // Registro
+      case 2:
+        return 'bg-purple-500'; // Asignación
+      case 3:
+        return 'bg-orange-500'; // En Proceso
+      case 4:
+        return 'bg-green-500'; // Resolución
       default:
-        return 'pi pi-circle';
-    }
-  }
-
-  getColorIcono(accion: string): string {
-    switch (accion.toLowerCase()) {
-      case 'creación del ticket':
-        return 'text-blue-500';
-      case 'asignación':
-        return 'text-orange-500';
-      case 'en proceso':
-        return 'text-yellow-500';
-      case 'actualización':
-        return 'text-blue-500';
-      case 'derivación':
-        return 'text-purple-500';
-      case 'cierre':
-        return 'text-green-500';
-      default:
-        return 'text-gray-500';
+        return 'bg-gray-500';
     }
   }
 }
