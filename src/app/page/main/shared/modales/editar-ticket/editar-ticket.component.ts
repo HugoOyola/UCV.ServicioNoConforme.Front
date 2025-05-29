@@ -529,7 +529,7 @@ export class EditarTicketComponent implements OnChanges, OnInit {
       cPerCodigo: !!datosParaAPI.cPerCodigo,
       idNoConformidad: !!datosParaAPI.idNoConformidad && datosParaAPI.idNoConformidad > 0,
       idCategoria: !!datosParaAPI.idCategoria && datosParaAPI.idCategoria > 0,
-      idPrioridad: !!datosParaAPI.idPrioridad && ['1', '2', '3'].includes(datosParaAPI.idPrioridad),
+      idPrioridad: !!datosParaAPI.idPrioridad && [1, 2, 3].includes(datosParaAPI.idPrioridad),
       idCodigoNC: !!datosParaAPI.idCodigoNC,
       cDetalleServicio: !!datosParaAPI.cDetalleServicio && datosParaAPI.cDetalleServicio.length > 0
       // CAMBIO: No validar dfechaIncidente y cLugarIncidente como requeridos
@@ -679,12 +679,12 @@ export class EditarTicketComponent implements OnChanges, OnInit {
   /**
    * Convertir la etiqueta de prioridad a su valor numérico para la API
    */
-  private obtenerValorPrioridad(etiquetaPrioridad: string): string {
+  private obtenerValorPrioridad(etiquetaPrioridad: string): number {
     switch (etiquetaPrioridad) {
-      case 'Alta': return '1';
-      case 'Media': return '2';
-      case 'Baja': return '3';
-      default: return '2'; // Valor por defecto: Media
+      case 'Alta': return 1;
+      case 'Media': return 2;
+      case 'Baja': return 3;
+      default: return 2; // Valor por defecto: Media
     }
   }
 

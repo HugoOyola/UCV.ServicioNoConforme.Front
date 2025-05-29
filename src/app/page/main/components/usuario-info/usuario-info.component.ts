@@ -1,4 +1,4 @@
-import { Component, effect, inject, Input } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainSharedService } from '@shared/services/main-shared.service';
 import { MainService } from '../../services/main.service';

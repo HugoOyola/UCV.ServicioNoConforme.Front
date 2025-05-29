@@ -37,9 +37,10 @@ export class MainService extends GlobalService {
 		});
 	}
 
-	post_ObtenerServicioListadoEscuelas(cperjuridica: string): Observable<HttpResponse<ResponseResultLst<any>>> {
+	post_ObtenerServicioListadoEscuelas(cperjuridica: string, ntipounidad: number): Observable<HttpResponse<ResponseResultLst<any>>> {
 		const param = {
 			cPerJuridica: cperjuridica,
+			nTipoUnidad: ntipounidad
 		};
 
 		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_ListadoEscuelas;
@@ -71,7 +72,7 @@ export class MainService extends GlobalService {
 			idCategoria: number,
 			dfechaIncidente: string,
 			cLugarIncidente: string,
-			idPrioridad: string,
+			idPrioridad: number,
 			cDetalleServicio: string,
 			cPerJuridica: string,
 			cUsuarioCorreo: string,
@@ -118,7 +119,7 @@ export class MainService extends GlobalService {
 			idCategoria: number,
 			dfechaIncidente: string,
 			cLugarIncidente: string,
-			idPrioridad: string,
+			idPrioridad: number,
 			cDetalleServicio: string,
 			idCodigoNC: string
 		}

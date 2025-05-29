@@ -206,7 +206,8 @@ export class RegistroComponent implements OnInit {
 
   obtenerListadoEscuelas(cPerJuridica: string): void {
     // Llamada al servicio para obtener las unidades académicas
-    this._mainService.post_ObtenerServicioListadoEscuelas(cPerJuridica).subscribe({
+    const nTipoUnidad = 1
+    this._mainService.post_ObtenerServicioListadoEscuelas(cPerJuridica, nTipoUnidad).subscribe({
       next: (response) => {
         if (response.body?.lstItem && response.body.lstItem.length > 0) {
           const unidadesAcademicas: UnidadAcademica[] = response.body.lstItem;
@@ -340,7 +341,7 @@ export class RegistroComponent implements OnInit {
     cPerCodigo: string,
     formData: any,
     fechaFormateada: string,
-    prioridadValor: string
+    prioridadValor: number
   ): void {
     this._mainService.post_ObtenerServicioDetallePersonal(cPerCodigo).subscribe({
       next: (response) => {
@@ -365,7 +366,7 @@ export class RegistroComponent implements OnInit {
     cPerCodigo: string,
     formData: any,
     fechaFormateada: string,
-    prioridadValor: string,
+    prioridadValor: number,
     cPerJuridica: string
   ): void {
     // Obtener email del usuario
@@ -413,12 +414,12 @@ export class RegistroComponent implements OnInit {
   }
 
   // Método auxiliar para convertir la etiqueta de prioridad a su valor numérico
-  obtenerValorPrioridad(etiquetaPrioridad: string): string {
+  obtenerValorPrioridad(etiquetaPrioridad: string): number {
     switch (etiquetaPrioridad) {
-      case 'Alta': return '1';
-      case 'Media': return '2';
-      case 'Baja': return '3';
-      default: return '1'; // Valor por defecto
+      case 'Alta': return 1;
+      case 'Media': return 2;
+      case 'Baja': return 3;
+      default: return 1; // Valor por defecto
     }
   }
 }
