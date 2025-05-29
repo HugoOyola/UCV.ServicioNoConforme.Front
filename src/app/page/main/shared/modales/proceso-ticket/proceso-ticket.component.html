@@ -22,7 +22,7 @@
       <!-- Detalle del Servicio No Conforme -->
       <div class="mb-6">
         <h4 class="font-semibold text-gray-900 mb-3">Detalle del Servicio No Conforme:</h4>
-        <div class="bg-red-50 border border-red-200 rounded-md p-4">
+        <div class="bg-red-50 border-solid border border-red-200 rounded-md p-4">
           <p class="text-sm text-gray-700">{{ ticket.detalle }}</p>
           <div class="flex items-center mt-3">
             <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium mr-2">Alta</span>
@@ -40,7 +40,7 @@
           <div *ngFor="let item of procesoHistorial; let i = index" class="flex items-start space-x-3">
             <!-- Icono con número de paso -->
             <div class="flex flex-col items-center">
-              <div class="flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-medium"
+              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium"
                    [ngClass]="getStepBackgroundColor(item.paso)">
                 {{ item.paso }}
               </div>
@@ -49,7 +49,7 @@
             </div>
 
             <!-- Contenido -->
-            <div class="flex-1 min-w-0 pb-4">
+            <div class="flex-1 min-w-0 p-4 border-solid border border-gray-300 rounded-md">
               <!-- Título del paso y fecha -->
               <div class="flex items-center justify-between mb-1">
                 <p class="text-sm font-medium text-gray-900">{{ item.titulo }}</p>
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Estado final del proceso -->
-      <div class="bg-green-50 border border-green-200 rounded-md p-4 mt-6">
+      <div class="bg-green-50 border-solid border border-green-200 rounded-md p-4 mt-6">
         <div class="flex items-center">
           <i class="pi pi-check-circle text-green-500 mr-2"></i>
           <span class="font-semibold text-green-800">Proceso Completado</span>
