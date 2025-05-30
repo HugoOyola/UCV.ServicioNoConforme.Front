@@ -10,24 +10,20 @@ export interface centrosEmpre {
 
 export interface ObtenerDatosUsuarios{
 	cPerCodigo: string,
-	cNombreUsuario: string,
-	cAreaUsuario: string,
-	nUniOrgCodigo: number,
-	cUniOrgNombre: string,
-	idCategoria: number,
-	cNombreCategoria: string,
-	dfechaIncidente: string,
-	cLugarIncidente: string,
-	idPrioridad: number,
-	cNombrePrioridad: string,
-	cDetalleServicio: string,
-	cPuestoUsuario: string,
+	emplid: string,
+	idSupervisor: string,
+	cCargo: string,
+	cTipoPersonal : string,
+	cPuesto: string,
+	cArea: string,
+	cDocumento: string,
+	cColaborador: string,
+	cMailCorp: string,
+	cMailPer: string,
 	cPerJuridica: string,
-	cFilialUsuario: string,
-	cUsuarioCorreo: string,
-	cIpUsuario: string
+	cPerApellido: string,
+	cFotoLink: string,
 }
-
 export interface ObtenerDatosPersonales {
 	cPerCodigo: string;
 	cPerApellido: string;

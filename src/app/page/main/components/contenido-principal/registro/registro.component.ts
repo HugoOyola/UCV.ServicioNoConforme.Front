@@ -93,6 +93,7 @@ export class RegistroComponent implements OnInit {
 
     // Usar effect como en el ejemplo de usuario-info
     effect(() => {
+      console.log('Contenido: ', this._mainSharedService.datosUsuario());
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
       this.cargarUnidadesAcademicas();
       this.obtenerNombreCampus();
@@ -288,8 +289,11 @@ export class RegistroComponent implements OnInit {
     }
   }
 
-  onSumit(): void {
-
+  onSubmit(): void {
+    const cNombreUsuario = this._mainSharedService.datosUsuario()?.cColaborador;
+    const cAreaUsuario = this._mainSharedService.datosUsuario()?.cArea;
+    console.log(cNombreUsuario);
+    console.log(cAreaUsuario);
   }
 
   // onSubmit(): void {
