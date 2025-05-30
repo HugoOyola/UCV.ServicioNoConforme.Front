@@ -88,7 +88,7 @@
               aria-invalid="form.get('prioridad')?.touched && form.get('prioridad')?.invalid"
               aria-describedby="prioridad-error">
               <div class="flex items-center" *ngFor="let opcion of prioridades; let i = index">
-                <p-radioButton name="prioridad" [value]="opcion.label" formControlName="prioridad"
+                <p-radioButton name="prioridad" [value]="opcion.value" formControlName="prioridad"
                   [inputId]="'prioridad' + i" [attr.aria-label]="'Prioridad ' + opcion.label">
                 </p-radioButton>
                 <label [for]="'prioridad' + i" class="ml-2 flex items-center gap-2">
