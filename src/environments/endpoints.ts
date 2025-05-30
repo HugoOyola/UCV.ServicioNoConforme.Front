@@ -20,6 +20,7 @@ export const routes = {
 			Snc_ListadoIncidencias: 'IncidenciasNC/ListadoServicioNC',
 			Snc_EditarIncidencias: 'IncidenciasNC/ModificarServicioNC',
 			Snc_EliminarServicio: 'IncidenciasNC/EliminarServicioNC',
+			Snc_SeguimientoServicio: 'IncidenciasNC/SeguimientoServicioNC',
 		}
 	}
 };
