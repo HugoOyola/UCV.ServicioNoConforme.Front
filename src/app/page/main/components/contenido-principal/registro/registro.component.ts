@@ -93,12 +93,21 @@ export class RegistroComponent implements OnInit {
 
     // Usar effect como en el ejemplo de usuario-info
     effect(() => {
-      console.log('Contenido: ', this._mainSharedService.datosUsuario());
+      const datosUsuario = this._mainSharedService.datosUsuario();
+      console.log('Contenido: ', datosUsuario);
+
+      // Acceder a los datos específicos
+      const cPerJuridica = datosUsuario?.cPerJuridica;
+      const cMailCorp = datosUsuario?.cMailCorp;
+
+      console.log('cPerJuridica:', cPerJuridica); // "1000098770"
+      console.log('cMailCorp:', cMailCorp); // "hespinola@ucv.edu.pe"
+
       const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
       this.cargarUnidadesAcademicas();
       this.obtenerNombreCampus();
       console.log('Prueba de cPerCodigoSignal:', cPerCodigoSignal);
-      console.log('El IP: ',this.getIp());
+      console.log('El IP: ', this.getIp());
     });
   }
 
@@ -290,28 +299,84 @@ export class RegistroComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const cNombreUsuario = this._mainSharedService.datosUsuario()?.cColaborador;
-    const cAreaUsuario = this._mainSharedService.datosUsuario()?.cArea;
+    if (this.form.invalid) {
+      console.warn('Formulario inválido');
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const datosUsuario = this._mainSharedService.datosUsuario();
+    const cNombreUsuario = datosUsuario?.cColaborador || '';
+    const cAreaUsuario = datosUsuario?.cArea || '';
+    const cPerJuridica = datosUsuario?.cPerJuridica || '';
+    const cUsuarioCorreo = datosUsuario?.cMailCorp || '';
+    const cPerCodigo = this._mainSharedService.cPerCodigo();
+
+    // Obtener valores del formulario
     const nUniOrgCodigo = this.form.get('area')?.value;
     const idCategoria = this.form.get('categoria')?.value;
-    const dFechaIncidente = this.form.get('fecha')?.value;
-    const cLugarIncidente = this.form.get('lugar')?.value;
+    const fechaIncidente = this.form.get('fecha')?.value;
+    const lugarIncidente = this.form.get('lugar')?.value;
     const idPrioridad = this.form.get('prioridad')?.value;
     const cDetalleServicio = this.form.get('detalle')?.value;
-    const cPerJuridica = this._mainSharedService.datosPersonales()?.cperjuridica;
-    const cUsuarioCorreo = this._mainSharedService.datosPersonales()?.cPerMaiNombre;
-    const cIpUsuario = this.getIp();
-    console.log("Nombres: ", cNombreUsuario);
-    console.log("Area: ",cAreaUsuario);
-    console.log("Escuela Destino", nUniOrgCodigo);
-    console.log("Categoria: ",idCategoria);
-    console.log("Fecha del Incidente: ", dFechaIncidente);
-    console.log("Lugar del Incidente: ", cLugarIncidente);
-    console.log("Prioridad: ", idPrioridad);
-    console.log("Detalle: ", cDetalleServicio);
-    console.log("cPerJuridica", cPerJuridica);
-    console.log("Correo: ", cUsuarioCorreo);
-    console.log("IP:", cIpUsuario);
+
+    // Obtener nombres para los campos requeridos
+    const areaSeleccionada = this.areas.find(area => area.value === nUniOrgCodigo);
+    const cUniOrgNombre = areaSeleccionada?.name || '';
+
+    const categoriaSeleccionada = this.categorias.find(cat => cat.value === idCategoria);
+    const cNombreCategoria = categoriaSeleccionada?.name || '';
+
+    const prioridadSeleccionada = this.prioridades.find(pri => pri.value === idPrioridad);
+    const cNombrePrioridad = prioridadSeleccionada?.label || '';
+
+    // Preparar los datos para el servicio
+    const datosGuardar = {
+      cPerCodigo: cPerCodigo,
+      cNombreUsuario: cNombreUsuario,
+      cAreaUsuario: cAreaUsuario,
+      nUniOrgCodigo: nUniOrgCodigo,
+      cUniOrgNombre: cUniOrgNombre,
+      idCategoria: idCategoria,
+      cNombreCategoria: cNombreCategoria,
+      // Fecha del incidente: cadena vacía si está vacía, sino convertir a toLocaleString
+      dfechaIncidente: fechaIncidente ? new Date(fechaIncidente).toLocaleString() : '',
+      // Lugar del incidente: cadena vacía si está vacío o solo espacios en blanco
+      cLugarIncidente: lugarIncidente && lugarIncidente.trim() !== '' ? lugarIncidente.trim() : '',
+      idPrioridad: idPrioridad,
+      cNombrePrioridad: cNombrePrioridad,
+      cDetalleServicio: cDetalleServicio,
+      cPuestoUsuario: '', // Agregar si tienes este dato disponible
+      cPerJuridica: cPerJuridica,
+      cFilialUsuario: this.campusNombre || '', // Usar el nombre del campus obtenido
+      cUsuarioCorreo: cUsuarioCorreo,
+      cIpUsuario: this.getIp()
+    };
+
+    console.log('Datos a guardar:', datosGuardar);
+
+    // Llamar al servicio para guardar
+    this._mainService.post_GuardarServicioNC(datosGuardar).subscribe({
+      next: (response) => {
+        console.log('Servicio guardado exitosamente:', response);
+        if (response.body?.isSuccess) {
+          // Mostrar mensaje de éxito (puedes usar un toast o modal)
+          console.log('Registro guardado correctamente');
+
+          // Opcionalmente limpiar el formulario
+          this.form.reset();
+          // O redirigir a otra página
+        } else {
+          console.error('Error en la respuesta del servidor:', response.body);
+          // Mostrar mensaje de error al usuario
+        }
+      },
+      error: (error) => {
+        console.error('Error al guardar el servicio:', error);
+        // Mostrar mensaje de error al usuario
+        // Ejemplo: this.showErrorMessage('Ocurrió un error al guardar el registro');
+      }
+    });
   }
 
   // Método auxiliar para convertir la etiqueta de prioridad a su valor numérico
