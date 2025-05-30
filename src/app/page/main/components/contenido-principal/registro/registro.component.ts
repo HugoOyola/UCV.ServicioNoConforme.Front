@@ -292,8 +292,26 @@ export class RegistroComponent implements OnInit {
   onSubmit(): void {
     const cNombreUsuario = this._mainSharedService.datosUsuario()?.cColaborador;
     const cAreaUsuario = this._mainSharedService.datosUsuario()?.cArea;
-    console.log(cNombreUsuario);
-    console.log(cAreaUsuario);
+    const nUniOrgCodigo = this.form.get('area')?.value;
+    const idCategoria = this.form.get('categoria')?.value;
+    const dFechaIncidente = this.form.get('fecha')?.value;
+    const cLugarIncidente = this.form.get('lugar')?.value;
+    const idPrioridad = this.form.get('prioridad')?.value;
+    const cDetalleServicio = this.form.get('detalle')?.value;
+    const cPerJuridica = this._mainSharedService.datosPersonales()?.cperjuridica;
+    const cUsuarioCorreo = this._mainSharedService.datosPersonales()?.cPerMaiNombre;
+    const cIpUsuario = this.getIp();
+    console.log("Nombres: ", cNombreUsuario);
+    console.log("Area: ",cAreaUsuario);
+    console.log("Escuela Destino", nUniOrgCodigo);
+    console.log("Categoria: ",idCategoria);
+    console.log("Fecha del Incidente: ", dFechaIncidente);
+    console.log("Lugar del Incidente: ", cLugarIncidente);
+    console.log("Prioridad: ", idPrioridad);
+    console.log("Detalle: ", cDetalleServicio);
+    console.log("cPerJuridica", cPerJuridica);
+    console.log("Correo: ", cUsuarioCorreo);
+    console.log("IP:", cIpUsuario);
   }
 
   // onSubmit(): void {
