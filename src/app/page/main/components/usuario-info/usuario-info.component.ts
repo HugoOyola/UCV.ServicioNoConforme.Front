@@ -33,7 +33,9 @@ export class UsuarioInfoComponent {
           if (v.body?.lstItem.length && v.body?.lstItem.length > 0) {
             // Tipo de Respuesta en caso de que el servicio no retorne un valor
             this.personalData = v.body?.lstItem[0] as PersonalData;
-            console.log('Datos del personal:', v.body?.lstItem[0].cCargo);
+            this._mainSharedService.datosUsuario.set(v.body?.lstItem[0] ?? null);
+            console.log('Datos del personal:', this._mainSharedService.datosUsuario());
+            // console.log('Datos del personal:', v.body?.lstItem[0].cCargo);
 
           // const cPerfiles = v.body?.item?.cPerfiles ?? null;
           // const PerfilArray = cPerfiles.split(',').map((p: string) => Number(p.trim()));

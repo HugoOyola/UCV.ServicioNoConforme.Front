@@ -68,13 +68,20 @@ export class MainService extends GlobalService {
 	post_GuardarServicioNC(
 		datos: {
 			cPerCodigo: string,
+			cNombreUsuario: string,
+			cAreaUsuario: string,
 			nUniOrgCodigo: number,
+			cUniOrgNombre: string,
 			idCategoria: number,
+			cNombreCategoria: string,
 			dfechaIncidente: string,
 			cLugarIncidente: string,
 			idPrioridad: number,
+			cNombrePrioridad: string,
 			cDetalleServicio: string,
+			cPuestoUsuario: string,
 			cPerJuridica: string,
+			cFilialUsuario: string,
 			cUsuarioCorreo: string,
 			cIpUsuario: string
 		}
