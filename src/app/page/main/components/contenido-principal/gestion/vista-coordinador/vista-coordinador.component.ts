@@ -1,4 +1,4 @@
-import { Component, OnInit , effect, inject } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
@@ -10,6 +10,7 @@ import { ProcesoTicketComponent } from '../../../../shared/modales/proceso-ticke
 import { MainSharedService } from '@shared/services/main-shared.service';
 import { MainService } from 'src/app/page/main/services/main.service';
 
+// ==================== INTERFACES ====================
 interface Ticket {
   idNoConformidad: number;
   idCodigoNC: string;
@@ -37,46 +38,68 @@ interface Ticket {
   cCargoDestino: string;
 }
 
+interface EstadisticasPrioridad {
+  total: number;
+  alta: number;
+  media: number;
+  baja: number;
+}
+
 type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
 
 @Component({
   selector: 'app-vista-coordinador',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, GestionarTicketComponent, ProcesoTicketComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputTextModule,
+    Button,
+    TableModule,
+    VerTicketComponent,
+    GestionarTicketComponent,
+    ProcesoTicketComponent
+  ],
   templateUrl: './vista-coordinador.component.html',
   styleUrl: './vista-coordinador.component.scss'
 })
 export class VistaCoordinadorComponent implements OnInit {
+
+  // ==================== SERVICIOS ====================
   private _mainService = inject(MainService);
   private _mainSharedService = inject(MainSharedService);
 
+  // ==================== PROPIEDADES PÚBLICAS ====================
   public ticketsFiltrados: Ticket[] = [];
   public searchTerm: string = '';
   public estadoFiltro: EstadoFiltro = 'Todos';
+  public estadisticas: EstadisticasPrioridad = { total: 0, alta: 0, media: 0, baja: 0 };
 
-  // Lista completa sin filtros (privada, solo para uso interno)
-  private ticketsOriginales: Ticket[] = [];
+  // Array de estados para el template
+  public estadosDisponibles: EstadoFiltro[] = [
+    'Todos', 'Pendiente', 'En Revisión', 'Cerrado', 'Derivado'
+  ];
 
-  // Modal de vista
+  // Modales
   public modalVisible: boolean = false;
-  public selectedTicket: Ticket | null = null;
-
-  // Modal de gestión
   public modalGestionVisible: boolean = false;
-  public selectedTicketGestion: Ticket | null = null;
-
-  // Modal de proceso
   public modalProcesoVisible: boolean = false;
+
+  // Tickets seleccionados para modales
+  public selectedTicket: Ticket | null = null;
+  public selectedTicketGestion: Ticket | null = null;
   public selectedTicketProceso: Ticket | null = null;
 
-  public listadoTicket: Ticket[] = [];
-  public filteredTicket: Ticket[] = [];
+  // ==================== PROPIEDADES PRIVADAS ====================
+  private ticketsOriginales: Ticket[] = [];
+  private nTipoGestion = 185; // Valor específico para Coordinador
 
+  // ==================== CONSTRUCTOR ====================
   constructor() {
-    // Usar effect para monitorear cambios en cPerCodigo
+    // Monitorear cambios en cPerCodigo
     effect(() => {
       const cPerCodigo = this._mainSharedService.cPerCodigo();
-      console.log('cPerCodigo en vista-coordinador:', cPerCodigo);
+      console.log('cPerCodigo actualizado en vista-coordinador:', cPerCodigo);
 
       if (cPerCodigo && cPerCodigo !== '') {
         this.cargarTicketsDesdeAPI();
@@ -84,50 +107,82 @@ export class VistaCoordinadorComponent implements OnInit {
     });
   }
 
+  // ==================== LIFECYCLE HOOKS ====================
   ngOnInit(): void {
-    // Si ya tenemos cPerCodigo al inicializar, cargar los tickets
     const cPerCodigo = this._mainSharedService.cPerCodigo();
     if (cPerCodigo && cPerCodigo !== '') {
       this.cargarTicketsDesdeAPI();
     }
   }
 
-  // Método para cargar tickets desde la API
+  // ==================== MÉTODOS DE CARGA DE DATOS ====================
+
+  // Carga los tickets desde la API
   cargarTicketsDesdeAPI(): void {
     const cPerCodigo = this._mainSharedService.cPerCodigo();
-    const nTipoGestion = 185; // Valor por defecto para Coordinador
 
-    console.log('Cargando tickets con:', { cPerCodigo, nTipoGestion });
+    if (!cPerCodigo) {
+      console.warn('No hay código de persona disponible');
+      return;
+    }
 
-    this._mainService.post_SeguimientoServicioNC(cPerCodigo, nTipoGestion).subscribe({
-      next: (response) => {
-        console.log('Respuesta de la API:', response);
-
-        if (response.body?.lstItem && response.body.lstItem.length > 0) {
-          const ticketsAPI: Ticket[] = response.body.lstItem;
-
-          // Mapear los datos de la API y guardar como originales
-          this.ticketsOriginales = ticketsAPI.map(item => this.mapearTicketDeAPI(item));
-
-          // Inicializar tickets filtrados
-          this.ticketsFiltrados = [...this.ticketsOriginales];
-
-          console.log('Tickets cargados:', this.ticketsOriginales.length);
-        } else {
-          console.warn('No se encontraron tickets en la respuesta');
-          this.ticketsOriginales = [];
-          this.ticketsFiltrados = [];
-        }
-      },
-      error: (error) => {
-        console.error('Error al cargar tickets:', error);
-        this.ticketsOriginales = [];
-        this.ticketsFiltrados = [];
-      }
+    console.log('Cargando tickets con:', {
+      cPerCodigo,
+      nTipoGestion: this.nTipoGestion
     });
+
+    this._mainService.post_SeguimientoServicioNC(cPerCodigo, this.nTipoGestion)
+      .subscribe({
+        next: (response) => this.procesarRespuestaAPI(response),
+        error: (error) => this.manejarErrorCarga(error)
+      });
   }
 
-  // Método para mapear los datos de la API al formato del componente
+  // Procesa la respuesta de la API
+  private procesarRespuestaAPI(response: any): void {
+    console.log('Respuesta de la API:', response);
+
+    if (response.body?.lstItem && response.body.lstItem.length > 0) {
+      this.ticketsOriginales = response.body.lstItem.map((item: Ticket) =>
+        this.mapearTicketDeAPI(item)
+      );
+
+      this.inicializarDatos();
+      console.log('Tickets cargados exitosamente:', this.ticketsOriginales.length);
+    } else {
+      console.warn('No se encontraron tickets en la respuesta');
+      this.reiniciarDatos();
+    }
+  }
+
+  // Maneja errores en la carga de datos
+  private manejarErrorCarga(error: any): void {
+    console.error('Error al cargar tickets:', error);
+    this.reiniciarDatos();
+  }
+
+  /**
+   * Inicializa los datos después de cargar los tickets
+   */
+  private inicializarDatos(): void {
+    this.ticketsFiltrados = [...this.ticketsOriginales];
+    this.calcularEstadisticas();
+  }
+
+  /**
+   * Reinicia todos los datos
+   */
+  private reiniciarDatos(): void {
+    this.ticketsOriginales = [];
+    this.ticketsFiltrados = [];
+    this.estadisticas = { total: 0, alta: 0, media: 0, baja: 0 };
+  }
+
+  // ==================== MÉTODOS DE MAPEO Y FORMATEO ====================
+
+  /**
+   * Mapea los datos de la API al formato del componente
+   */
   private mapearTicketDeAPI(item: Ticket): Ticket {
     return {
       ...item,
@@ -136,109 +191,183 @@ export class VistaCoordinadorComponent implements OnInit {
     };
   }
 
-  // Método para formatear fechas de la API
+  // Formatea las fechas de la API
   private formatearFecha(fechaAPI: string): string {
     if (!fechaAPI) return '';
 
     try {
-      // La fecha viene en formato "06/01/2025 00:00:00" o "06/02/2025 09:57:51"
+      // La fecha viene en formato "06/01/2025 00:00:00"
       const [fecha] = fechaAPI.split(' ');
-      return fecha; // Retorna solo la parte de la fecha
+      return fecha;
     } catch (error) {
       console.error('Error al formatear fecha:', fechaAPI, error);
       return fechaAPI;
     }
   }
 
-  // Método que se ejecuta cuando se escribe en el campo de búsqueda
+  // ==================== MÉTODOS DE ESTADÍSTICAS ====================
+
+  // Calcula las estadísticas de prioridad
+  calcularEstadisticas(): void {
+    const tickets = this.ticketsOriginales;
+
+    this.estadisticas = {
+      total: tickets.length,
+      alta: this.contarPorPrioridad(tickets, 'Alta'),
+      media: this.contarPorPrioridad(tickets, 'Media'),
+      baja: this.contarPorPrioridad(tickets, 'Baja')
+    };
+  }
+
+  // Cuenta tickets por prioridad específica
+  private contarPorPrioridad(tickets: Ticket[], prioridad: string): number {
+    return tickets.filter(ticket => ticket.cPrioridad === prioridad).length;
+  }
+
+  /**
+   * Obtiene las estadísticas actuales
+   */
+  obtenerEstadisticas(): EstadisticasPrioridad {
+    return this.estadisticas;
+  }
+
+  // ==================== MÉTODOS DE FILTRADO Y BÚSQUEDA ====================
+
+  // Realiza la búsqueda por término
   buscarPorTermino(): void {
     this.filtrarTickets();
   }
 
-  // Método para limpiar la búsqueda
+  // Limpia todos los filtros y búsquedas
   limpiarBusqueda(): void {
     this.searchTerm = '';
     this.estadoFiltro = 'Todos';
     this.ticketsFiltrados = [...this.ticketsOriginales];
   }
 
-  buscarTicket(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.toLowerCase();
-
-    this.filteredTicket = this.listadoTicket.filter(ticket =>
-      ticket.cAreaDestino.toLowerCase().includes(value) ||
-      ticket.descripcion.toLowerCase().includes(value) ||
-      ticket.cEstado.toLowerCase().includes(value)
-    );
-  }
-
-  // Método principal para filtrar tickets
-  filtrarTickets(): void {
-    // Primero filtramos por el estado
-    let resultados = this.ticketsOriginales;
-
-    if (this.estadoFiltro !== 'Todos') {
-      resultados = this.ticketsOriginales.filter(ticket => ticket.cEstado === this.estadoFiltro);
-    }
-
-    // Luego filtramos por término de búsqueda si existe
-    if (this.searchTerm && this.searchTerm.trim()) {
-      const termino = this.searchTerm.toLowerCase().trim();
-      resultados = resultados.filter(ticket =>
-        ticket.idCodigoNC.toLowerCase().includes(termino) ||
-        ticket.fechaIncidente.toLowerCase().includes(termino) ||
-        ticket.cAreaDestino.toLowerCase().includes(termino) ||
-        ticket.descripcion.toLowerCase().includes(termino) ||
-        ticket.cPrioridad.toLowerCase().includes(termino) ||
-        ticket.cEstado.toLowerCase().includes(termino)
-      );
-    }
-
-    this.ticketsFiltrados = resultados;
-  }
-
+  /**
+   * Cambia el filtro de estado
+   */
   cambiarFiltroEstado(estado: EstadoFiltro): void {
     this.estadoFiltro = estado;
     this.filtrarTickets();
   }
 
-  // Método para ver detalles del ticket
+  /**
+   * Método principal para filtrar tickets
+   */
+  filtrarTickets(): void {
+    let resultados = [...this.ticketsOriginales];
+
+    // Filtrar por estado
+    if (this.estadoFiltro !== 'Todos') {
+      resultados = resultados.filter(ticket => ticket.cEstado === this.estadoFiltro);
+    }
+
+    // Filtrar por término de búsqueda
+    if (this.searchTerm && this.searchTerm.trim()) {
+      const termino = this.searchTerm.toLowerCase().trim();
+      resultados = resultados.filter(ticket => this.cumpleCriteriosBusqueda(ticket, termino));
+    }
+
+    this.ticketsFiltrados = resultados;
+  }
+
+  /**
+   * Verifica si un ticket cumple con los criterios de búsqueda
+   */
+  private cumpleCriteriosBusqueda(ticket: Ticket, termino: string): boolean {
+    const campos = [
+      ticket.idCodigoNC,
+      ticket.fechaIncidente,
+      ticket.cAreaDestino,
+      ticket.descripcion,
+      ticket.cPrioridad,
+      ticket.cEstado
+    ];
+
+    return campos.some(campo =>
+      campo && campo.toLowerCase().includes(termino)
+    );
+  }
+
+  // ==================== MÉTODOS DE GESTIÓN DE MODALES ====================
+
+  /**
+   * Abre el modal de detalles del ticket
+   */
   verDetalles(ticket: Ticket): void {
     this.selectedTicket = ticket;
     this.modalVisible = true;
   }
 
-  // Método para ver gestion del ticket
+  /**
+   * Abre el modal de gestión del ticket
+   */
   gestionarTicket(ticket: Ticket): void {
     this.selectedTicketGestion = ticket;
     this.modalGestionVisible = true;
   }
 
-  // Método para cerrar modal de visualización
-  closeModal(): void {
-    this.modalVisible = false;
-  }
-
-  // Método para cerrar modal de gestión
-  closeGestionModal(): void {
-    this.modalGestionVisible = false;
-    this.selectedTicketGestion = null;
-  }
-
-  // Método para abrir modal de proceso
+  /**
+   * Abre el modal de proceso del ticket
+   */
   abrirModalProceso(ticket: Ticket): void {
     this.selectedTicketProceso = ticket;
     this.modalProcesoVisible = true;
   }
 
+  /**
+   * Cierra el modal de visualización
+   */
+  closeModal(): void {
+    this.modalVisible = false;
+    this.selectedTicket = null;
+  }
+
+  /**
+   * Cierra el modal de gestión
+   */
+  closeGestionModal(): void {
+    this.modalGestionVisible = false;
+    this.selectedTicketGestion = null;
+  }
+
+  /**
+   * Cierra el modal de proceso
+   */
   cerrarModalProceso(): void {
     this.modalProcesoVisible = false;
     this.selectedTicketProceso = null;
   }
 
-  // Método para refrescar los datos
+  // ==================== MÉTODOS UTILITARIOS ====================
+
+  /**
+   * Refresca todos los datos desde la API
+   */
   refrescarDatos(): void {
     this.cargarTicketsDesdeAPI();
+  }
+
+  /**
+   * Obtiene el número total de tickets filtrados
+   */
+  obtenerTotalFiltrados(): number {
+    return this.ticketsFiltrados.length;
+  }
+
+  /**
+   * Verifica si hay tickets cargados
+   */
+  tieneTickets(): boolean {
+    return this.ticketsOriginales.length > 0;
+  }
+
+  /**
+   * Obtiene un ticket por su ID
+   */
+  obtenerTicketPorId(idCodigoNC: string): Ticket | undefined {
+    return this.ticketsOriginales.find(ticket => ticket.idCodigoNC === idCodigoNC);
   }
 }
