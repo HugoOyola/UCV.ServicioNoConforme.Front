@@ -28,7 +28,7 @@
     <form [formGroup]="editForm" *ngIf="!loading" class="px-8 py-4">
       <!-- ID (solo lectura) -->
       <div class="bg-gray-100 border-solid border rounded border-gray-400 p-2 text-center text-gray-600 text-[16px] mb-4">
-        <strong>Código:</strong> {{ servicioCompleto?.cCodigoServ || ticket?.id }}
+        <strong>Código:</strong> {{ getCodigoServicio() }}
       </div>
 
       <!-- Formulario de edición en dos columnas -->
@@ -132,7 +132,7 @@
       </div>
 
       <!-- Información adicional del servicio (solo lectura) -->
-      <!-- <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
+      <div *ngIf="servicioCompleto" class="mt-4 p-3 bg-gray-50 rounded-md">
         <h4 class="text-md font-medium text-gray-700 mb-2 uppercase">Información del Registro</h4>
         <div class="grid grid-cols-2 gap-4 text-[12px] text-gray-600">
           <div>
@@ -144,11 +144,11 @@
           <div>
             <strong>Fecha Registro:</strong> {{ servicioCompleto.fechaRegistro }}
           </div>
-          <div>
+          <div *ngIf="servicioCompleto.cNombreUsuario">
             <strong>Usuario:</strong> {{ servicioCompleto.cNombreUsuario }}
           </div>
         </div>
-      </div> -->
+      </div>
     </form>
 
     <!-- Footer con botones -->
