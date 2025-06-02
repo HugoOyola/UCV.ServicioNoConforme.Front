@@ -205,6 +205,7 @@ export class ListadoComponent implements OnInit {
 
   /**
    * Método específico para formatear solo la fecha (sin hora) para el listado
+   * Corrige el problema de interpretación de formatos de fecha
    */
   private formatearSoloFecha(fecha: string | null): string {
     if (!fecha) return '';
@@ -212,32 +213,125 @@ export class ListadoComponent implements OnInit {
     try {
       let fechaObj: Date;
 
+      // Si la fecha viene en formato ISO desde la base de datos (2025-04-02 00:00:00.000)
+      if (fecha.includes('-') && (fecha.includes(':') || fecha.includes('T'))) {
+        // Formato ISO: usar directamente
+        fechaObj = new Date(fecha);
+      }
       // Si la fecha viene como "22/05/2025 11:14:13 AM" o "05/22/2025 11:14:13"
-      if (fecha.includes('/')) {
-        // Remover la parte de hora y AM/PM para obtener solo la fecha
-        const soloFecha = fecha.split(' ')[0]; // Obtiene solo la parte de fecha
-        fechaObj = new Date(soloFecha);
+      else if (fecha.includes('/')) {
+        // Extraer solo la parte de fecha
+        const soloFecha = fecha.split(' ')[0];
+        const partes = soloFecha.split('/');
+
+        // Verificar si tenemos 3 partes
+        if (partes.length === 3) {
+          // Determinar el formato basándose en el contexto o valores
+          let dia: number, mes: number, año: number;
+
+          // Si el primer número es mayor a 12, asumimos formato dd/mm/yyyy
+          if (parseInt(partes[0]) > 12) {
+            dia = parseInt(partes[0]);
+            mes = parseInt(partes[1]) - 1; // Los meses en JS van de 0-11
+            año = parseInt(partes[2]);
+          }
+          // Si el segundo número es mayor a 12, asumimos formato mm/dd/yyyy
+          else if (parseInt(partes[1]) > 12) {
+            mes = parseInt(partes[0]) - 1;
+            dia = parseInt(partes[1]);
+            año = parseInt(partes[2]);
+          }
+          // Si ambos son <= 12, necesitamos otra lógica o asumir un formato
+          else {
+            // Por defecto, asumimos formato dd/mm/yyyy (formato español)
+            dia = parseInt(partes[0]);
+            mes = parseInt(partes[1]) - 1;
+            año = parseInt(partes[2]);
+          }
+
+          fechaObj = new Date(año, mes, dia);
+        } else {
+          // Fallback: intentar parsear directamente
+          fechaObj = new Date(fecha);
+        }
       } else {
         fechaObj = new Date(fecha);
       }
 
       // Verificar si la fecha es válida
       if (isNaN(fechaObj.getTime())) {
-        // Si no se puede parsear, intentar extraer solo la parte de fecha del string original
+        console.warn('Fecha inválida detectada:', fecha);
         return fecha.split(' ')[0] || fecha;
       }
 
-      // Devolver solo la fecha en formato dd/mm/yyyy
-      return fechaObj.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+      // Devolver la fecha en formato dd/mm/yyyy (formato español)
+      const dia = fechaObj.getDate().toString().padStart(2, '0');
+      const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
+      const año = fechaObj.getFullYear();
+
+      return `${dia}/${mes}/${año}`;
+
     } catch (error) {
       console.warn('Error al formatear fecha:', fecha, error);
-      // Si hay error, devolver solo la parte de fecha del string original
       return fecha.split(' ')[0] || fecha;
     }
+  }
+
+  /**
+   * Método alternativo más robusto para casos específicos
+   * Úsalo si el anterior no resuelve completamente el problema
+   */
+  private formatearFechaDesdeISO(fecha: string | null): string {
+    if (!fecha) return '';
+
+    try {
+      // Si viene en formato ISO desde SQL Server (2025-04-02 00:00:00.000)
+      if (fecha.includes('-')) {
+        // Extraer solo la parte de fecha (antes del espacio o T)
+        const fechaSolo = fecha.split(' ')[0].split('T')[0];
+        const [año, mes, dia] = fechaSolo.split('-');
+
+        // Crear fecha específicamente con los valores extraídos
+        const fechaObj = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
+
+        if (isNaN(fechaObj.getTime())) {
+          return fechaSolo;
+        }
+
+        // Formatear como dd/mm/yyyy
+        return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${año}`;
+      }
+
+      // Para otros formatos, usar el método anterior
+      return this.formatearSoloFecha(fecha);
+
+    } catch (error) {
+      console.warn('Error al formatear fecha ISO:', fecha, error);
+      return fecha;
+    }
+  }
+
+  /**
+   * Método para debugging - ayuda a identificar el formato de fecha recibido
+   */
+  private debugFecha(fecha: string, origen: string): void {
+    console.log(`=== DEBUG FECHA (${origen}) ===`);
+    console.log('Fecha original:', fecha);
+    console.log('Contiene "-":', fecha.includes('-'));
+    console.log('Contiene "/":', fecha.includes('/'));
+    console.log('Contiene ":":', fecha.includes(':'));
+
+    if (fecha.includes('/')) {
+      const partes = fecha.split(' ')[0].split('/');
+      console.log('Partes separadas por "/":', partes);
+    }
+
+    if (fecha.includes('-')) {
+      const partes = fecha.split(' ')[0].split('T')[0].split('-');
+      console.log('Partes separadas por "-":', partes);
+    }
+
+    console.log('================================');
   }
 
   /**
