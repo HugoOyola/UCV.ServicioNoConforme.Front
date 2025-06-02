@@ -76,6 +76,9 @@ export class RegistroComponent implements OnInit {
   // En el componente, actualizar la definición de categorias
   public categorias: CategoriaOption[] = [];
 
+  // Configuración para el DatePicker
+  public dateFormat = 'dd/mm/yy'; // Formato para mostrar en el DatePicker
+
   // Agregar propiedad para el nombre del campus
   public campusNombre: string = '';
 
@@ -298,6 +301,14 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  // Método auxiliar para formatear fecha como DD/MM/YYYY
+  private formatearFecha(fecha: Date): string {
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // getMonth() devuelve 0-11
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       console.warn('Formulario inválido');
@@ -339,8 +350,8 @@ export class RegistroComponent implements OnInit {
       cUniOrgNombre: cUniOrgNombre,
       idCategoria: idCategoria,
       cNombreCategoria: cNombreCategoria,
-      // Fecha del incidente: cadena vacía si está vacía, sino convertir a toLocaleString
-      dfechaIncidente: fechaIncidente ? new Date(fechaIncidente).toLocaleString() : '',
+      // Fecha del incidente: formatear como DD/MM/YYYY
+      dfechaIncidente: fechaIncidente ? this.formatearFecha(new Date(fechaIncidente)) : '',
       // Lugar del incidente: cadena vacía si está vacío o solo espacios en blanco
       cLugarIncidente: lugarIncidente && lugarIncidente.trim() !== '' ? lugarIncidente.trim() : '',
       idPrioridad: idPrioridad,

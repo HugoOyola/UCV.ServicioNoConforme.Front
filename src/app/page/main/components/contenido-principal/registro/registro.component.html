@@ -59,7 +59,7 @@
             Fecha del incidente
           </label>
           <p-datepicker id="fecha" formControlName="fecha" [iconDisplay]="'input'" [showIcon]="true"
-            inputId="fecha-input" [maxDate]="maxDate" styleClass="w-full" placeholder="Seleccione una fecha"
+            inputId="fecha-input" [maxDate]="maxDate" styleClass="w-full" placeholder="Seleccione una fecha" [dateFormat]="dateFormat"
             [attr.aria-label]="'Seleccione fecha del incidente'"></p-datepicker>
         </div>
 
