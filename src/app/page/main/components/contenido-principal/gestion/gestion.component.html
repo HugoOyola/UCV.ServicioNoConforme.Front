@@ -1,6 +1,6 @@
 <!-- Componente de Gestión -->
 <div class="w-full mx-auto">
-  <header class="bg-gradient-to-r from-blue-100 to-blue-50 px-10 py-6 border-solid border-0 border-b border-gray-200">
+  <header class="bg-gradient-to-r from-blue-100 to-blue-50 px-10 py-6 border-b border-gray-200">
     <h2 class="text-2xl font-bold text-[#1a2a47] flex items-center">
       <i class="pi pi-check-circle mr-3 text-xl text-red-500" aria-hidden="true"></i>
       Gestión de Servicios no Conformes
@@ -11,102 +11,43 @@
   </header>
 
   <!-- Contenido principal -->
-  <div class="p-5">
-    <!-- Contenedor principal: Selector izquierda, Cards derecha -->
-    <div class="flex flex-col lg:flex-row gap-6 mb-8 lg:items-stretch">
-      <!-- Selector de tipo de gestión - Izquierda -->
-      <div class="lg:w-1/3">
-        <div class="bg-white py-3 px-6 rounded-lg shadow-sm border-solid border border-gray-200 h-full min-h-[116px]">
-          <h3 class="text-md font-semibold text-gray-800 mb-2">Seleccione el tipo de gestión:</h3>
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center">
-              <p-radioButton
-                class="flex items-center"
-                size="small"
-                inputId="coordinator"
-                name="managementType"
-                value="coordinator"
-                [(ngModel)]="selectedManagementType"
-                (onClick)="onManagementTypeChange()">
-              </p-radioButton>
-              <label for="coordinator" class="ml-3 flex items-center cursor-pointer">
-                <i class="pi pi-user text-blue-600 mr-3 text-lg"></i>
-                <span class="font-medium text-gray-800 mr-2">Coordinador</span>
-                <span class="text-sm text-gray-500">- Servicios pendientes de derivar</span>
-              </label>
-            </div>
+  <div class="p-6">
+    <!-- Selector de tipo de gestión - Ancho completo -->
+    <div class="mb-8">
+      <div class="bg-white rounded-lg shadow-sm border-solid border border-gray-200 p-6 shadow-md">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Seleccione el tipo de gestión:</h3>
 
-            <div class="flex items-center">
-              <p-radioButton
-                class="flex items-center"
-                size="small"
-                inputId="area"
-                name="managementType"
-                value="area"
-                [(ngModel)]="selectedManagementType"
-                (onClick)="onManagementTypeChange()">
-              </p-radioButton>
-              <label for="area" class="ml-3 flex items-center cursor-pointer">
-                <i class="pi pi-building text-blue-600 mr-3 text-md"></i>
-                <span class="font-medium text-gray-800 mr-2">Área</span>
-                <span class="text-sm text-gray-500">- Servicios derivados a mi área</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cards de estadísticas - Derecha -->
-      <div class="lg:w-2/3">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 min-h-[116px]">
-          <!-- Card Total -->
-          <div class="bg-blue-50 rounded-lg shadow-sm border-solid border border-blue-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="text-blue-600 font-bold text-md uppercase tracking-wide mb-1">Total</h4>
-                <div class="text-2xl font-bold text-blue-600">{{ totalServices }}</div>
-              </div>
-              <div class="bg-blue-500 rounded-full p-2 flex items-center justify-center">
-                <i class="pi pi-check-circle text-xl text-white"></i>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Opción Coordinador -->
+          <div
+            class="flex items-center p-4 border-solid border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+            [class.border-blue-500]="selectedManagementType === 'coordinator'"
+            [class.bg-blue-50]="selectedManagementType === 'coordinator'" (click)="selectManagementType('coordinator')">
+            <p-radioButton inputId="coordinator" name="managementType" value="coordinator"
+              [(ngModel)]="selectedManagementType" (onClick)="onManagementTypeChange()" class="mr-4">
+            </p-radioButton>
+            <div class="flex items-center flex-1">
+              <i class="pi pi-user text-blue-600 mr-4 text-2xl"></i>
+              <div class="flex flex-col">
+                <span class="font-semibold text-gray-800 text-lg">Coordinador</span>
+                <span class="text-sm text-gray-500">Servicios pendientes de derivar</span>
               </div>
             </div>
           </div>
 
-          <!-- Card Alta Prioridad -->
-          <div class="bg-red-50 rounded-lg shadow-sm border-solid border border-red-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="text-red-600 font-semibold text-md uppercase tracking-wide mb-1">Alta Prioridad</h4>
-                <div class="text-2xl font-bold text-red-600">{{ highPriorityServices }}</div>
-              </div>
-              <div class="bg-red-500 rounded-full p-2 flex items-center justify-center">
-                <i class="pi pi-exclamation-circle text-xl text-white"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Media Prioridad -->
-          <div class="bg-orange-50 rounded-lg shadow-sm border-solid border border-orange-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="text-orange-600 font-semibold text-md uppercase tracking-wide mb-1">Media Prioridad</h4>
-                <div class="text-2xl font-bold text-orange-600">{{ mediumPriorityServices }}</div>
-              </div>
-              <div class="bg-orange-500 rounded-full p-2 flex items-center justify-center">
-                <i class="pi pi-clock text-xl text-white"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Baja Prioridad -->
-          <div class="bg-green-50 rounded-lg shadow-sm border-solid border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="text-green-600 font-semibold text-md uppercase tracking-wide mb-1">Baja Prioridad</h4>
-                <div class="text-2xl font-bold text-green-600">{{ lowPriorityServices }}</div>
-              </div>
-              <div class="bg-green-500 rounded-full p-2 flex items-center justify-center">
-                <i class="pi pi-arrow-down text-xl text-white"></i>
+          <!-- Opción Área -->
+          <div
+            class="flex items-center p-4 border-solid border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+            [class.border-blue-500]="selectedManagementType === 'area'"
+            [class.bg-blue-50]="selectedManagementType === 'area'" (click)="selectManagementType('area')">
+            <p-radioButton inputId="area" name="managementType" value="area" [(ngModel)]="selectedManagementType"
+              (onClick)="onManagementTypeChange()" class="mr-4">
+            </p-radioButton>
+            <div class="flex items-center flex-1">
+              <i class="pi pi-building text-blue-600 mr-4 text-2xl"></i>
+              <div class="flex flex-col">
+                <span class="font-semibold text-gray-800 text-lg">Área</span>
+                <span class="text-sm text-gray-500">Servicios derivados a mi área</span>
               </div>
             </div>
           </div>

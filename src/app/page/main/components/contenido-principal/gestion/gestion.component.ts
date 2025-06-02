@@ -19,43 +19,23 @@ import { VistaAreaComponent } from './vista-area/vista-area.component';
   styleUrl: './gestion.component.scss'
 })
 export class GestionComponent {
-  public selectedManagementType: string = 'coordinator';
-  public totalServices: number = 25;
-  public highPriorityServices: number = 6;
-  public mediumPriorityServices: number = 8;
-  public lowPriorityServices: number = 11; // ✅ Agregar esta propiedad
+  public selectedManagementType: string = '';
 
-  constructor() {}
+  selectManagementType(type: string): void {
+    this.selectedManagementType = type;
+    this.onManagementTypeChange();
+  }
 
   onManagementTypeChange(): void {
-    console.log('Tipo de gestión seleccionado:', this.selectedManagementType);
-
+    // Lógica adicional cuando cambia el tipo de gestión
     if (this.selectedManagementType === 'coordinator') {
-      this.loadPendingServices();
-    } else {
-      this.loadAreaServices();
+      console.log('Modo coordinador seleccionado');
+      // Aquí puedes agregar lógica específica para coordinador
+      // Ejemplo: cargar servicios pendientes de derivar
+    } else if (this.selectedManagementType === 'area') {
+      console.log('Modo área seleccionado');
+      // Aquí puedes agregar lógica específica para área
+      // Ejemplo: cargar servicios derivados al área
     }
-  }
-
-  getEmptyStateMessage(): string {
-    return this.selectedManagementType === 'coordinator'
-      ? 'No hay servicios pendientes de derivar'
-      : 'No hay servicios derivados a tu área';
-  }
-
-  private loadPendingServices() {
-    // Datos basados en los tickets reales del coordinador
-    this.totalServices = 25;
-    this.highPriorityServices = 6;  // Tickets con prioridad "Alta"
-    this.mediumPriorityServices = 8; // Tickets con prioridad "Media"
-    this.lowPriorityServices = 11;   // Tickets con prioridad "Baja"
-  }
-
-  private loadAreaServices() {
-    // Simular datos para área
-    this.totalServices = 18;
-    this.highPriorityServices = 4;
-    this.mediumPriorityServices = 6;
-    this.lowPriorityServices = 8;
   }
 }
