@@ -7,15 +7,49 @@ import { TagModule } from 'primeng/tag';
 import { DateFormatPipe } from '../../pipes/date-format.pipe';
 
 interface Ticket {
-  id: string;
-  fecha: string;
-  areaDestino: string;
-  categoria: string;
-  prioridad: 'Alta' | 'Media' | 'Baja';
-  estado: 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
-  detalle: string;
-  lugar: string;
+  idNoConformidad: number;
+  idCodigoNC: string;
+  idCategoria: number;
+  descripcion: string;
+  fechaIncidente: string;
+  descripcionNC: string;
+  idPrioridad: number;
+  cPrioridad: string;
+  detalleServicioNC: string;
+  cUsOrigen: string;
+  cAreaOrigen: string;
+  cPuestoOrigen: string;
+  unidadDestino: number;
+  cAreaDestino: string;
+  cPerJuridica: string;
+  cFilDestino: string;
+  estadoNC: number;
+  cEstado: string;
   fechaRegistro: string;
+  cPerCodigoDeriva: string;
+  correoDeriva: string;
+  cUsDestino: string;
+  cUnidadDestino: string;
+  cCargoDestino: string;
+  // Campos adicionales (pueden estar o no dependiendo del contexto)
+  cCodigoServ?: string;
+  nUniOrgCodigo?: number;
+  cUniOrgNombre?: string;
+  descripcionCat?: string;
+  cPerCodigo?: string;
+  cNombreUsuario?: string;
+  cDepartamento?: string;
+  usuarioCorreo?: string;
+  cPerCodigoSuper?: string;
+  cNombreSupervisor?: string;
+  cCargoSupervisor?: string;
+  correoSupervisor?: string;
+  nTipCur?: number;
+  tipoNC?: number;
+  nPrdCodigo?: number;
+  detalleNC?: string | null;
+  respuestaNC?: string | null;
+  dFechaFinal?: string;
 }
 
 @Component({
@@ -32,5 +66,23 @@ export class VerTicketComponent {
 
   close(): void {
     this.btnCerrar.emit();
+  }
+
+  // Método helper para obtener la categoría (puede venir de diferentes campos)
+  getCategoria(): string {
+    if (!this.ticket) return '';
+    return this.ticket.descripcionCat || this.ticket.descripcion || 'No especificado';
+  }
+
+  // Método helper para obtener el lugar/descripción
+  getLugar(): string {
+    if (!this.ticket) return '';
+    return this.ticket.descripcionNC || this.ticket.cAreaDestino || 'No especificado';
+  }
+
+  // Método helper para obtener el código del servicio
+  getCodigoServicio(): string {
+    if (!this.ticket) return '';
+    return this.ticket.cCodigoServ || this.ticket.idCodigoNC || 'No especificado';
   }
 }
