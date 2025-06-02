@@ -36,25 +36,25 @@ interface Ticket {
   cUsDestino: string;
   cUnidadDestino: string;
   cCargoDestino: string;
-  // Campos adicionales específicos del listado
-  cCodigoServ: string;
-  nUniOrgCodigo: number;
-  cUniOrgNombre: string;
-  descripcionCat: string;
-  cPerCodigo: string;
-  cNombreUsuario: string;
-  cDepartamento: string;
-  usuarioCorreo: string;
-  cPerCodigoSuper: string;
-  cNombreSupervisor: string;
-  cCargoSupervisor: string;
-  correoSupervisor: string;
-  nTipCur: number;
-  tipoNC: number;
-  nPrdCodigo: number;
-  detalleNC: string | null;
-  respuestaNC: string | null;
-  dFechaFinal: string;
+  // Campos adicionales específicos del listado (opcionales para compatibilidad)
+  cCodigoServ?: string;
+  nUniOrgCodigo?: number;
+  cUniOrgNombre?: string;
+  descripcionCat?: string;
+  cPerCodigo?: string;
+  cNombreUsuario?: string;
+  cDepartamento?: string;
+  usuarioCorreo?: string;
+  cPerCodigoSuper?: string;
+  cNombreSupervisor?: string;
+  cCargoSupervisor?: string;
+  correoSupervisor?: string;
+  nTipCur?: number;
+  tipoNC?: number;
+  nPrdCodigo?: number;
+  detalleNC?: string | null;
+  respuestaNC?: string | null;
+  dFechaFinal?: string;
 }
 
 type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
@@ -253,7 +253,7 @@ export class ListadoComponent implements OnInit {
         ticket.descripcion.toLowerCase().includes(termino) ||
         ticket.cPrioridad.toLowerCase().includes(termino) ||
         ticket.cEstado.toLowerCase().includes(termino) ||
-        ticket.cCodigoServ.toLowerCase().includes(termino)
+        (ticket.cCodigoServ && ticket.cCodigoServ.toLowerCase().includes(termino))
       );
     }
 
