@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../shared/modales/ver-ticket/ver-ticket.component";
 import { EditarTicketComponent } from '../../../shared/modales/editar-ticket/editar-ticket.component';
 import { EliminarTicketComponent } from '../../../shared/modales/eliminar-ticket/eliminar-ticket.component';
+import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
 import { MainService } from '../../../services/main.service';
 import { MainSharedService } from '@shared/services/main-shared.service';
 
@@ -62,7 +63,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent, DateFormatPipe],
   templateUrl: './listado.component.html',
   styleUrl: './listado.component.scss'
 })
@@ -148,15 +149,15 @@ export class ListadoComponent implements OnInit {
     });
   }
 
-   // Método para mapear los datos de la API al formato del componente
-   private mapearTicketDeAPI(item: any): Ticket {
+  // Método para mapear los datos de la API al formato del componente
+  private mapearTicketDeAPI(item: any): Ticket {
     return {
       // Campos originales de vista-coordinador
       idNoConformidad: item.idNoConformidad,
       idCodigoNC: item.idCodigoNC,
       idCategoria: item.idCategoria,
       descripcion: item.descripcionCat || item.descripcion || '',
-      fechaIncidente: this.formatearFecha(item.fechaIncidente || item.dFechaFinal),
+      fechaIncidente: item.fechaIncidente || item.dFechaFinal,
       descripcionNC: item.descripcionNC || '',
       idPrioridad: item.idPrioridad,
       cPrioridad: item.cPrioridad,
@@ -170,7 +171,7 @@ export class ListadoComponent implements OnInit {
       cFilDestino: item.cFilial || '',
       estadoNC: item.estadoNC,
       cEstado: item.cEstado,
-      fechaRegistro: this.formatearFecha(item.fechaRegistro),
+      fechaRegistro: item.fechaRegistro,
       cPerCodigoDeriva: item.cPerCodigoSuper || '',
       correoDeriva: item.correoSupervisor || '',
       cUsDestino: item.cNombreSupervisor || '',
@@ -194,22 +195,8 @@ export class ListadoComponent implements OnInit {
       nPrdCodigo: item.nPrdCodigo,
       detalleNC: item.detalleNC,
       respuestaNC: item.respuestaNC,
-      dFechaFinal: this.formatearFecha(item.dFechaFinal)
+      dFechaFinal: item.dFechaFinal
     };
-  }
-
-  // Método para formatear fechas de la API (igual que vista-coordinador)
-  private formatearFecha(fechaAPI: string): string {
-    if (!fechaAPI) return '';
-
-    try {
-      // La fecha viene en formato "06/01/2025 00:00:00" o "06/02/2025 09:57:51"
-      const [fecha] = fechaAPI.split(' ');
-      return fecha; // Retorna solo la parte de la fecha
-    } catch (error) {
-      console.error('Error al formatear fecha:', fechaAPI, error);
-      return fechaAPI;
-    }
   }
 
   // Método para ver detalles del ticket
