@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { VistaCoordinadorComponent } from "./vista-coordinador/vista-coordinador.component";
@@ -11,7 +10,6 @@ import { VistaAreaComponent } from './vista-area/vista-area.component';
   standalone: true,
   imports: [
     CommonModule,
-    Button,
     RadioButtonModule,
     FormsModule,
     VistaCoordinadorComponent,
