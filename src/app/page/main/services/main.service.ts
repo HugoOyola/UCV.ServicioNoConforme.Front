@@ -151,4 +151,18 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	// Método para obtener el seguimiento del servicio no conforme
+	post_SeguimientoServicioNC(cpercodigo: string, ntipogestion: number): Observable<HttpResponse<ResponseResultLst<any>>> {
+		const param = {
+			cPerCodigo: cpercodigo,
+			nTipoGestion: ntipogestion
+		};
+
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_SeguimientoServicio;
+		return this._http.post<ResponseResultLst<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }

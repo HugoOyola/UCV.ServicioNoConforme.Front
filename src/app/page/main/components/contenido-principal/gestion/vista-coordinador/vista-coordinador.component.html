@@ -54,27 +54,27 @@
     </ng-template>
     <ng-template pTemplate="body" let-ticket>
       <tr class="text-gray-700">
-        <td class="text-center w-[8%]">{{ ticket.id }}</td>
-        <td class="text-center w-[12%]">{{ ticket.fecha }}</td>
-        <td class="w-[25%]">{{ ticket.areaDestino }}</td>
-        <td class="w-[20%]">{{ ticket.categoria }}</td>
+        <td class="text-center w-[8%]">{{ ticket.idCodigoNC }}</td>
+        <td class="text-center w-[12%]">{{ ticket.fechaIncidente }}</td>
+        <td class="w-[25%]">{{ ticket.cAreaDestino }}</td>
+        <td class="w-[20%]">{{ ticket.descripcion }}</td>
         <td class="text-center w-[12%]">
           <span [ngClass]="{
-                          'bg-red-200 text-red-600': ticket.prioridad === 'Alta',
-                          'bg-yellow-100 text-yellow-600': ticket.prioridad === 'Media',
-                          'bg-green-100 text-green-600': ticket.prioridad === 'Baja'
+                          'bg-red-200 text-red-600': ticket.cPrioridad === 'Alta',
+                          'bg-yellow-100 text-yellow-600': ticket.cPrioridad === 'Media',
+                          'bg-green-100 text-green-600': ticket.cPrioridad === 'Baja'
                       }" class="px-3 py-1 rounded-full text-md font-medium">
-            {{ ticket.prioridad }}
+            {{ ticket.cPrioridad }}
           </span>
         </td>
         <td class="text-center w-[8%]">
           <span [ngClass]="{
-                          'text-yellow-600 bg-yellow-100': ticket.estado === 'Pendiente',
-                          'text-blue-600 bg-blue-100': ticket.estado === 'En Revisión',
-                          'text-green-600 bg-green-100': ticket.estado === 'Cerrado',
-                          'text-purple-600 bg-purple-100': ticket.estado === 'Derivado'
+                          'text-yellow-600 bg-yellow-100': ticket.cEstado === 'Pendiente',
+                          'text-blue-600 bg-blue-100': ticket.cEstado === 'En Revisión',
+                          'text-green-600 bg-green-100': ticket.cEstado === 'Cerrado',
+                          'text-purple-600 bg-purple-100': ticket.cEstado === 'Derivado'
                       }" class="px-2 py-1 rounded text-md font-medium">
-            {{ ticket.estado }}
+            {{ ticket.cEstado }}
           </span>
         </td>
         <td class="flex justify-center space-x-2">
@@ -112,15 +112,15 @@
 </app-ver-ticket>
 
 <!-- Modal para Gestionar Ticket -->
-<app-gestionar-ticket
+<!-- <app-gestionar-ticket
   [visible]="modalGestionVisible"
   [ticket]="selectedTicketGestion"
   (btnCerrar)="closeGestionModal()">
-</app-gestionar-ticket>
+</app-gestionar-ticket> -->
 
 <!-- Modal para Proceso Ticket -->
-<app-proceso-ticket
+<!-- <app-proceso-ticket
   [visible]="modalProcesoVisible"
   [ticket]="selectedTicketProceso"
   (btnCerrar)="cerrarModalProceso()">
-</app-proceso-ticket>
+</app-proceso-ticket> -->

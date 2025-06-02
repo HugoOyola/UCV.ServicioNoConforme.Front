@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
@@ -7,17 +7,34 @@ import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../../shared/modales/ver-ticket/ver-ticket.component";
 import { GestionarTicketComponent } from '../../../../shared/modales/gestionar-ticket/gestionar-ticket.component';
 import { ProcesoTicketComponent } from '../../../../shared/modales/proceso-ticket/proceso-ticket.component';
+import { MainSharedService } from '@shared/services/main-shared.service';
+import { MainService } from 'src/app/page/main/services/main.service';
 
 interface Ticket {
-  id: string;
-  fecha: string;
-  areaDestino: string;
-  categoria: string;
-  prioridad: 'Alta' | 'Media' | 'Baja';
-  estado: 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
-  detalle: string;
-  lugar: string;
+  idNoConformidad: number;
+  idCodigoNC: string;
+  idCategoria: number;
+  descripcion: string;
+  fechaIncidente: string;
+  descripcionNC: string;
+  idPrioridad: number;
+  cPrioridad: string;
+  detalleServicioNC: string;
+  cUsOrigen: string;
+  cAreaOrigen: string;
+  cPuestoOrigen: string;
+  unidadDestino: number;
+  cAreaDestino: string;
+  cPerJuridica: string;
+  cFilDestino: string;
+  estadoNC: number;
+  cEstado: string;
   fechaRegistro: string;
+  cPerCodigoDeriva: string;
+  correoDeriva: string;
+  cUsDestino: string;
+  cUnidadDestino: string;
+  cCargoDestino: string;
 }
 
 type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
@@ -30,10 +47,15 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
   styleUrl: './vista-coordinador.component.scss'
 })
 export class VistaCoordinadorComponent implements OnInit {
-  public tickets: Ticket[] = [];
+  private _mainService = inject(MainService);
+  private _mainSharedService = inject(MainSharedService);
+
   public ticketsFiltrados: Ticket[] = [];
   public searchTerm: string = '';
   public estadoFiltro: EstadoFiltro = 'Todos';
+
+  // Lista completa sin filtros (privada, solo para uso interno)
+  private ticketsOriginales: Ticket[] = [];
 
   // Modal de vista
   public modalVisible: boolean = false;
@@ -50,290 +72,82 @@ export class VistaCoordinadorComponent implements OnInit {
   public listadoTicket: Ticket[] = [];
   public filteredTicket: Ticket[] = [];
 
-  constructor() { }
+  constructor() {
+    // Usar effect para monitorear cambios en cPerCodigo
+    effect(() => {
+      const cPerCodigo = this._mainSharedService.cPerCodigo();
+      console.log('cPerCodigo en vista-coordinador:', cPerCodigo);
+
+      if (cPerCodigo && cPerCodigo !== '') {
+        this.cargarTicketsDesdeAPI();
+      }
+    });
+  }
 
   ngOnInit(): void {
-    // Inicializar datos de ejemplo
-    this.tickets = [
-      {
-        id: "SNC-001",
-        fecha: "10/05/2025",
-        areaDestino: "Área Académica",
-        categoria: "Servicios Académicos",
-        prioridad: "Alta",
-        estado: "Pendiente",
-        detalle: "Problemas con el sistema de matrícula en línea. Los estudiantes no pueden completar el proceso.",
-        lugar: "Laboratorio de Informática",
-        fechaRegistro: "10/05/2025 08:30",
-      },
-      {
-        id: "SNC-002",
-        fecha: "08/05/2025",
-        areaDestino: "Infraestructura",
-        categoria: "Infraestructura",
-        prioridad: "Media",
-        estado: "En Revisión",
-        detalle: "Fallas en el sistema de aire acondicionado del aula 302.",
-        lugar: "Aula 302",
-        fechaRegistro: "08/05/2025 10:15",
-      },
-      {
-        id: "SNC-003",
-        fecha: "05/05/2025",
-        areaDestino: "Bienestar Universitario",
-        categoria: "Atención al Usuario",
-        prioridad: "Baja",
-        estado: "Cerrado",
-        detalle: "Demora excesiva en la atención de trámites de bienestar estudiantil.",
-        lugar: "Oficina de Bienestar",
-        fechaRegistro: "05/05/2025 14:20",
-      },
-      {
-        id: "SNC-004",
-        fecha: "01/05/2025",
-        areaDestino: "Área Administrativa",
-        categoria: "Trámites Documentarios",
-        prioridad: "Alta",
-        estado: "Derivado",
-        detalle: "Documentos extraviados en el proceso de transferencia entre departamentos.",
-        lugar: "Oficina de Trámite Documentario",
-        fechaRegistro: "01/05/2025 09:45",
-      },
-      {
-        id: "SNC-005",
-        fecha: "28/04/2025",
-        areaDestino: "Área de Investigación",
-        categoria: "Otros",
-        prioridad: "Media",
-        estado: "Cerrado",
-        detalle: "Retraso en la aprobación de proyectos de investigación.",
-        lugar: "Dirección de Investigación",
-        fechaRegistro: "28/04/2025 11:30",
-      },
-      {
-        id: "SNC-006",
-        fecha: "11/05/2025",
-        areaDestino: "Área Académica",
-        categoria: "Servicios Académicos",
-        prioridad: "Alta",
-        estado: "Pendiente",
-        detalle: "Error en la asignación de cursos para el semestre entrante.",
-        lugar: "Oficina de Registro Académico",
-        fechaRegistro: "11/05/2025 09:00"
-      },
-      {
-        id: "SNC-007",
-        fecha: "12/05/2025",
-        areaDestino: "Infraestructura",
-        categoria: "Infraestructura",
-        prioridad: "Media",
-        estado: "En Revisión",
-        detalle: "Fugas de agua en los baños del segundo piso.",
-        lugar: "Edificio Principal",
-        fechaRegistro: "12/05/2025 10:30"
-      },
-      {
-        id: "SNC-008",
-        fecha: "13/05/2025",
-        areaDestino: "Bienestar Universitario",
-        categoria: "Atención al Usuario",
-        prioridad: "Baja",
-        estado: "Cerrado",
-        detalle: "Solicitud de ampliación del horario de atención médica.",
-        lugar: "Centro de Salud Universitario",
-        fechaRegistro: "13/05/2025 11:15"
-      },
-      {
-        id: "SNC-009",
-        fecha: "14/05/2025",
-        areaDestino: "Área Administrativa",
-        categoria: "Trámites Documentarios",
-        prioridad: "Alta",
-        estado: "Derivado",
-        detalle: "Demora en la emisión de certificados de estudios.",
-        lugar: "Oficina de Secretaría General",
-        fechaRegistro: "14/05/2025 08:45"
-      },
-      {
-        id: "SNC-010",
-        fecha: "15/05/2025",
-        areaDestino: "Área de Investigación",
-        categoria: "Otros",
-        prioridad: "Media",
-        estado: "Cerrado",
-        detalle: "Falta de insumos para laboratorios de investigación.",
-        lugar: "Laboratorio de Ciencias",
-        fechaRegistro: "15/05/2025 09:30"
-      },
-      {
-        id: "SNC-011",
-        fecha: "16/05/2025",
-        areaDestino: "Área Académica",
-        categoria: "Servicios Académicos",
-        prioridad: "Alta",
-        estado: "Pendiente",
-        detalle: "Problemas con la plataforma de enseñanza virtual.",
-        lugar: "Sala de Profesores",
-        fechaRegistro: "16/05/2025 10:00"
-      },
-      {
-        id: "SNC-012",
-        fecha: "17/05/2025",
-        areaDestino: "Infraestructura",
-        categoria: "Infraestructura",
-        prioridad: "Media",
-        estado: "En Revisión",
-        detalle: "Reparación de ventanas rotas en el aula 105.",
-        lugar: "Aula 105",
-        fechaRegistro: "17/05/2025 11:20"
-      },
-      {
-        id: "SNC-013",
-        fecha: "18/05/2025",
-        areaDestino: "Bienestar Universitario",
-        categoria: "Atención al Usuario",
-        prioridad: "Baja",
-        estado: "Cerrado",
-        detalle: "Solicitud de actividades recreativas para estudiantes.",
-        lugar: "Patio Central",
-        fechaRegistro: "18/05/2025 12:10"
-      },
-      {
-        id: "SNC-014",
-        fecha: "19/05/2025",
-        areaDestino: "Área Administrativa",
-        categoria: "Trámites Documentarios",
-        prioridad: "Alta",
-        estado: "Derivado",
-        detalle: "Errores en la transcripción de notas finales.",
-        lugar: "Oficina de Registro Académico",
-        fechaRegistro: "19/05/2025 09:50"
-      },
-      {
-        id: "SNC-015",
-        fecha: "20/05/2025",
-        areaDestino: "Área de Investigación",
-        categoria: "Otros",
-        prioridad: "Media",
-        estado: "Cerrado",
-        detalle: "Solicitud de acceso a bases de datos científicas.",
-        lugar: "Biblioteca Central",
-        fechaRegistro: "20/05/2025 10:40"
-      },
-      {
-        id: "SNC-016",
-        fecha: "21/05/2025",
-        areaDestino: "Área Académica",
-        categoria: "Servicios Académicos",
-        prioridad: "Alta",
-        estado: "Pendiente",
-        detalle: "Falta de docentes para el curso de Matemáticas II.",
-        lugar: "Departamento de Matemáticas",
-        fechaRegistro: "21/05/2025 11:30"
-      },
-      {
-        id: "SNC-017",
-        fecha: "22/05/2025",
-        areaDestino: "Infraestructura",
-        categoria: "Infraestructura",
-        prioridad: "Media",
-        estado: "En Revisión",
-        detalle: "Mantenimiento de ascensores en el edificio B.",
-        lugar: "Edificio B",
-        fechaRegistro: "22/05/2025 12:20"
-      },
-      {
-        id: "SNC-018",
-        fecha: "23/05/2025",
-        areaDestino: "Bienestar Universitario",
-        categoria: "Atención al Usuario",
-        prioridad: "Baja",
-        estado: "Cerrado",
-        detalle: "Solicitud de charlas sobre salud mental.",
-        lugar: "Auditorio Principal",
-        fechaRegistro: "23/05/2025 13:10"
-      },
-      {
-        id: "SNC-019",
-        fecha: "24/05/2025",
-        areaDestino: "Área Administrativa",
-        categoria: "Trámites Documentarios",
-        prioridad: "Alta",
-        estado: "Derivado",
-        detalle: "Problemas con la emisión de constancias de estudios.",
-        lugar: "Oficina de Secretaría Académica",
-        fechaRegistro: "24/05/2025 09:15"
-      },
-      {
-        id: "SNC-020",
-        fecha: "25/05/2025",
-        areaDestino: "Área de Investigación",
-        categoria: "Otros",
-        prioridad: "Media",
-        estado: "Cerrado",
-        detalle: "Solicitud de financiamiento para proyecto de tesis.",
-        lugar: "Oficina de Investigación",
-        fechaRegistro: "25/05/2025 10:05"
-      },
-      {
-        id: "SNC-021",
-        fecha: "26/05/2025",
-        areaDestino: "Área Académica",
-        categoria: "Servicios Académicos",
-        prioridad: "Alta",
-        estado: "Pendiente",
-        detalle: "Inconvenientes con la inscripción de cursos electivos.",
-        lugar: "Plataforma Virtual",
-        fechaRegistro: "26/05/2025 11:00"
-      },
-      {
-        id: "SNC-022",
-        fecha: "27/05/2025",
-        areaDestino: "Infraestructura",
-        categoria: "Infraestructura",
-        prioridad: "Media",
-        estado: "En Revisión",
-        detalle: "Reparación de techos en el pabellón C.",
-        lugar: "Pabellón C",
-        fechaRegistro: "27/05/2025 12:45"
-      },
-      {
-        id: "SNC-023",
-        fecha: "28/05/2025",
-        areaDestino: "Bienestar Universitario",
-        categoria: "Atención al Usuario",
-        prioridad: "Baja",
-        estado: "Cerrado",
-        detalle: "Solicitud de implementación de áreas verdes.",
-        lugar: "Campus Universitario",
-        fechaRegistro: "28/05/2025 13:30"
-      },
-      {
-        id: "SNC-024",
-        fecha: "29/05/2025",
-        areaDestino: "Área Administrativa",
-        categoria: "Trámites Documentarios",
-        prioridad: "Alta",
-        estado: "Derivado",
-        detalle: "Retrasos en la entrega de diplomas de grado.",
-        lugar: "Oficina de Grados y Títulos",
-        fechaRegistro: "29/05/2025 09:40"
-      },
-      {
-        id: "SNC-025",
-        fecha: "30/05/2025",
-        areaDestino: "Área de Investigación",
-        categoria: "Otros",
-        prioridad: "Media",
-        estado: "Cerrado",
-        detalle: "Solicitud de asesoría para publicación en revistas científicas.",
-        lugar: "Centro de Publicaciones",
-        fechaRegistro: "30/05/2025 10:25"
-      }
-    ];
+    // Si ya tenemos cPerCodigo al inicializar, cargar los tickets
+    const cPerCodigo = this._mainSharedService.cPerCodigo();
+    if (cPerCodigo && cPerCodigo !== '') {
+      this.cargarTicketsDesdeAPI();
+    }
+  }
 
-    // Inicializar tickets filtrados con todos los tickets
-    this.ticketsFiltrados = [...this.tickets];
+  // Método para cargar tickets desde la API
+  cargarTicketsDesdeAPI(): void {
+    const cPerCodigo = this._mainSharedService.cPerCodigo();
+    const nTipoGestion = 185; // Valor por defecto para Coordinador
+
+    console.log('Cargando tickets con:', { cPerCodigo, nTipoGestion });
+
+    this._mainService.post_SeguimientoServicioNC(cPerCodigo, nTipoGestion).subscribe({
+      next: (response) => {
+        console.log('Respuesta de la API:', response);
+
+        if (response.body?.lstItem && response.body.lstItem.length > 0) {
+          const ticketsAPI: Ticket[] = response.body.lstItem;
+
+          // Mapear los datos de la API y guardar como originales
+          this.ticketsOriginales = ticketsAPI.map(item => this.mapearTicketDeAPI(item));
+
+          // Inicializar tickets filtrados
+          this.ticketsFiltrados = [...this.ticketsOriginales];
+
+          console.log('Tickets cargados:', this.ticketsOriginales.length);
+        } else {
+          console.warn('No se encontraron tickets en la respuesta');
+          this.ticketsOriginales = [];
+          this.ticketsFiltrados = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar tickets:', error);
+        this.ticketsOriginales = [];
+        this.ticketsFiltrados = [];
+      }
+    });
+  }
+
+  // Método para mapear los datos de la API al formato del componente
+  private mapearTicketDeAPI(item: Ticket): Ticket {
+    return {
+      ...item,
+      fechaIncidente: this.formatearFecha(item.fechaIncidente),
+      fechaRegistro: this.formatearFecha(item.fechaRegistro)
+    };
+  }
+
+  // Método para formatear fechas de la API
+  private formatearFecha(fechaAPI: string): string {
+    if (!fechaAPI) return '';
+
+    try {
+      // La fecha viene en formato "06/01/2025 00:00:00" o "06/02/2025 09:57:51"
+      const [fecha] = fechaAPI.split(' ');
+      return fecha; // Retorna solo la parte de la fecha
+    } catch (error) {
+      console.error('Error al formatear fecha:', fechaAPI, error);
+      return fechaAPI;
+    }
   }
 
   // Método que se ejecuta cuando se escribe en el campo de búsqueda
@@ -345,7 +159,7 @@ export class VistaCoordinadorComponent implements OnInit {
   limpiarBusqueda(): void {
     this.searchTerm = '';
     this.estadoFiltro = 'Todos';
-    this.ticketsFiltrados = [...this.tickets];
+    this.ticketsFiltrados = [...this.ticketsOriginales];
   }
 
   buscarTicket(event: Event): void {
@@ -353,31 +167,31 @@ export class VistaCoordinadorComponent implements OnInit {
     const value = input.value.toLowerCase();
 
     this.filteredTicket = this.listadoTicket.filter(ticket =>
-      ticket.areaDestino.toLowerCase().includes(value) ||
-      ticket.categoria.toLowerCase().includes(value) ||
-      ticket.estado.toLowerCase().includes(value)
+      ticket.cAreaDestino.toLowerCase().includes(value) ||
+      ticket.descripcion.toLowerCase().includes(value) ||
+      ticket.cEstado.toLowerCase().includes(value)
     );
   }
 
   // Método principal para filtrar tickets
   filtrarTickets(): void {
     // Primero filtramos por el estado
-    let resultados = this.tickets;
+    let resultados = this.ticketsOriginales;
 
     if (this.estadoFiltro !== 'Todos') {
-      resultados = this.tickets.filter(ticket => ticket.estado === this.estadoFiltro);
+      resultados = this.ticketsOriginales.filter(ticket => ticket.cEstado === this.estadoFiltro);
     }
 
     // Luego filtramos por término de búsqueda si existe
     if (this.searchTerm && this.searchTerm.trim()) {
       const termino = this.searchTerm.toLowerCase().trim();
       resultados = resultados.filter(ticket =>
-        ticket.id.toLowerCase().includes(termino) ||
-        ticket.fecha.toLowerCase().includes(termino) ||
-        ticket.areaDestino.toLowerCase().includes(termino) ||
-        ticket.categoria.toLowerCase().includes(termino) ||
-        ticket.prioridad.toLowerCase().includes(termino) ||
-        ticket.estado.toLowerCase().includes(termino)
+        ticket.idCodigoNC.toLowerCase().includes(termino) ||
+        ticket.fechaIncidente.toLowerCase().includes(termino) ||
+        ticket.cAreaDestino.toLowerCase().includes(termino) ||
+        ticket.descripcion.toLowerCase().includes(termino) ||
+        ticket.cPrioridad.toLowerCase().includes(termino) ||
+        ticket.cEstado.toLowerCase().includes(termino)
       );
     }
 
@@ -421,5 +235,10 @@ export class VistaCoordinadorComponent implements OnInit {
   cerrarModalProceso(): void {
     this.modalProcesoVisible = false;
     this.selectedTicketProceso = null;
+  }
+
+  // Método para refrescar los datos
+  refrescarDatos(): void {
+    this.cargarTicketsDesdeAPI();
   }
 }
