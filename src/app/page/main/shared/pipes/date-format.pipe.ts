@@ -41,23 +41,34 @@ export class DateFormatPipe implements PipeTransform {
         if (partes.length === 3) {
           let dia: number, mes: number, año: number;
 
-          // Si el primer número es mayor a 12, es DD/MM/YYYY
+          // LÓGICA MEJORADA: Para fechas que vienen del sistema
+          // Si el primer número es mayor a 12, definitivamente es DD/MM/YYYY
           if (partes[0] > 12) {
             dia = partes[0];
             mes = partes[1];
             año = partes[2];
           }
-          // Si el segundo número es mayor a 12, es MM/DD/YYYY
+          // Si el segundo número es mayor a 12, definitivamente es MM/DD/YYYY
           else if (partes[1] > 12) {
             mes = partes[0];
             dia = partes[1];
             año = partes[2];
           }
-          // Si ambos son <= 12, asumir formato DD/MM/YYYY (español)
+          // Si ambos son <= 12, necesitamos usar más contexto
           else {
-            dia = partes[0];
-            mes = partes[1];
-            año = partes[2];
+            // NUEVA LÓGICA: Para tu caso específico donde viene MM/DD/YYYY del sistema
+            // Si viene con hora (como 06/05/2025 12:00:00 AM), probablemente es MM/DD/YYYY
+            if (fechaLimpia.includes(':') || fechaLimpia.includes('AM') || fechaLimpia.includes('PM')) {
+              mes = partes[0];  // Formato MM/DD/YYYY
+              dia = partes[1];
+              año = partes[2];
+            }
+            // Si no tiene hora, asumir formato español DD/MM/YYYY
+            else {
+              dia = partes[0];  // Formato DD/MM/YYYY
+              mes = partes[1];
+              año = partes[2];
+            }
 
             // Si el año es de 2 dígitos, convertir a 4 dígitos
             if (año < 100) {
