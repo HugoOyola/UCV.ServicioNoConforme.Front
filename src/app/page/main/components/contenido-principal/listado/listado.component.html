@@ -11,46 +11,6 @@
   </header>
 
   <div class="p-5">
-    <!-- Sección de búsqueda y filtros (igual que vista-coordinador) -->
-    <div class="mb-5">
-      <div class="flex justify-between mb-3">
-        <div class="relative flex-grow mr-4">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i class="pi pi-search"></i>
-          </div>
-          <input type="text" pInputText [(ngModel)]="searchTerm" placeholder="Buscar por código, área o categoría..."
-            (input)="buscarPorTermino()"
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-        </div>
-        <p-button (click)="limpiarBusqueda()" label="Limpiar" icon="pi pi-times" [raised]="true" severity="secondary">
-        </p-button>
-      </div>
-
-      <!-- Filtros de estado -->
-      <div class="flex justify-center space-x-2 pt-8 mb-2">
-        <button (click)="cambiarFiltroEstado('Todos')" class="px-3 py-1 text-sm rounded-md transition-colors"
-          [ngClass]="estadoFiltro === 'Todos' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Todos
-        </button>
-        <button (click)="cambiarFiltroEstado('Pendiente')" class="px-3 py-1 text-sm rounded-md transition-colors"
-          [ngClass]="estadoFiltro === 'Pendiente' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Pendientes
-        </button>
-        <button (click)="cambiarFiltroEstado('En Revisión')" class="px-3 py-1 text-sm rounded-md transition-colors"
-          [ngClass]="estadoFiltro === 'En Revisión' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          En Revisión
-        </button>
-        <button (click)="cambiarFiltroEstado('Cerrado')" class="px-3 py-1 text-sm rounded-md transition-colors"
-          [ngClass]="estadoFiltro === 'Cerrado' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Cerrados
-        </button>
-        <button (click)="cambiarFiltroEstado('Derivado')" class="px-3 py-1 text-sm rounded-md transition-colors"
-          [ngClass]="estadoFiltro === 'Derivado' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-          Derivados
-        </button>
-      </div>
-    </div>
-
     <!-- Mensaje de carga -->
     <div *ngIf="loading" class="text-center py-8">
       <i class="pi pi-spin pi-spinner text-2xl text-blue-500"></i>
@@ -67,7 +27,7 @@
 
     <!-- Tabla de tickets -->
     <div *ngIf="!loading && !error">
-      <p-table [value]="ticketsFiltrados" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+      <p-table [value]="tickets" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[5, 10, 20]" [responsive]="true" styleClass="p-datatable-sm" [rowHover]="true"
         responsiveLayout="scroll">
         <ng-template pTemplate="header">
@@ -130,26 +90,15 @@
 
 <!-- Modales -->
 <!-- Modal de visualización -->
-<app-ver-ticket
-  [visible]="modalVisible"
-  [ticket]="selectedTicket"
-  (btnCerrar)="closeModal()">
+<app-ver-ticket [visible]="modalVisible" [ticket]="selectedTicket" (btnCerrar)="closeModal()">
 </app-ver-ticket>
 
 <!-- Modal de edición -->
-<app-editar-ticket
-  *ngIf="modalEdicionVisible"
-  [visible]="modalEdicionVisible"
-  [ticket]="ticketEnEdicion"
-  (btnCerrar)="closeModalEdicion()"
-  (ticketEditado)="guardarCambios($event)">
+<app-editar-ticket *ngIf="modalEdicionVisible" [visible]="modalEdicionVisible" [ticket]="ticketEnEdicion"
+  (btnCerrar)="closeModalEdicion()" (ticketEditado)="guardarCambios($event)">
 </app-editar-ticket>
 
 <!-- Modal de eliminación -->
-<app-eliminar-ticket
-  *ngIf="modalEliminacionVisible"
-  [visible]="modalEliminacionVisible"
-  [ticket]="ticketAEliminar"
-  (btnCerrar)="closeModalEliminacion()"
-  (confirmarEliminacion)="eliminarTicket($event)">
+<app-eliminar-ticket *ngIf="modalEliminacionVisible" [visible]="modalEliminacionVisible" [ticket]="ticketAEliminar"
+  (btnCerrar)="closeModalEliminacion()" (confirmarEliminacion)="eliminarTicket($event)">
 </app-eliminar-ticket>

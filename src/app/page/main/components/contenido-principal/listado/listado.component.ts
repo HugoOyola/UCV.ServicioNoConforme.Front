@@ -70,14 +70,9 @@ export class ListadoComponent implements OnInit {
   private _mainService = inject(MainService);
   private _mainSharedService = inject(MainSharedService);
 
-  public ticketsFiltrados: Ticket[] = [];
-  public searchTerm: string = '';
-  public estadoFiltro: EstadoFiltro = 'Todos';
+  public tickets: Ticket[] = [];
   public loading: boolean = false;
   public error: string = '';
-
-  // Lista completa sin filtros (privada, solo para uso interno)
-  private ticketsOriginales: Ticket[] = [];
 
   // Modal de vista
   public modalVisible: boolean = false;
@@ -134,32 +129,27 @@ export class ListadoComponent implements OnInit {
         if (response.body?.lstItem && response.body.lstItem.length > 0) {
           const ticketsAPI: Ticket[] = response.body.lstItem;
 
-          // Mapear los datos de la API y guardar como originales
-          this.ticketsOriginales = ticketsAPI.map(item => this.mapearTicketDeAPI(item));
+          // Mapear los datos de la API
+          this.tickets = ticketsAPI.map(item => this.mapearTicketDeAPI(item));
 
-          // Inicializar tickets filtrados
-          this.ticketsFiltrados = [...this.ticketsOriginales];
-
-          console.log('Tickets cargados:', this.ticketsOriginales.length);
+          console.log('Tickets cargados:', this.tickets.length);
         } else {
           console.warn('No se encontraron tickets en la respuesta');
-          this.ticketsOriginales = [];
-          this.ticketsFiltrados = [];
+          this.tickets = [];
         }
         this.loading = false;
       },
       error: (error) => {
         console.error('Error al cargar tickets:', error);
         this.error = 'Error al conectar con el servidor';
-        this.ticketsOriginales = [];
-        this.ticketsFiltrados = [];
+        this.tickets = [];
         this.loading = false;
       }
     });
   }
 
-  // Método para mapear los datos de la API al formato del componente
-  private mapearTicketDeAPI(item: any): Ticket {
+   // Método para mapear los datos de la API al formato del componente
+   private mapearTicketDeAPI(item: any): Ticket {
     return {
       // Campos originales de vista-coordinador
       idNoConformidad: item.idNoConformidad,
@@ -222,49 +212,6 @@ export class ListadoComponent implements OnInit {
     }
   }
 
-  // Método que se ejecuta cuando se escribe en el campo de búsqueda
-  buscarPorTermino(): void {
-    this.filtrarTickets();
-  }
-
-  // Método para limpiar la búsqueda
-  limpiarBusqueda(): void {
-    this.searchTerm = '';
-    this.estadoFiltro = 'Todos';
-    this.ticketsFiltrados = [...this.ticketsOriginales];
-  }
-
-  // Método principal para filtrar tickets
-  filtrarTickets(): void {
-    // Primero filtramos por el estado
-    let resultados = this.ticketsOriginales;
-
-    if (this.estadoFiltro !== 'Todos') {
-      resultados = this.ticketsOriginales.filter(ticket => ticket.cEstado === this.estadoFiltro);
-    }
-
-    // Luego filtramos por término de búsqueda si existe
-    if (this.searchTerm && this.searchTerm.trim()) {
-      const termino = this.searchTerm.toLowerCase().trim();
-      resultados = resultados.filter(ticket =>
-        ticket.idCodigoNC.toLowerCase().includes(termino) ||
-        ticket.fechaIncidente.toLowerCase().includes(termino) ||
-        ticket.cAreaDestino.toLowerCase().includes(termino) ||
-        ticket.descripcion.toLowerCase().includes(termino) ||
-        ticket.cPrioridad.toLowerCase().includes(termino) ||
-        ticket.cEstado.toLowerCase().includes(termino) ||
-        (ticket.cCodigoServ && ticket.cCodigoServ.toLowerCase().includes(termino))
-      );
-    }
-
-    this.ticketsFiltrados = resultados;
-  }
-
-  cambiarFiltroEstado(estado: EstadoFiltro): void {
-    this.estadoFiltro = estado;
-    this.filtrarTickets();
-  }
-
   // Método para ver detalles del ticket
   verDetalles(ticket: Ticket): void {
     this.selectedTicket = ticket;
@@ -312,25 +259,19 @@ export class ListadoComponent implements OnInit {
   guardarCambios(ticketEditado: Ticket): void {
     console.log('Guardando cambios del ticket editado:', ticketEditado);
 
-    // Actualizar los arrays locales con el ticket editado
-    const index = this.ticketsOriginales.findIndex(t => t.idNoConformidad === ticketEditado.idNoConformidad);
+    // Actualizar el array local con el ticket editado
+    const index = this.tickets.findIndex(t => t.idNoConformidad === ticketEditado.idNoConformidad);
 
     if (index !== -1) {
-      // Actualizar el ticket en el array original
-      this.ticketsOriginales[index] = { ...ticketEditado };
-
-      // Actualizar también en tickets filtrados si existe
-      const indexFiltrado = this.ticketsFiltrados.findIndex(t => t.idNoConformidad === ticketEditado.idNoConformidad);
-      if (indexFiltrado !== -1) {
-        this.ticketsFiltrados[indexFiltrado] = { ...ticketEditado };
-      }
+      // Actualizar el ticket en el array
+      this.tickets[index] = { ...ticketEditado };
 
       // También actualizar selectedTicket si es el mismo ticket
       if (this.selectedTicket && this.selectedTicket.idNoConformidad === ticketEditado.idNoConformidad) {
         this.selectedTicket = { ...ticketEditado };
       }
 
-      console.log('Ticket actualizado exitosamente en arrays locales');
+      console.log('Ticket actualizado exitosamente');
     } else {
       console.error('No se encontró el ticket para actualizar:', ticketEditado.idNoConformidad);
     }
@@ -365,9 +306,8 @@ export class ListadoComponent implements OnInit {
 
         // Verificar si la eliminación fue exitosa
         if (response.status === 200) {
-          // Eliminar de los arrays locales
-          this.ticketsOriginales = this.ticketsOriginales.filter(t => t.idNoConformidad !== ticket.idNoConformidad);
-          this.ticketsFiltrados = this.ticketsFiltrados.filter(t => t.idNoConformidad !== ticket.idNoConformidad);
+          // Eliminar del array local
+          this.tickets = this.tickets.filter(t => t.idNoConformidad !== ticket.idNoConformidad);
 
           console.log('Ticket eliminado exitosamente');
         } else {
