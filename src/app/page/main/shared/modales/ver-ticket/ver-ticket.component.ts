@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { DateFormatPipe } from '../../pipes/date-format.pipe';
 
 interface Ticket {
   id: string;
@@ -20,7 +21,7 @@ interface Ticket {
 @Component({
   selector: 'app-ver-ticket',
   standalone: true,
-  imports: [CommonModule, DialogModule, ButtonModule, TagModule],
+  imports: [CommonModule, DialogModule, ButtonModule, TagModule, DateFormatPipe],
   templateUrl: './ver-ticket.component.html',
   styleUrl: './ver-ticket.component.scss'
 })

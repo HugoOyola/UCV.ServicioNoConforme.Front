@@ -29,7 +29,7 @@
       <ng-template pTemplate="body" let-ticket>
         <tr class="text-gray-700">
           <td class="text-center w-[8%]">{{ ticket.id}}</td>
-          <td class="text-center w-[12%]">{{ ticket.fecha }}</td>
+          <td class="text-center w-[12%]">{{ ticket.fecha | dateFormat }}</td>
           <td class="w-[25%]">{{ ticket.areaDestino }}</td>
           <td class="w-[20%]">{{ ticket.categoria }}</td>
           <td class="text-center w-[12%]">

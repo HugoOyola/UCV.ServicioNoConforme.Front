@@ -31,7 +31,7 @@
         <div>
           <div class="mb-3">
             <div class="text-sm text-gray-500">Fecha del Incidente</div>
-            <div class="font-medium">{{ticket.fecha}}</div>
+            <div class="font-medium">{{ticket.fecha | dateFormat }}</div>
           </div>
 
           <div class="mb-3">
@@ -57,7 +57,7 @@
         <div>
           <div class="mb-3">
             <div class="text-sm text-gray-500">Fecha de Registro</div>
-            <div class="font-medium">{{ticket.fechaRegistro}}</div>
+            <div class="font-medium">{{ ticket.fechaRegistro | dateFormat }}</div>
           </div>
 
           <div class="mb-3">

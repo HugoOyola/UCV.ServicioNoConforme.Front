@@ -9,6 +9,7 @@ import { EditarTicketComponent } from '../../../shared/modales/editar-ticket/edi
 import { EliminarTicketComponent } from '../../../shared/modales/eliminar-ticket/eliminar-ticket.component';
 import { MainService } from '../../../services/main.service';
 import { MainSharedService } from '@shared/services/main-shared.service';
+import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
 
 interface Ticket {
   id: string;
@@ -64,7 +65,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
 @Component({
   selector: 'app-listado',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, Button, TableModule, VerTicketComponent, EditarTicketComponent, EliminarTicketComponent, DateFormatPipe],
   templateUrl: './listado.component.html',
   styleUrl: './listado.component.scss'
 })
@@ -152,20 +153,20 @@ export class ListadoComponent implements OnInit {
   }
 
   /**
-   * Método para mapear los datos de la API al formato de interfaz Ticket
+   * Método simplificado para mapear servicios - sin formateo de fechas
    */
   private mapearServiciosATickets(servicios: ServicioNoConforme[]): Ticket[] {
     return servicios.map(servicio => ({
       id: servicio.cCodigoServ,
       idNoConformidad: servicio.idNoConformidad,
-      fecha: this.formatearSoloFecha(servicio.dFechaFinal), // Cambiar para usar solo dFechaFinal
+      fecha: servicio.dFechaFinal, // El pipe se encarga del formateo
       areaDestino: servicio.cAreaDestino || servicio.cUniOrgNombre,
       categoria: servicio.descripcionCat,
       prioridad: this.mapearPrioridad(servicio.cPrioridad),
       estado: this.mapearEstado(servicio.cEstado),
       detalle: servicio.detalleServicioNC || servicio.descripcionNC || '',
       lugar: servicio.descripcionNC || 'No especificado',
-      fechaRegistro: this.formatearSoloFecha(servicio.fechaRegistro || servicio.dFechaFinal)
+      fechaRegistro: servicio.fechaRegistro || servicio.dFechaFinal // El pipe se encarga del formateo
     }));
   }
 
@@ -200,114 +201,6 @@ export class ListadoComponent implements OnInit {
         return 'Derivado';
       default:
         return 'Pendiente';
-    }
-  }
-
-  /**
-   * Método específico para formatear solo la fecha (sin hora) para el listado
-   * Corrige el problema de interpretación de formatos de fecha
-   */
-  private formatearSoloFecha(fecha: string | null): string {
-    if (!fecha) return '';
-
-    try {
-      let fechaObj: Date;
-
-      // Si la fecha viene en formato ISO desde la base de datos (2025-04-02 00:00:00.000)
-      if (fecha.includes('-') && (fecha.includes(':') || fecha.includes('T'))) {
-        // Formato ISO: usar directamente
-        fechaObj = new Date(fecha);
-      }
-      // Si la fecha viene como "22/05/2025 11:14:13 AM" o "05/22/2025 11:14:13"
-      else if (fecha.includes('/')) {
-        // Extraer solo la parte de fecha
-        const soloFecha = fecha.split(' ')[0];
-        const partes = soloFecha.split('/');
-
-        // Verificar si tenemos 3 partes
-        if (partes.length === 3) {
-          // Determinar el formato basándose en el contexto o valores
-          let dia: number, mes: number, año: number;
-
-          // Si el primer número es mayor a 12, asumimos formato dd/mm/yyyy
-          if (parseInt(partes[0]) > 12) {
-            dia = parseInt(partes[0]);
-            mes = parseInt(partes[1]) - 1; // Los meses en JS van de 0-11
-            año = parseInt(partes[2]);
-          }
-          // Si el segundo número es mayor a 12, asumimos formato mm/dd/yyyy
-          else if (parseInt(partes[1]) > 12) {
-            mes = parseInt(partes[0]) - 1;
-            dia = parseInt(partes[1]);
-            año = parseInt(partes[2]);
-          }
-          // Si ambos son <= 12, necesitamos otra lógica o asumir un formato
-          else {
-            // Por defecto, asumimos formato dd/mm/yyyy (formato español)
-            dia = parseInt(partes[0]);
-            mes = parseInt(partes[1]) - 1;
-            año = parseInt(partes[2]);
-          }
-
-          fechaObj = new Date(año, mes, dia);
-        } else {
-          // Fallback: intentar parsear directamente
-          fechaObj = new Date(fecha);
-        }
-      } else {
-        fechaObj = new Date(fecha);
-      }
-
-      // Verificar si la fecha es válida
-      if (isNaN(fechaObj.getTime())) {
-        console.warn('Fecha inválida detectada:', fecha);
-        return fecha.split(' ')[0] || fecha;
-      }
-
-      // Devolver la fecha en formato dd/mm/yyyy (formato español)
-      const dia = fechaObj.getDate().toString().padStart(2, '0');
-      const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
-      const año = fechaObj.getFullYear();
-
-      return `${dia}/${mes}/${año}`;
-
-    } catch (error) {
-      console.warn('Error al formatear fecha:', fecha, error);
-      return fecha.split(' ')[0] || fecha;
-    }
-  }
-
-  /**
-   * Método alternativo más robusto para casos específicos
-   * Úsalo si el anterior no resuelve completamente el problema
-   */
-  private formatearFechaDesdeISO(fecha: string | null): string {
-    if (!fecha) return '';
-
-    try {
-      // Si viene en formato ISO desde SQL Server (2025-04-02 00:00:00.000)
-      if (fecha.includes('-')) {
-        // Extraer solo la parte de fecha (antes del espacio o T)
-        const fechaSolo = fecha.split(' ')[0].split('T')[0];
-        const [año, mes, dia] = fechaSolo.split('-');
-
-        // Crear fecha específicamente con los valores extraídos
-        const fechaObj = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
-
-        if (isNaN(fechaObj.getTime())) {
-          return fechaSolo;
-        }
-
-        // Formatear como dd/mm/yyyy
-        return `${dia.padStart(2, '0')}/${mes.padStart(2, '0')}/${año}`;
-      }
-
-      // Para otros formatos, usar el método anterior
-      return this.formatearSoloFecha(fecha);
-
-    } catch (error) {
-      console.warn('Error al formatear fecha ISO:', fecha, error);
-      return fecha;
     }
   }
 
