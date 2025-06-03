@@ -32,13 +32,27 @@
         responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr class="bg-gray-300 text-gray-700 uppercase text-md font-semibold">
-            <th class="text-center p-3">Código</th>
-            <th class="text-center p-3">Fecha</th>
-            <th class="text-center p-3">Área Destino</th>
-            <th class="text-center p-3">Categoría</th>
-            <th class="text-center p-3">Prioridad</th>
-            <th class="text-center p-3">Estado</th>
-            <th class="text-center p-3">Acciones</th>
+            <th class="text-center p-3" style="width: 10%">
+              <i class="pi pi-hashtag mr-1"></i>Código
+            </th>
+            <th class="text-center p-3" style="width: 12%">
+              <i class="pi pi-calendar mr-1"></i>Fecha
+            </th>
+            <th class="text-left p-3" style="width: 25%">
+              <i class="pi pi-building mr-1"></i>Área Destino
+            </th>
+            <th class="text-left p-3" style="width: 20%">
+              <i class="pi pi-tags mr-1"></i>Categoría
+            </th>
+            <th class="text-center p-3" style="width: 12%">
+              <i class="pi pi-flag mr-1"></i>Prioridad
+            </th>
+            <th class="text-center p-3" style="width: 11%">
+              <i class="pi pi-info-circle mr-1"></i>Estado
+            </th>
+            <th class="text-center p-3" style="width: 10%">
+              <i class="pi pi-cog mr-1"></i>Acciones
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-ticket>
