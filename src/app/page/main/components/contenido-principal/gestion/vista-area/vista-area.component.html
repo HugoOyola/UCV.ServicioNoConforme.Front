@@ -1,4 +1,66 @@
+<div class="mb-8">
+  <p class="mb-1">Resumen de Prioridades:</p>
+  <div class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-4 gap-4">
+    <!-- Card Total -->
+    <div
+      class="bg-blue-50 rounded-lg shadow-sm border-solid border border-blue-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-blue-600 font-bold text-md uppercase tracking-wide mb-1">Total</h4>
+          <div class="text-2xl font-bold text-blue-600">{{ estadisticas.total }}</div>
+        </div>
+        <div class="flex items-center justify-center">
+          <i class="pi pi-check-circle text-3xl text-blue-500"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Alta Prioridad -->
+    <div
+      class="bg-red-50 rounded-lg shadow-sm border-solid border border-red-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-red-600 font-semibold text-md uppercase tracking-wide mb-1">Alta Prioridad</h4>
+          <div class="text-2xl font-bold text-red-600">{{ estadisticas.alta }}</div>
+        </div>
+        <div class="flex items-center justify-center">
+          <i class="pi pi-exclamation-circle text-3xl text-red-500"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Media Prioridad -->
+    <div
+      class="bg-orange-50 rounded-lg shadow-sm border-solid border border-orange-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-orange-600 font-semibold text-md uppercase tracking-wide mb-1">Media Prioridad</h4>
+          <div class="text-3xl font-extrabold text-orange-600">{{ estadisticas.media }}</div>
+        </div>
+        <div class="flex items-center justify-center">
+          <i class="pi pi-clock text-3xl text-orange-500"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card Baja Prioridad -->
+    <div
+      class="bg-green-50 rounded-lg shadow-sm border-solid border border-green-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      <div class="flex items-center justify-between">
+        <div>
+          <h4 class="text-green-600 font-semibold text-md uppercase tracking-wide mb-1">Baja Prioridad</h4>
+          <div class="text-2xl font-bold text-green-600">{{ estadisticas.baja }}</div>
+        </div>
+        <div class="flex items-center justify-center">
+          <i class="pi pi-arrow-down text-3xl text-green-500"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="mb-5">
+  <p class="mb-1">Buscar Servicio no conforme:</p>
   <div class="flex justify-between mb-3">
     <div class="relative flex-grow mr-4">
       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -8,53 +70,66 @@
         (input)="buscarPorTermino()"
         class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
     </div>
-    <p-button (click)="limpiarBusqueda()" label="Limpiar" icon="pi pi-times" [raised]="true" severity="secondary">
-    </p-button>
+    <div class="flex space-x-2">
+      <p-button (click)="limpiarBusqueda()" label="Limpiar" icon="pi pi-times" [raised]="true" severity="secondary">
+      </p-button>
+      <p-button (click)="refrescarDatos()" label="Actualizar" icon="pi pi-refresh" [raised]="true" severity="info">
+      </p-button>
+    </div>
   </div>
 
   <!-- Filtros de estado -->
-  <div class="flex justify-center space-x-2 pt-8 mb-2">
-    <button (click)="cambiarFiltroEstado('Todos')" class="px-3 py-1 text-sm rounded-md transition-colors"
-      [ngClass]="estadoFiltro === 'Todos' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-      Todos
+  <div class="flex justify-center items-center space-x-2 pt-4 mb-4">
+    <span class="text-sm font-medium text-gray-600 mr-2">Filtrar por estado:</span>
+
+    <button *ngFor="let estado of estadosDisponibles" (click)="cambiarFiltroEstado(estado)"
+      class="px-4 py-2 text-sm rounded-md transition-all duration-200 font-medium" [ngClass]="estadoFiltro === estado ?
+        'bg-[#1a2a47] text-white shadow-md transform scale-105' :
+        'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'">
+      {{ estado }}
     </button>
-    <button (click)="cambiarFiltroEstado('Pendiente')" class="px-3 py-1 text-sm rounded-md transition-colors"
-      [ngClass]="estadoFiltro === 'Pendiente' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-      Pendientes
-    </button>
-    <button (click)="cambiarFiltroEstado('En Revisión')" class="px-3 py-1 text-sm rounded-md transition-colors"
-      [ngClass]="estadoFiltro === 'En Revisión' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-      En Revisión
-    </button>
-    <button (click)="cambiarFiltroEstado('Cerrado')" class="px-3 py-1 text-sm rounded-md transition-colors"
-      [ngClass]="estadoFiltro === 'Cerrado' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-      Cerrados
-    </button>
-    <button (click)="cambiarFiltroEstado('Derivado')" class="px-3 py-1 text-sm rounded-md transition-colors"
-      [ngClass]="estadoFiltro === 'Derivado' ? 'bg-[#1a2a47] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
-      Derivados
-    </button>
+  </div>
+
+  <!-- Contador de resultados filtrados -->
+  <div class="text-center text-sm text-gray-600 mb-2" *ngIf="searchTerm || estadoFiltro !== 'Todos'">
+    <i class="pi pi-filter mr-1"></i>
+    Mostrando {{ obtenerTotalFiltrados() }} de {{ estadisticas.total }} tickets
   </div>
 </div>
 
 <div>
   <p-table [value]="ticketsFiltrados" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
     [rowsPerPageOptions]="[5, 10, 20]" [responsive]="true" styleClass="p-datatable-sm" [rowHover]="true"
-    responsiveLayout="scroll">
+    responsiveLayout="scroll" [loading]="cargandoDatos"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} tickets" [showCurrentPageReport]="true">
     <ng-template pTemplate="header">
       <tr class="bg-gray-300 text-gray-700 uppercase text-md font-semibold">
-        <th class="text-center p-3">Código</th>
-        <th class="text-center p-3">Fecha</th>
-        <th class="text-center p-3">Área Destino</th>
-        <th class="text-center p-3">Categoría</th>
-        <th class="text-center p-3">Prioridad</th>
-        <th class="text-center p-3">Estado</th>
-        <th class="text-center p-3">Acciones</th>
+        <th class="text-center p-3" style="width: 10%">
+          <i class="pi pi-hashtag mr-1"></i>Código
+        </th>
+        <th class="text-center p-3" style="width: 12%">
+          <i class="pi pi-calendar mr-1"></i>Fecha
+        </th>
+        <th class="text-left p-3" style="width: 25%">
+          <i class="pi pi-building mr-1"></i>Área Destino
+        </th>
+        <th class="text-left p-3" style="width: 20%">
+          <i class="pi pi-tags mr-1"></i>Categoría
+        </th>
+        <th class="text-center p-3" style="width: 12%">
+          <i class="pi pi-flag mr-1"></i>Prioridad
+        </th>
+        <th class="text-center p-3" style="width: 11%">
+          <i class="pi pi-info-circle mr-1"></i>Estado
+        </th>
+        <th class="text-center p-3" style="width: 10%">
+          <i class="pi pi-cog mr-1"></i>Acciones
+        </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-ticket>
       <tr class="text-gray-700">
-        <td class="text-center w-[8%]">{{ ticket.idCodigoNC }}</td>
+        <td class="text-center w-[8%]">SNC-{{ ticket.idCodigoNC }}</td>
         <td class="text-center w-[12%]">{{ ticket.fechaIncidente }}</td>
         <td class="w-[25%]">{{ ticket.cAreaDestino }}</td>
         <td class="w-[20%]">{{ ticket.descripcion }}</td>
@@ -78,17 +153,11 @@
           </span>
         </td>
         <td class="flex justify-center space-x-2">
-          <p-button icon="pi pi-eye" severity="info"
-            (click)="verDetalles(ticket)">
+          <p-button icon="pi pi-eye" severity="info" (click)="verDetalles(ticket)">
           </p-button>
-          <p-button icon="pi pi-cog" severity="help"
-            (click)="gestionarTicket(ticket)">
+          <p-button icon="pi pi-cog" severity="help" (click)="gestionarTicket(ticket)">
           </p-button>
-          <p-button
-            icon="pi pi-history"
-            severity="secondary"
-            (click)="abrirModalProceso(ticket)"
-            pTooltip="Ver Proceso"
+          <p-button icon="pi pi-history" severity="secondary" (click)="abrirModalProceso(ticket)" pTooltip="Ver Proceso"
             tooltipPosition="top">
           </p-button>
         </td>
@@ -97,7 +166,18 @@
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="7" class="text-center text-lg text-gray-500 py-6">
-          No se encontraron tickets con los criterios de búsqueda actuales.
+          <div class="flex flex-col items-center space-y-2">
+            <i class="pi pi-inbox text-4xl text-gray-400"></i>
+            <span *ngIf="!tieneTicketsOriginales() && !searchTerm && estadoFiltro === 'Todos'">
+              No se han asignado tickets.
+            </span>
+            <span *ngIf="tieneTicketsOriginales() && (searchTerm || estadoFiltro !== 'Todos')">
+              No se encontraron tickets con los criterios de búsqueda actuales.
+            </span>
+            <span *ngIf="!tieneTicketsOriginales() && (searchTerm || estadoFiltro !== 'Todos')">
+              No hay tickets disponibles para filtrar.
+            </span>
+          </div>
         </td>
       </tr>
     </ng-template>
@@ -105,20 +185,13 @@
 </div>
 
 <!-- Modal para Ver Ticket -->
-<app-ver-ticket
-  [visible]="modalVisible"
-  [ticket]="selectedTicket"
-  (btnCerrar)="closeModal()">
+<app-ver-ticket [visible]="modalVisible" [ticket]="selectedTicket" (btnCerrar)="closeModal()">
 </app-ver-ticket>
 
 <!-- Modal para Gestionar Ticket -->
-<app-gestionar-ticket
-  [visible]="modalGestionVisible"
-  (btnCerrar)="closeGestionModal()">
+<app-gestionar-ticket [visible]="modalGestionVisible" (btnCerrar)="closeGestionModal()">
 </app-gestionar-ticket>
 
 <!-- Modal para Proceso Ticket -->
-<app-proceso-ticket
-  [visible]="modalProcesoVisible"
-  (btnCerrar)="cerrarModalProceso()">
+<app-proceso-ticket [visible]="modalProcesoVisible" (btnCerrar)="cerrarModalProceso()">
 </app-proceso-ticket>

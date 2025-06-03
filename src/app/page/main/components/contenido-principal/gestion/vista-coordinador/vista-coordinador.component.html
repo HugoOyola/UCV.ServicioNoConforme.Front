@@ -100,7 +100,7 @@
 <div>
   <p-table [value]="ticketsFiltrados" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
     [rowsPerPageOptions]="[5, 10, 20]" [responsive]="true" styleClass="p-datatable-sm" [rowHover]="true"
-    responsiveLayout="scroll" [loading]="!tieneTickets() && estadisticas.total === 0"
+    responsiveLayout="scroll" [loading]="cargandoDatos"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} tickets" [showCurrentPageReport]="true">
     <ng-template pTemplate="header">
       <tr class="bg-gray-300 text-gray-700 uppercase text-md font-semibold">
@@ -166,7 +166,18 @@
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="7" class="text-center text-lg text-gray-500 py-6">
-          No se encontraron tickets con los criterios de búsqueda actuales.
+          <div class="flex flex-col items-center space-y-2">
+            <i class="pi pi-inbox text-4xl text-gray-400"></i>
+            <span *ngIf="!tieneTicketsOriginales() && !searchTerm && estadoFiltro === 'Todos'">
+              No se han asignado tickets.
+            </span>
+            <span *ngIf="tieneTicketsOriginales() && (searchTerm || estadoFiltro !== 'Todos')">
+              No se encontraron tickets con los criterios de búsqueda actuales.
+            </span>
+            <span *ngIf="!tieneTicketsOriginales() && (searchTerm || estadoFiltro !== 'Todos')">
+              No hay tickets disponibles para filtrar.
+            </span>
+          </div>
         </td>
       </tr>
     </ng-template>

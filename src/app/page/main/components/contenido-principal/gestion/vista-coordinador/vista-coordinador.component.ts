@@ -75,6 +75,9 @@ export class VistaCoordinadorComponent implements OnInit {
   public estadoFiltro: EstadoFiltro = 'Todos';
   public estadisticas: EstadisticasPrioridad = { total: 0, alta: 0, media: 0, baja: 0 };
 
+  // Agregar propiedad para controlar el estado de carga
+  public cargandoDatos: boolean = false;
+
   // Array de estados para el template
   public estadosDisponibles: EstadoFiltro[] = [
     'Todos', 'Pendiente', 'En Revisión', 'Cerrado', 'Derivado'
@@ -92,7 +95,7 @@ export class VistaCoordinadorComponent implements OnInit {
 
   // ==================== PROPIEDADES PRIVADAS ====================
   private ticketsOriginales: Ticket[] = [];
-  private nTipoGestion = 185; // Valor específico para Coordinador
+  private nTipoGestion = 185; // Valor específico para el Coordinador
 
   // ==================== CONSTRUCTOR ====================
   constructor() {
@@ -131,10 +134,19 @@ export class VistaCoordinadorComponent implements OnInit {
       nTipoGestion: this.nTipoGestion
     });
 
+    // Activar loader antes de la llamada
+    this.cargandoDatos = true;
+
     this._mainService.post_SeguimientoServicioNC(cPerCodigo, this.nTipoGestion)
       .subscribe({
-        next: (response) => this.procesarRespuestaAPI(response),
-        error: (error) => this.manejarErrorCarga(error)
+        next: (response) => {
+          this.procesarRespuestaAPI(response);
+          this.cargandoDatos = false; // Desactivar loader después de procesar
+        },
+        error: (error) => {
+          this.manejarErrorCarga(error);
+          this.cargandoDatos = false; // Desactivar loader en caso de error
+        }
       });
   }
 
@@ -289,6 +301,10 @@ export class VistaCoordinadorComponent implements OnInit {
     return campos.some(campo =>
       campo && campo.toLowerCase().includes(termino)
     );
+  }
+
+  tieneTicketsOriginales(): boolean {
+    return this.ticketsOriginales.length > 0;
   }
 
   // ==================== MÉTODOS DE GESTIÓN DE MODALES ====================
