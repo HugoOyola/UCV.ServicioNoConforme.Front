@@ -93,7 +93,12 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="7" class="text-center text-lg text-gray-500 py-6">
-              No se encontraron tickets con los criterios de búsqueda actuales.
+              <div class="flex flex-col items-center space-y-2">
+                <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                <span>
+                  No se encontraron tickets con los criterios de búsqueda actuales.
+                </span>
+              </div>
             </td>
           </tr>
         </ng-template>
