@@ -2,6 +2,7 @@ import { Component, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../../shared/modales/ver-ticket/ver-ticket.component";
@@ -55,6 +56,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
     FormsModule,
     InputTextModule,
     Button,
+    Tooltip,
     TableModule,
     VerTicketComponent,
     GestionarTicketComponent,
@@ -371,9 +373,15 @@ export class VistaCoordinadorComponent implements OnInit {
 
   /**
    * Abre el modal de gestión del ticket
+   * Solo permite gestionar tickets que no estén en estado 'Derivado'
    */
-
   gestionarTicket(ticket: Ticket): void {
+    // Verificar si el ticket está derivado
+    if (ticket.cEstado === 'Derivado') {
+      console.warn('No se puede gestionar un ticket derivado:', ticket);
+      return; // Salir sin hacer nada
+    }
+
     console.log('Gestionar ticket:', ticket);
 
     // ✅ NUEVO: Establecer el ticket en el signal antes de abrir el modal
@@ -382,7 +390,6 @@ export class VistaCoordinadorComponent implements OnInit {
     this.selectedTicketGestion = ticket;
     this.modalGestionVisible = true;
   }
-
   /**
    * Abre el modal de proceso del ticket
    */
