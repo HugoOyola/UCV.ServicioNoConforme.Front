@@ -161,8 +161,8 @@
           <p-button
             icon="pi pi-cog"
             severity="help"
-            [disabled]="ticket.cEstado === 'Derivado'"
-            [pTooltip]="ticket.cEstado === 'Derivado' ? 'Ticket derivado - No se puede gestionar' : 'Gestionar ticket'"
+            [disabled]="ticket.cEstado === 'Derivado' || ticket.cEstado === 'Cerrado'"
+            [pTooltip]="getTooltipGestionar(ticket.cEstado)"
             tooltipPosition="top"
             (click)="gestionarTicket(ticket)">
           </p-button>

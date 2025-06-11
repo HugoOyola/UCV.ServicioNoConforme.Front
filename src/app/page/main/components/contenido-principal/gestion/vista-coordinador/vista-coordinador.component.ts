@@ -376,9 +376,9 @@ export class VistaCoordinadorComponent implements OnInit {
    * Solo permite gestionar tickets que no estén en estado 'Derivado'
    */
   gestionarTicket(ticket: Ticket): void {
-    // Verificar si el ticket está derivado
-    if (ticket.cEstado === 'Derivado') {
-      console.warn('No se puede gestionar un ticket derivado:', ticket);
+    // Verificar si el ticket está derivado o cerrado
+    if (ticket.cEstado === 'Derivado' || ticket.cEstado === 'Cerrado') {
+      console.warn('No se puede gestionar un ticket en estado:', ticket.cEstado, ticket);
       return; // Salir sin hacer nada
     }
 
@@ -390,6 +390,7 @@ export class VistaCoordinadorComponent implements OnInit {
     this.selectedTicketGestion = ticket;
     this.modalGestionVisible = true;
   }
+
   /**
    * Abre el modal de proceso del ticket
    */
@@ -440,6 +441,21 @@ export class VistaCoordinadorComponent implements OnInit {
    */
   obtenerTotalFiltrados(): number {
     return this.ticketsFiltrados.length;
+  }
+
+
+  /**
+   * Obtiene el tooltip apropiado para el botón de gestionar según el estado
+   */
+  getTooltipGestionar(estado: string): string {
+    switch (estado) {
+      case 'Derivado':
+        return 'Ticket derivado - No se puede gestionar';
+      case 'Cerrado':
+        return 'Ticket cerrado - No se puede gestionar';
+      default:
+        return 'Gestionar ticket';
+    }
   }
 
   /**
