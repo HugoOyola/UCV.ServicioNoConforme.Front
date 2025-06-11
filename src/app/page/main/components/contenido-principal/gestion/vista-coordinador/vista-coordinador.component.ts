@@ -95,7 +95,7 @@ export class VistaCoordinadorComponent implements OnInit {
 
   // ==================== PROPIEDADES PRIVADAS ====================
   private ticketsOriginales: Ticket[] = [];
-  private nTipoGestion = 185; // Valor específico para el Coordinador
+  private nTipoGestion = 11; // Valor específico para el Area
 
   // ==================== CONSTRUCTOR ====================
   constructor() {
@@ -151,51 +151,16 @@ export class VistaCoordinadorComponent implements OnInit {
   }
 
   // Procesa la respuesta de la API
-  // Procesa la respuesta de la API
   private procesarRespuestaAPI(response: any): void {
-    console.log('=== RESPUESTA COMPLETA DE LA API ===');
-    console.log('Response completo:', response);
+    console.log('Respuesta de la API:', response);
 
     if (response.body?.lstItem && response.body.lstItem.length > 0) {
-      console.log('=== ESTRUCTURA DE UN ITEM ===');
-      console.log('Primer item completo:', response.body.lstItem[0]);
-
-      console.log('=== TODAS LAS PROPIEDADES DISPONIBLES ===');
-      const primerItem = response.body.lstItem[0];
-      Object.keys(primerItem).forEach(key => {
-        console.log(`${key}: ${primerItem[key]} (tipo: ${typeof primerItem[key]})`);
-      });
-
-      console.log('=== COMPARACIÓN CON INTERFAZ ACTUAL ===');
-      const interfaceFields = [
-        'idNoConformidad', 'idCodigoNC', 'idCategoria', 'descripcion',
-        'fechaIncidente', 'descripcionNC', 'idPrioridad', 'cPrioridad',
-        'detalleServicioNC', 'cUsOrigen', 'cAreaOrigen', 'cPuestoOrigen',
-        'unidadDestino', 'cAreaDestino', 'cPerJuridica', 'cFilDestino',
-        'estadoNC', 'cEstado', 'fechaRegistro', 'cPerCodigoDeriva',
-        'correoDeriva', 'cUsDestino', 'cUnidadDestino', 'cCargoDestino'
-      ];
-
-      console.log('Campos en interfaz actual vs disponibles en API:');
-      interfaceFields.forEach(field => {
-        const exists = Object.prototype.hasOwnProperty.call(primerItem, field);
-        console.log(`${field}: ${exists ? '✅ Existe' : '❌ No existe'} ${exists ? `(valor: ${primerItem[field]})` : ''}`);
-      });
-
-      console.log('=== CAMPOS ADICIONALES EN API NO MAPEADOS ===');
-      Object.keys(primerItem).forEach(key => {
-        if (!interfaceFields.includes(key)) {
-          console.log(`${key}: ${primerItem[key]} (tipo: ${typeof primerItem[key]})`);
-        }
-      });
-
-      // Mapear con la estructura actual (temporal)
-      this.ticketsOriginales = response.body.lstItem.map((item: any) =>
+      this.ticketsOriginales = response.body.lstItem.map((item: Ticket) =>
         this.mapearTicketDeAPI(item)
       );
 
       this.inicializarDatos();
-      console.log('✅ Tickets cargados exitosamente:', this.ticketsOriginales.length);
+      console.log('Tickets cargados exitosamente:', this.ticketsOriginales.length);
     } else {
       console.warn('No se encontraron tickets en la respuesta');
       this.reiniciarDatos();
@@ -230,55 +195,11 @@ export class VistaCoordinadorComponent implements OnInit {
   /**
    * Mapea los datos de la API al formato del componente
    */
-  private mapearTicketDeAPI(item: any): Ticket {
-    return {
-      // Mapeo directo
-      idNoConformidad: item.idNoConformidad,
-      idCodigoNC: item.idCodigoNC,
-      idCategoria: item.idCategoria,
-      descripcion: item.descripcionCat || '', // "BIBLIOTECA", "ADMINISTRATIVO"
-      fechaIncidente: this.formatearFecha(item.fechaIncidente || item.fechaRegistro),
-      descripcionNC: item.descripcionNC || '',
-      idPrioridad: item.idPrioridad,
-      cPrioridad: item.cPrioridad,
-      detalleServicioNC: item.detalleServicioNC || '',
-
-      // Mapeo desde campos de usuario origen
-      cUsOrigen: item.cNombreUsuario || '',
-      cAreaOrigen: item.cDepartamento || '',
-      cPuestoOrigen: '', // No hay campo equivalente en la API, o usar un campo relacionado
-
-      // Mapeo de destino
-      unidadDestino: item.nUniOrgCodigo || 0,
-      cAreaDestino: item.cAreaDestino || '',
-      cPerJuridica: item.cPerJuridica || '',
-      cFilDestino: item.cFilial || '',
-
-      // Estado
-      estadoNC: item.estadoNC,
-      cEstado: item.cEstado,
-
-      // Fechas
-      fechaRegistro: this.formatearFecha(item.fechaRegistro),
-
-      // Supervisor/Derivación
-      cPerCodigoDeriva: item.cPerCodigoSuper || '',
-      correoDeriva: item.correoSupervisor || '',
-      cUsDestino: item.cNombreSupervisor || '',
-      cUnidadDestino: item.cUniOrgNombre || '',
-      cCargoDestino: item.cCargoSupervisor || ''
-    };
-  }
-
-  /**
-   * Método alternativo si quieres usar todos los campos de la API
-   */
-  private mapearTicketCompletoDeAPI(item: any): any {
+  private mapearTicketDeAPI(item: Ticket): Ticket {
     return {
       ...item,
       fechaIncidente: this.formatearFecha(item.fechaIncidente),
-      fechaRegistro: this.formatearFecha(item.fechaRegistro),
-      dFechaFinal: this.formatearFecha(item.dFechaFinal)
+      fechaRegistro: this.formatearFecha(item.fechaRegistro)
     };
   }
 
@@ -464,34 +385,5 @@ export class VistaCoordinadorComponent implements OnInit {
    */
   obtenerTicketPorId(idCodigoNC: string): Ticket | undefined {
     return this.ticketsOriginales.find(ticket => ticket.idCodigoNC === idCodigoNC);
-  }
-
-  onTicketDerivado(ticketActualizado: Ticket): void {
-    console.log('✅ Ticket derivado:', ticketActualizado);
-
-    // Actualizar el ticket en la lista local
-    const index = this.ticketsOriginales.findIndex(
-      t => t.idNoConformidad === ticketActualizado.idNoConformidad
-    );
-
-    if (index !== -1) {
-      this.ticketsOriginales[index] = ticketActualizado;
-      this.filtrarTickets();
-      this.calcularEstadisticas();
-    }
-  }
-
-  onTicketAtendido(ticketActualizado: Ticket): void {
-    console.log('✅ Ticket atendido:', ticketActualizado);
-
-    const index = this.ticketsOriginales.findIndex(
-      t => t.idNoConformidad === ticketActualizado.idNoConformidad
-    );
-
-    if (index !== -1) {
-      this.ticketsOriginales[index] = ticketActualizado;
-      this.filtrarTickets();
-      this.calcularEstadisticas();
-    }
   }
 }
