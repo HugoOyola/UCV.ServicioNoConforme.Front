@@ -95,7 +95,7 @@ export class VistaCoordinadorComponent implements OnInit {
 
   // ==================== PROPIEDADES PRIVADAS ====================
   private ticketsOriginales: Ticket[] = [];
-  private nTipoGestion = 11; // Valor específico para el Area
+  private nTipoGestion = 185; // Valor específico para el Coordinador
 
   // ==================== CONSTRUCTOR ====================
   constructor() {
