@@ -18,13 +18,13 @@
     </div>
 
     <!-- Contenido del modal -->
-    <div class="px-6 py-4" *ngIf="ticket">
+    <div class="px-6 py-4">
       <!-- Detalle del Servicio No Conforme -->
       <div class="mb-6">
         <h4 class="font-semibold text-gray-900 mb-3">Detalle del Servicio No Conforme:</h4>
         <div class="bg-red-50 border-solid border border-red-200 rounded-md p-4">
           <p class="text-md"><strong>Código:&nbsp;</strong>SNC-0001</p>
-          <p class="text-sm text-gray-700">{{ ticket.detalle }}</p>
+          <p class="text-sm text-gray-700">Se registró el servicio no conforme por problemas en el sistema de matrícula que impedía el registro de nuevos estudiantes.</p>
           <div class="flex items-center mt-3">
             <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium mr-2">Alta</span>
             <span class="text-xs text-gray-600">Resuelto</span>
@@ -38,32 +38,121 @@
 
         <!-- Timeline del proceso -->
         <div class="space-y-4">
-          <div *ngFor="let item of procesoHistorial; let i = index" class="flex items-start space-x-3">
+          <!-- Paso 1: Registro -->
+          <div class="flex items-start space-x-3">
             <!-- Icono con número de paso -->
             <div class="flex flex-col items-center">
-              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium"
-                   [ngClass]="getStepBackgroundColor(item.paso)">
-                {{ item.paso }}
+              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium bg-blue-500">
+                1
               </div>
-              <!-- Línea conectora (no mostrar en el último elemento) -->
-              <div *ngIf="i < procesoHistorial.length - 1" class="w-0.5 h-12 bg-gray-200 mt-2"></div>
+              <!-- Línea conectora -->
+              <div class="w-0.5 h-12 bg-gray-200 mt-2"></div>
             </div>
 
             <!-- Contenido -->
             <div class="flex-1 min-w-0 p-4 border-solid border border-gray-300 rounded-md">
               <!-- Título del paso y fecha -->
               <div class="flex items-center justify-between mb-1">
-                <p class="text-sm font-medium text-gray-900">{{ item.titulo }}</p>
-                <p class="text-xs text-gray-500">{{ item.fecha }} {{ item.hora }}</p>
+                <p class="text-sm font-medium text-gray-900">Registro</p>
+                <p class="text-xs text-gray-500">10/05/2025 10:30</p>
               </div>
 
               <!-- Descripción -->
-              <p class="text-sm text-gray-600 mb-2">{{ item.descripcion }}</p>
+              <p class="text-sm text-gray-600 mb-2">Se registró el servicio no conforme por problemas en el sistema de matrícula.</p>
 
               <!-- Usuario -->
               <div class="flex items-center text-xs text-gray-500 mb-2">
                 <i class="pi pi-user mr-1"></i>
-                <span>{{ item.usuario }}</span>
+                <span>Juan Pérez</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 2: Asignación -->
+          <div class="flex items-start space-x-3">
+            <!-- Icono con número de paso -->
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium bg-purple-500">
+                2
+              </div>
+              <!-- Línea conectora -->
+              <div class="w-0.5 h-12 bg-gray-200 mt-2"></div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex-1 min-w-0 p-4 border-solid border border-gray-300 rounded-md">
+              <!-- Título del paso y fecha -->
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-sm font-medium text-gray-900">Asignación</p>
+                <p class="text-xs text-gray-500">10/05/2025 14:15</p>
+              </div>
+
+              <!-- Descripción -->
+              <p class="text-sm text-gray-600 mb-2">Asignado a Dirección Académica para revisión técnica.</p>
+
+              <!-- Usuario -->
+              <div class="flex items-center text-xs text-gray-500 mb-2">
+                <i class="pi pi-user mr-1"></i>
+                <span>María López</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3: En Proceso -->
+          <div class="flex items-start space-x-3">
+            <!-- Icono con número de paso -->
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium bg-orange-500">
+                3
+              </div>
+              <!-- Línea conectora -->
+              <div class="w-0.5 h-12 bg-gray-200 mt-2"></div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex-1 min-w-0 p-4 border-solid border border-gray-300 rounded-md">
+              <!-- Título del paso y fecha -->
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-sm font-medium text-gray-900">En Proceso</p>
+                <p class="text-xs text-gray-500">10/05/2025 16:30</p>
+              </div>
+
+              <!-- Descripción -->
+              <p class="text-sm text-gray-600 mb-2">Se inició la revisión del sistema. Identificado problema en la base de datos.</p>
+
+              <!-- Usuario -->
+              <div class="flex items-center text-xs text-gray-500 mb-2">
+                <i class="pi pi-user mr-1"></i>
+                <span>Carlos Rodríguez</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 4: Resolución -->
+          <div class="flex items-start space-x-3">
+            <!-- Icono con número de paso -->
+            <div class="flex flex-col items-center">
+              <div class="flex items-center justify-center w-8 h-8 rounded-full border-solid border-3 border-white shadow-md text-white text-sm font-medium bg-green-500">
+                4
+              </div>
+              <!-- Sin línea conectora (último elemento) -->
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex-1 min-w-0 p-4 border-solid border border-gray-300 rounded-md">
+              <!-- Título del paso y fecha -->
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-sm font-medium text-gray-900">Resolución</p>
+                <p class="text-xs text-gray-500">11/05/2025 09:00</p>
+              </div>
+
+              <!-- Descripción -->
+              <p class="text-sm text-gray-600 mb-2">Se solucionó el problema con el sistema de matrícula. Se reinició el servicio y se actualizó la base de datos. Sistema funcionando correctamente.</p>
+
+              <!-- Usuario -->
+              <div class="flex items-center text-xs text-gray-500 mb-2">
+                <i class="pi pi-user mr-1"></i>
+                <span>Carlos Rodríguez</span>
               </div>
             </div>
           </div>

@@ -77,7 +77,7 @@ export class VerTicketComponent {
   // Método helper para obtener el lugar/descripción
   getLugar(): string {
     if (!this.ticket) return '';
-    return this.ticket.descripcionNC || this.ticket.cAreaDestino || 'No especificado';
+    return this.ticket.descripcionNC || 'No especificado';
   }
 
   // Método helper para obtener el código del servicio
