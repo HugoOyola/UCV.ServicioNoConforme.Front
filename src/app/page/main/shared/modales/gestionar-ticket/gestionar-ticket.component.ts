@@ -428,21 +428,66 @@ export class GestionarTicketComponent {
     console.log('Atendiendo ticket desde signal:', ticketActual);
     console.log('Comentario:', this.comentario);
 
-    // Simular atención (puedes implementar la API real aquí si existe)
-    setTimeout(() => {
-      const ticketActualizado = {
-        ...ticketActual,
-        estadoNC: 4,
-        cEstado: 'Cerrado'
-      };
+    // Obtener datos del usuario actual
+    const datosUsuario = this._mainSharedService.datosUsuario();
+    const cPerCodigo = this._mainSharedService.cPerCodigo();
 
-      // Actualizar el ticket en el signal
-      this._mainSharedService.establecerTicketEnGestion(ticketActualizado);
+    // Buscar los datos originales del ticket en el signal de seguimiento
+    const datosSeguimiento = this.datosSeguimiento();
+    let datosOriginalesTicket = null;
 
-      this.ticketAtendido.emit(ticketActualizado);
-      this.close();
-      this.loading = false;
-    }, 2000);
+    if (datosSeguimiento?.tickets) {
+      datosOriginalesTicket = datosSeguimiento.tickets.find(
+        t => t.idCodigoNC === ticketActual.idCodigoNC
+      );
+    }
+
+    // Preparar los datos para el cierre según la estructura de la API
+    const datosCierre = {
+      cPerCodigo: cPerCodigo, // Código del usuario que está atendiendo
+      idNoConformidad: ticketActual.idNoConformidad,
+      nUniOrgCodigoD: ticketActual.unidadDestino,
+      cPerCodigoD: ticketActual.cPerCodigoDeriva || cPerCodigo, // Código del usuario destino o el actual
+      correoDeriva: ticketActual.correoDeriva,
+      respuestaFinal: this.comentario
+    };
+
+    console.log('Datos de cierre preparados:', datosCierre);
+
+    // Llamar a la API de cierre/atención
+    this._mainService.post_ModificaCierreSNC(datosCierre).subscribe({
+      next: (response) => {
+        console.log('Ticket atendido exitosamente:', response);
+
+        if (response.body?.isSuccess) {
+          // Actualizar el ticket con los nuevos datos
+          const ticketActualizado = {
+            ...ticketActual,
+            estadoNC: 4, // Estado cerrado
+            cEstado: 'Cerrado',
+            respuestaNC: this.comentario,
+            dFechaFinal: new Date().toISOString().split('T')[0] // Fecha actual
+          };
+
+          // Actualizar el ticket en el signal
+          this._mainSharedService.establecerTicketEnGestion(ticketActualizado);
+
+          this.ticketAtendido.emit(ticketActualizado);
+          this.close();
+        } else {
+          console.error('Error en la respuesta de atención:', response.body);
+          // Aquí puedes mostrar un mensaje de error al usuario
+          // Ejemplo: this.showErrorMessage('Error al procesar el ticket');
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error al atender el ticket:', error);
+        // Aquí puedes mostrar un mensaje de error al usuario
+        // Ejemplo: this.showErrorMessage('Error de conexión al procesar el ticket');
+        this.loading = false;
+      }
+    });
   }
 
   // ==================== MÉTODOS UTILITARIOS ====================

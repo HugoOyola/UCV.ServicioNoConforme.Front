@@ -175,4 +175,12 @@ export class MainService extends GlobalService {
 			observe: 'response',
 		});
 	}
+
+	post_ModificaCierreSNC(datos: unknown ): Observable<HttpResponse<ResponseResultItem<any>>> {
+		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_ModificaCierre; // Asumiendo que existe este endpoint
+		return this._http.put<ResponseResultItem<any>>(ling, datos, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 }

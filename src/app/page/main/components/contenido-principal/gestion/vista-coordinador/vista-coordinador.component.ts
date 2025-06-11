@@ -529,8 +529,5 @@ export class VistaCoordinadorComponent implements OnInit {
       this.filtrarTickets(); // Refiltrar para actualizar la vista
       this.calcularEstadisticas();
     }
-
-    // Opcional: Recargar todos los datos desde la API para asegurar consistencia
-    // this.cargarTicketsDesdeAPI();
   }
 }
