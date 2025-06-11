@@ -191,7 +191,11 @@
 <!-- Modal para Gestionar Ticket -->
 <!-- Con ticket y eventos -->
 <!-- Modal para Gestionar Ticket -->
-<app-gestionar-ticket [visible]="modalGestionVisible" (btnCerrar)="closeGestionModal()">
+<app-gestionar-ticket
+  [visible]="modalGestionVisible"
+  (btnCerrar)="closeGestionModal()"
+  (ticketDerivado)="onTicketDerivado($event)"
+  (ticketAtendido)="onTicketAtendido($event)">
 </app-gestionar-ticket>
 
 

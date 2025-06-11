@@ -11,6 +11,10 @@
         <h3 class="text-lg font-medium text-white">
           <strong>Gestionar Servicio No Conforme</strong>
         </h3>
+        <!-- Mostrar el ID del ticket desde el signal -->
+        <p class="text-sm text-gray-300" *ngIf="ticket()">
+          SNC-{{ ticket()?.idCodigoNC }}
+        </p>
       </div>
       <!-- Botón X para cerrar -->
       <button type="button" class="text-white hover:text-gray-200 flex items-center justify-center h-6 w-6" (click)="close()">
@@ -30,19 +34,26 @@
 
     <!-- Contenido -->
     <div class="p-6">
-      <div class="space-y-6">
-        <!-- Información básica del ticket (datos hardcodeados) -->
+      <!-- Mostrar mensaje si no hay ticket -->
+      <div *ngIf="!ticket()" class="text-center py-8">
+        <i class="pi pi-exclamation-triangle text-4xl text-yellow-500 mb-3"></i>
+        <p class="text-gray-600">No hay ticket seleccionado para gestionar</p>
+      </div>
+
+      <!-- Contenido del ticket -->
+      <div *ngIf="ticket()" class="space-y-6">
+        <!-- Información básica del ticket -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Código</label>
             <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
-              {{ ticket?.idCodigoNC || 'SNC-2024-001' }}
+              SNC-{{ ticket()?.idCodigoNC }}
             </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Registro</label>
             <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
-              {{ ticket?.fechaRegistro || '15/03/2024 14:30' }}
+              {{ ticket()?.fechaRegistro }}
             </p>
           </div>
         </div>
@@ -52,34 +63,56 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Área Actual</label>
             <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
-              {{ ticket?.cAreaDestino || 'Área de Sistemas' }}
+              {{ ticket()?.cAreaDestino }}
             </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
             <p class="text-sm p-2 rounded"
                [ngClass]="{
-                 'bg-red-100 text-red-700 border border-red-300': ticket?.cPrioridad === 'Alta',
-                 'bg-yellow-100 text-yellow-700 border border-yellow-300': ticket?.cPrioridad === 'Media',
-                 'bg-green-100 text-green-700 border border-green-300': ticket?.cPrioridad === 'Baja'
+                 'bg-red-100 text-red-700 border border-red-300': ticket()?.cPrioridad === 'Alta',
+                 'bg-yellow-100 text-yellow-700 border border-yellow-300': ticket()?.cPrioridad === 'Media',
+                 'bg-green-100 text-green-700 border border-green-300': ticket()?.cPrioridad === 'Baja'
                }">
-              {{ ticket?.cPrioridad || 'Alta' }}
+              {{ ticket()?.cPrioridad }}
             </p>
           </div>
         </div>
 
-        <!-- Usuario que reportó -->
+        <!-- Usuario que reportó (usando datos originales del signal) -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Usuario que reportó</label>
             <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
-              {{ ticket?.cNombreUsuario || 'Juan Pérez García' }}
+              {{ ticket()?.cUsOrigen || obtenerDatosTicketOriginal()?.cNombreUsuario || 'No disponible' }}
             </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
             <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
-              {{ ticket?.usuarioCorreo || 'usuario@correo.com' }}
+              {{ ticket()?.correoDeriva || obtenerDatosTicketOriginal()?.usuarioCorreo || 'No disponible' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Estado actual -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Estado Actual</label>
+            <p class="text-sm p-2 rounded"
+               [ngClass]="{
+                 'text-yellow-600 bg-yellow-100': ticket()?.cEstado === 'Pendiente',
+                 'text-blue-600 bg-blue-100': ticket()?.cEstado === 'En Revisión',
+                 'text-green-600 bg-green-100': ticket()?.cEstado === 'Cerrado',
+                 'text-purple-600 bg-purple-100': ticket()?.cEstado === 'Derivado'
+               }">
+              {{ ticket()?.cEstado }}
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Incidente</label>
+            <p class="text-sm bg-gray-50 border-solid border border-gray-400 p-2 rounded">
+              {{ ticket()?.fechaIncidente }}
             </p>
           </div>
         </div>
@@ -88,15 +121,32 @@
         <div>
           <h4 class="text-md font-semibold text-gray-800 mb-3">Detalle del Servicio No Conforme:</h4>
           <p class="text-sm text-gray-600 bg-gray-50 p-3 border-solid border border-gray-400 rounded">
-            {{ ticket?.detalleServicioNC || 'El equipo de cómputo en la oficina de psicología no enciende desde ayer. Se requiere revisión técnica urgente ya que afecta la atención a estudiantes.' }}
+            {{ ticket()?.detalleServicioNC || 'No hay detalles disponibles' }}
+          </p>
+        </div>
+
+        <!-- Descripción/Categoría -->
+        <div *ngIf="ticket()?.descripcion">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+          <p class="text-sm bg-blue-50 border-solid border border-blue-400 p-2 rounded">
+            {{ ticket()?.descripcion }}
           </p>
         </div>
 
         <!-- Lugar del incidente -->
-        <div *ngIf="ticket?.descripcion">
+        <div *ngIf="ticket()?.descripcionNC">
           <label class="block text-sm font-medium text-gray-700 mb-1">Lugar del incidente</label>
           <p class="text-sm bg-blue-50 border-solid border border-blue-400 p-2 rounded">
+            {{ ticket()?.descripcionNC }}
+          </p>
+        </div>
 
+        <!-- Información de seguimiento -->
+        <div *ngIf="datosSeguimiento()?.ultimaActualizacion" class="bg-blue-50 p-3 rounded border border-blue-200">
+          <p class="text-sm text-blue-700">
+            <i class="pi pi-info-circle mr-1"></i>
+            Datos actualizados: {{ datosSeguimiento()?.ultimaActualizacion | date:'short' }}
+            ({{ datosSeguimiento()?.tickets?.length }} tickets en seguimiento)
           </p>
         </div>
 

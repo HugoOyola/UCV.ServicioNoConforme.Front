@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Select } from 'primeng/select';
@@ -91,10 +91,16 @@ export class GestionarTicketComponent {
 
   // ==================== INPUTS Y OUTPUTS ====================
   @Input() public visible: boolean = false;
-  @Input() public ticket: Ticket | null = null;
   @Output() public btnCerrar: EventEmitter<void> = new EventEmitter<void>();
   @Output() public ticketDerivado: EventEmitter<Ticket> = new EventEmitter<Ticket>();
   @Output() public ticketAtendido: EventEmitter<Ticket> = new EventEmitter<Ticket>();
+
+  // ==================== COMPUTED SIGNALS ====================
+  // Obtener el ticket actual desde el signal
+  public ticket = computed(() => this._mainSharedService.ticketEnGestion());
+
+  // Obtener todos los datos de seguimiento desde el signal
+  public datosSeguimiento = computed(() => this._mainSharedService.datosSeguimiento());
 
   // ==================== PROPIEDADES PÚBLICAS ====================
   // Estados de carga
@@ -115,6 +121,27 @@ export class GestionarTicketComponent {
   // Lista de áreas - ahora se carga dinámicamente desde la API
   public areas: AreaOption[] = [];
 
+  // ==================== CONSTRUCTOR Y EFFECTS ====================
+  constructor() {
+    // Effect para reaccionar a cambios en el ticket
+    effect(() => {
+      const ticketActual = this.ticket();
+      if (ticketActual) {
+        console.log('Ticket actualizado en gestionar-ticket:', ticketActual);
+        // Resetear el formulario cuando cambie el ticket
+        this.resetForm();
+      }
+    });
+
+    // Effect para reaccionar a cambios en los datos de seguimiento
+    effect(() => {
+      const datos = this.datosSeguimiento();
+      if (datos) {
+        console.log('Datos de seguimiento disponibles:', datos.tickets.length);
+      }
+    });
+  }
+
   // ==================== MÉTODOS DE MODAL ====================
 
   /**
@@ -122,6 +149,8 @@ export class GestionarTicketComponent {
    */
   close(): void {
     this.resetForm();
+    // Limpiar el ticket en gestión del signal
+    this._mainSharedService.limpiarTicketEnGestion();
     this.btnCerrar.emit();
   }
 
@@ -153,11 +182,12 @@ export class GestionarTicketComponent {
 
     // Obtener cPerJuridica del usuario actual o del ticket
     const datosUsuario = this._mainSharedService.datosUsuario();
+    const ticketActual = this.ticket();
     let cPerJuridica = datosUsuario?.cPerJuridica;
 
     // Si no tenemos cPerJuridica del usuario, intentar obtenerlo del ticket
-    if (!cPerJuridica && this.ticket?.cPerJuridica) {
-      cPerJuridica = this.ticket.cPerJuridica;
+    if (!cPerJuridica && ticketActual?.cPerJuridica) {
+      cPerJuridica = ticketActual.cPerJuridica;
     }
 
     if (!cPerJuridica) {
@@ -229,7 +259,7 @@ export class GestionarTicketComponent {
    * Verifica si se puede procesar la acción
    */
   canProcess(): boolean {
-    if (!this.selectedAction) {
+    if (!this.selectedAction || !this.ticket()) {
       return false;
     }
 
@@ -287,7 +317,8 @@ export class GestionarTicketComponent {
    * Método principal para gestionar el ticket
    */
   gestionar(): void {
-    if (this.canProcess() && this.ticket) {
+    const ticketActual = this.ticket();
+    if (this.canProcess() && ticketActual) {
       this.loading = true;
 
       if (this.selectedAction === 'derivar') {
@@ -302,12 +333,13 @@ export class GestionarTicketComponent {
    * Deriva el ticket a otra área usando la API real
    */
   private derivarTicket(): void {
-    if (!this.ticket || !this.selectedArea) {
+    const ticketActual = this.ticket();
+    if (!ticketActual || !this.selectedArea) {
       this.loading = false;
       return;
     }
 
-    console.log('Derivando ticket:', this.ticket);
+    console.log('Derivando ticket desde signal:', ticketActual);
     console.log('Área seleccionada:', this.selectedArea);
     console.log('Comentario:', this.comentario);
 
@@ -315,29 +347,39 @@ export class GestionarTicketComponent {
     const datosUsuario = this._mainSharedService.datosUsuario();
     const cPerCodigo = this._mainSharedService.cPerCodigo();
 
+    // Buscar los datos originales del ticket en el signal de seguimiento
+    const datosSeguimiento = this.datosSeguimiento();
+    let datosOriginalesTicket = null;
+
+    if (datosSeguimiento?.tickets) {
+      datosOriginalesTicket = datosSeguimiento.tickets.find(
+        t => t.idCodigoNC === ticketActual.idCodigoNC
+      );
+    }
+
     // Preparar los datos para la derivación según la estructura de la API
     const datosDerivacion = {
       cPerCodigo: cPerCodigo,
-      idNoConformidad: this.ticket.idNoConformidad,
-      idCodigoNC: this.ticket.idCodigoNC,
-      cNombreUsuarioO: datosUsuario?.cColaborador || '',
-      cAreaUsuarioO: datosUsuario?.cArea || '',
-      cPuestoUsuarioO: '', // Agregar si tienes este dato
-      nUniOrgCodigoO: this.ticket.nUniOrgCodigo || 0,
-      cNombreCategoria: this.ticket.descripcionCat || '',
-      dfechaIncidente: this.ticket.fechaIncidente,
-      fechaRegistroNC: this.ticket.fechaRegistro,
-      cLugarIncidente: '', // Agregar si tienes este dato en el ticket
-      cNombrePrioridad: this.ticket.cPrioridad,
-      cDetalleServicio: this.ticket.detalleServicioNC,
-      cPerJuridica: this.ticket.cPerJuridica,
-      cFilialUsuarioO: this.ticket.cFilDestino || '',
-      cUsuarioCorreoO: datosUsuario?.cMailCorp || '',
+      idNoConformidad: ticketActual.idNoConformidad,
+      idCodigoNC: ticketActual.idCodigoNC,
+      cNombreUsuarioO: datosOriginalesTicket?.cNombreUsuario || datosUsuario?.cColaborador || '',
+      cAreaUsuarioO: datosOriginalesTicket?.cDepartamento || datosUsuario?.cArea || '',
+      cPuestoUsuarioO: ticketActual.cPuestoOrigen || '',
+      nUniOrgCodigoO: datosOriginalesTicket?.nUniOrgCodigo || ticketActual.unidadDestino || 0,
+      cNombreCategoria: datosOriginalesTicket?.descripcionCat || ticketActual.descripcion || '',
+      dfechaIncidente: ticketActual.fechaIncidente,
+      fechaRegistroNC: ticketActual.fechaRegistro,
+      cLugarIncidente: ticketActual.descripcionNC || '',
+      cNombrePrioridad: ticketActual.cPrioridad,
+      cDetalleServicio: ticketActual.detalleServicioNC,
+      cPerJuridica: ticketActual.cPerJuridica,
+      cFilialUsuarioO: datosOriginalesTicket?.cFilial || ticketActual.cFilDestino || '',
+      cUsuarioCorreoO: datosOriginalesTicket?.usuarioCorreo || datosUsuario?.cMailCorp || '',
       nUniOrgCodigoD: this.selectedArea, // Área de destino seleccionada
       comentario: this.comentario
     };
 
-    console.log('Datos de derivación:', datosDerivacion);
+    console.log('Datos de derivación preparados:', datosDerivacion);
 
     // Llamar a la API de derivación
     this._mainService.post_DerivarServicioNC(datosDerivacion).subscribe({
@@ -347,12 +389,15 @@ export class GestionarTicketComponent {
         if (response.body?.isSuccess) {
           // Actualizar el ticket con los nuevos datos
           const ticketActualizado = {
-            ...this.ticket!,
+            ...ticketActual,
             estadoNC: 4,
             cEstado: 'Derivado',
-            cAreaDestino: this.areas.find(area => area.value === this.selectedArea)?.name || this.ticket!.cAreaDestino,
+            cAreaDestino: this.areas.find(area => area.value === this.selectedArea)?.name || ticketActual.cAreaDestino,
             unidadDestino: this.selectedArea!
           };
+
+          // Actualizar el ticket en el signal
+          this._mainSharedService.establecerTicketEnGestion(ticketActualizado);
 
           this.ticketDerivado.emit(ticketActualizado);
           this.close();
@@ -374,21 +419,28 @@ export class GestionarTicketComponent {
    * Atiende el ticket directamente (simulado)
    */
   private atenderTicket(): void {
-    console.log('Atendiendo ticket:', this.ticket);
+    const ticketActual = this.ticket();
+    if (!ticketActual) {
+      this.loading = false;
+      return;
+    }
+
+    console.log('Atendiendo ticket desde signal:', ticketActual);
     console.log('Comentario:', this.comentario);
 
     // Simular atención (puedes implementar la API real aquí si existe)
     setTimeout(() => {
-      if (this.ticket) {
-        const ticketActualizado = {
-          ...this.ticket,
-          estadoNC: 3,
-          cEstado: 'Cerrado'
-        };
+      const ticketActualizado = {
+        ...ticketActual,
+        estadoNC: 3,
+        cEstado: 'Cerrado'
+      };
 
-        this.ticketAtendido.emit(ticketActualizado);
-        this.close();
-      }
+      // Actualizar el ticket en el signal
+      this._mainSharedService.establecerTicketEnGestion(ticketActualizado);
+
+      this.ticketAtendido.emit(ticketActualizado);
+      this.close();
       this.loading = false;
     }, 2000);
   }
@@ -405,5 +457,21 @@ export class GestionarTicketComponent {
     this.loading = false;
     this.loadingAreas = false;
     this.areas = [];
+  }
+
+  /**
+   * Obtiene datos específicos del ticket desde el signal
+   */
+  obtenerDatosTicketOriginal(): any | null {
+    const ticketActual = this.ticket();
+    const datosSeguimiento = this.datosSeguimiento();
+
+    if (!ticketActual || !datosSeguimiento?.tickets) {
+      return null;
+    }
+
+    return datosSeguimiento.tickets.find(
+      t => t.idCodigoNC === ticketActual.idCodigoNC
+    );
   }
 }

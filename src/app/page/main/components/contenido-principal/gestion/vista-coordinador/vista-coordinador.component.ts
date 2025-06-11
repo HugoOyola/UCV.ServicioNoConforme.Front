@@ -157,12 +157,18 @@ export class VistaCoordinadorComponent implements OnInit {
     if (response.body?.lstItem && response.body.lstItem.length > 0) {
       console.log('Datos originales de la API:', response.body.lstItem);
 
+      // Mapear los tickets
       this.ticketsOriginales = response.body.lstItem.map((item: any) =>
         this.mapearTicketDeAPI(item)
       );
 
-      console.log('Tickets mapeados:', this.ticketsOriginales);
+      // ✅ NUEVO: Actualizar el signal con los datos originales de la API
+      this._mainSharedService.actualizarDatosSeguimiento(
+        response.body.lstItem,
+        this.nTipoGestion
+      );
 
+      console.log('Tickets mapeados:', this.ticketsOriginales);
       this.inicializarDatos();
       console.log('Tickets cargados exitosamente:', this.ticketsOriginales.length);
     } else {
@@ -192,6 +198,9 @@ export class VistaCoordinadorComponent implements OnInit {
     this.ticketsOriginales = [];
     this.ticketsFiltrados = [];
     this.estadisticas = { total: 0, alta: 0, media: 0, baja: 0 };
+
+    // ✅ NUEVO: Limpiar los signals
+    this._mainSharedService.limpiarDatosSeguimiento();
   }
 
   // ==================== MÉTODOS DE MAPEO Y FORMATEO ====================
@@ -363,8 +372,13 @@ export class VistaCoordinadorComponent implements OnInit {
   /**
    * Abre el modal de gestión del ticket
    */
+
   gestionarTicket(ticket: Ticket): void {
     console.log('Gestionar ticket:', ticket);
+
+    // ✅ NUEVO: Establecer el ticket en el signal antes de abrir el modal
+    this._mainSharedService.establecerTicketEnGestion(ticket);
+
     this.selectedTicketGestion = ticket;
     this.modalGestionVisible = true;
   }
@@ -392,6 +406,9 @@ export class VistaCoordinadorComponent implements OnInit {
   closeGestionModal(): void {
     this.modalGestionVisible = false;
     this.selectedTicketGestion = null;
+
+    // ✅ NUEVO: Limpiar el ticket en gestión del signal
+    this._mainSharedService.limpiarTicketEnGestion();
   }
 
   /**
@@ -432,6 +449,11 @@ export class VistaCoordinadorComponent implements OnInit {
     return this.ticketsOriginales.find(ticket => ticket.idCodigoNC === idCodigoNC);
   }
 
+  actualizarTicketEspecifico(idCodigoNC: string): void {
+    // Recargar todos los datos para asegurar consistencia
+    this.cargarTicketsDesdeAPI();
+  }
+
   /**
    * Método para obtener los datos completos de un ticket para derivar
    */
@@ -459,5 +481,49 @@ export class VistaCoordinadorComponent implements OnInit {
 
     console.log('Datos preparados para derivación:', datosDerivacion);
     return datosDerivacion;
+  }
+
+  // Agregar estos métodos al VistaCoordinadorComponent
+
+  /**
+   * Maneja cuando un ticket ha sido derivado exitosamente
+   */
+  onTicketDerivado(ticketActualizado: Ticket): void {
+    console.log('Ticket derivado exitosamente:', ticketActualizado);
+
+    // Actualizar el ticket en la lista local
+    const index = this.ticketsOriginales.findIndex(
+      t => t.idCodigoNC === ticketActualizado.idCodigoNC
+    );
+
+    if (index !== -1) {
+      this.ticketsOriginales[index] = ticketActualizado;
+      this.filtrarTickets(); // Refiltrar para actualizar la vista
+      this.calcularEstadisticas();
+    }
+
+    // Opcional: Recargar todos los datos desde la API para asegurar consistencia
+    // this.cargarTicketsDesdeAPI();
+  }
+
+  /**
+   * Maneja cuando un ticket ha sido atendido exitosamente
+   */
+  onTicketAtendido(ticketActualizado: Ticket): void {
+    console.log('Ticket atendido exitosamente:', ticketActualizado);
+
+    // Actualizar el ticket en la lista local
+    const index = this.ticketsOriginales.findIndex(
+      t => t.idCodigoNC === ticketActualizado.idCodigoNC
+    );
+
+    if (index !== -1) {
+      this.ticketsOriginales[index] = ticketActualizado;
+      this.filtrarTickets(); // Refiltrar para actualizar la vista
+      this.calcularEstadisticas();
+    }
+
+    // Opcional: Recargar todos los datos desde la API para asegurar consistencia
+    // this.cargarTicketsDesdeAPI();
   }
 }
