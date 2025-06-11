@@ -21,7 +21,8 @@ export const routes = {
 			Snc_EditarIncidencias: 'IncidenciasNC/ModificarServicioNC',
 			Snc_EliminarServicio: 'IncidenciasNC/EliminarServicioNC',
 			Snc_SeguimientoServicio: 'IncidenciasNC/SeguimientoServicioNC',
-			Snc_DerivarServicio :'DerivarServicioNC',
+			Snc_DerivarServicio :'IncidenciasNC/DerivarServicioNC',
+			Snc_ModificaCierre :'IncidenciasNC/ModificaCierreSNC',
 		}
 	}
 };

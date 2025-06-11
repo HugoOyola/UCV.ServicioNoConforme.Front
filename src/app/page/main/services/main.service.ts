@@ -167,30 +167,10 @@ export class MainService extends GlobalService {
 	}
 
 	// Metodo para derivar un servicio no conforme
-	post_DerivarServicioNC(
-		datos: {
-			cPerCodigo: string,
-			idNoConformidad: number,
-			idCodigoNC: string,
-			cNombreUsuarioO: string,
-			cAreaUsuarioO: string,
-			cPuestoUsuarioO: string,
-			nUniOrgCodigoO: number,
-			cNombreCategoria: string,
-			dfechaIncidente: string,
-			fechaRegistroNC: string,
-			cLugarIncidente: string,
-			cNombrePrioridad: string,
-			cDetalleServicio: string,
-			cPerJuridica: string,
-			cFilialUsuarioO: string,
-			cUsuarioCorreoO: string,
-			nUniOrgCodigoD: number,
-			comentario: string
-		}
-	): Observable<HttpResponse<ResponseResultItem<any>>> {
+	post_DerivarServicioNC(data: unknown): Observable<HttpResponse<ResponseResultItem<any>>> {
+		// console.log("Viendo datos: ", data);
 		const url = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_DerivarServicio;
-		return this._http.post<ResponseResultItem<any>>(url, datos, {
+		return this._http.post<ResponseResultItem<any>>(url, data, {
 			headers: this.headers_a_json,
 			observe: 'response',
 		});

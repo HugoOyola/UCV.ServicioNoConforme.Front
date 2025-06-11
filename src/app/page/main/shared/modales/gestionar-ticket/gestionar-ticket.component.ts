@@ -373,7 +373,7 @@ export class GestionarTicketComponent {
       cNombrePrioridad: ticketActual.cPrioridad,
       cDetalleServicio: ticketActual.detalleServicioNC,
       cPerJuridica: ticketActual.cPerJuridica,
-      cFilialUsuarioO: datosOriginalesTicket?.cFilialUsuarioO,
+      cFilialUsuarioO: datosOriginalesTicket?.cFilDestino,
       cUsuarioCorreoO: datosOriginalesTicket?.correoDeriva,
       nUniOrgCodigoD: this.selectedArea,
       comentario: this.comentario,

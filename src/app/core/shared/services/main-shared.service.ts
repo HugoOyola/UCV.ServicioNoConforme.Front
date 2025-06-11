@@ -35,7 +35,7 @@ export class MainSharedService {
 	}
 
 	// Método para establecer el ticket que se está gestionando
-	establecerTicketEnGestion(ticket: any): void {
+	establecerTicketEnGestion(ticket: unknown): void {
 		this.ticketEnGestion.set(ticket);
 	}
 
