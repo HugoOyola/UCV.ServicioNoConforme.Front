@@ -359,24 +359,24 @@ export class GestionarTicketComponent {
 
     // Preparar los datos para la derivación según la estructura de la API
     const datosDerivacion = {
-      cPerCodigo: cPerCodigo,
+      cPerCodigo: ticketActual.cPerCodigoDeriva,
       idNoConformidad: ticketActual.idNoConformidad,
       idCodigoNC: ticketActual.idCodigoNC,
-      cNombreUsuarioO: datosOriginalesTicket?.cNombreUsuario || datosUsuario?.cColaborador || '',
-      cAreaUsuarioO: datosOriginalesTicket?.cDepartamento || datosUsuario?.cArea || '',
-      cPuestoUsuarioO: ticketActual.cPuestoOrigen || '',
-      nUniOrgCodigoO: datosOriginalesTicket?.nUniOrgCodigo || ticketActual.unidadDestino || 0,
-      cNombreCategoria: datosOriginalesTicket?.descripcionCat || ticketActual.descripcion || '',
-      dfechaIncidente: ticketActual.fechaIncidente,
+      cNombreUsuarioO: datosOriginalesTicket?.cUsDestino,
+      cAreaUsuarioO: datosOriginalesTicket?.cUnidadDestino,
+      cPuestoUsuarioO: ticketActual.cCargoDestino,
+      nUniOrgCodigoO: datosOriginalesTicket?.unidadDestino,
+      cNombreCategoria: datosOriginalesTicket?.descripcionCat || ticketActual.descripcion,
+      dfechaIncidente: ticketActual.fechaIncidente || '',
       fechaRegistroNC: ticketActual.fechaRegistro,
       cLugarIncidente: ticketActual.descripcionNC || '',
       cNombrePrioridad: ticketActual.cPrioridad,
       cDetalleServicio: ticketActual.detalleServicioNC,
       cPerJuridica: ticketActual.cPerJuridica,
-      cFilialUsuarioO: datosOriginalesTicket?.cFilial || ticketActual.cFilDestino || '',
-      cUsuarioCorreoO: datosOriginalesTicket?.usuarioCorreo || datosUsuario?.cMailCorp || '',
-      nUniOrgCodigoD: this.selectedArea, // Área de destino seleccionada
-      comentario: this.comentario
+      cFilialUsuarioO: datosOriginalesTicket?.cFilialUsuarioO,
+      cUsuarioCorreoO: datosOriginalesTicket?.correoDeriva,
+      nUniOrgCodigoD: this.selectedArea,
+      comentario: this.comentario,
     };
 
     console.log('Datos de derivación preparados:', datosDerivacion);
@@ -390,7 +390,7 @@ export class GestionarTicketComponent {
           // Actualizar el ticket con los nuevos datos
           const ticketActualizado = {
             ...ticketActual,
-            estadoNC: 4,
+            estadoNC: 3,
             cEstado: 'Derivado',
             cAreaDestino: this.areas.find(area => area.value === this.selectedArea)?.name || ticketActual.cAreaDestino,
             unidadDestino: this.selectedArea!
@@ -432,7 +432,7 @@ export class GestionarTicketComponent {
     setTimeout(() => {
       const ticketActualizado = {
         ...ticketActual,
-        estadoNC: 3,
+        estadoNC: 4,
         cEstado: 'Cerrado'
       };
 

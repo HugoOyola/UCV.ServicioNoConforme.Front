@@ -30,8 +30,8 @@ export class MainComponent {
 	public _encryptionService = inject(EncryptionService);
 
 	constructor() {
-		this.cargarDatosNuevos('7000090106');
-		// this.cargarDatosNuevos('7000061020');
+		// this.cargarDatosNuevos('7000090106');
+		this.cargarDatosNuevos('7000061020');
 
 		effect(() => {
 			const cPerCodigoSignal = this._mainSharedService.cPerCodigo();
