@@ -189,7 +189,13 @@
 </app-ver-ticket>
 
 <!-- Modal para Gestionar Ticket -->
-<app-gestionar-ticket [visible]="modalGestionVisible" (btnCerrar)="closeGestionModal()">
+<!-- Con ticket y eventos -->
+<app-gestionar-ticket
+  [visible]="modalGestionVisible"
+  [ticket]="selectedTicketGestion"
+  (btnCerrar)="closeGestionModal()"
+  (ticketDerivado)="onTicketDerivado($event)"
+  (ticketAtendido)="onTicketAtendido($event)">
 </app-gestionar-ticket>
 
 <!-- Modal para Proceso Ticket -->

@@ -93,19 +93,19 @@ export class MainService extends GlobalService {
 		});
 	}
 
-	post_Global_ObtenerPerfilesCalidad(cPerCodigo: string, nSisGruCodigo: number, nSisGruTipo: number, nObjTipo: number): Observable<HttpResponse<ResponseResultItem<any>>>{
-    const param = {
-      cPerCodigo : cPerCodigo,
-      nSisGruCodigo: nSisGruCodigo,
-      nSisGruTipo: nSisGruTipo,
-      nObjTipo: nObjTipo
-    };
-    const ling =  this.ApiPerfilGlobal.url + this.ApiPerfilGlobal.endpoints.Calidad_Perfiles;
-    return this._http.post<ResponseResultItem<any>>(ling, param, {
-      headers: this.headers_a_json,
-      observe: 'response',
-    });
-  }
+	post_Global_ObtenerPerfilesCalidad(cPerCodigo: string, nSisGruCodigo: number, nSisGruTipo: number, nObjTipo: number): Observable<HttpResponse<ResponseResultItem<any>>> {
+		const param = {
+			cPerCodigo: cPerCodigo,
+			nSisGruCodigo: nSisGruCodigo,
+			nSisGruTipo: nSisGruTipo,
+			nObjTipo: nObjTipo
+		};
+		const ling = this.ApiPerfilGlobal.url + this.ApiPerfilGlobal.endpoints.Calidad_Perfiles;
+		return this._http.post<ResponseResultItem<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
 
 	post_ObtenerListadoServiciosNC(cPerCodigo: string): Observable<HttpResponse<ResponseResultLst<any>>> {
 		const param = {
@@ -161,6 +161,36 @@ export class MainService extends GlobalService {
 
 		const ling = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_SeguimientoServicio;
 		return this._http.post<ResponseResultLst<any>>(ling, param, {
+			headers: this.headers_a_json,
+			observe: 'response',
+		});
+	}
+
+	// Metodo para derivar un servicio no conforme
+	post_DerivarServicioNC(
+		datos: {
+			cPerCodigo: string,
+			idNoConformidad: number,
+			idCodigoNC: string,
+			cNombreUsuarioO: string,
+			cAreaUsuarioO: string,
+			cPuestoUsuarioO: string,
+			nUniOrgCodigoO: number,
+			cNombreCategoria: string,
+			dfechaIncidente: string,
+			fechaRegistroNC: string,
+			cLugarIncidente: string,
+			cNombrePrioridad: string,
+			cDetalleServicio: string,
+			cPerJuridica: string,
+			cFilialUsuarioO: string,
+			cUsuarioCorreoO: string,
+			nUniOrgCodigoD: number,
+			comentario: string
+		}
+	): Observable<HttpResponse<ResponseResultItem<any>>> {
+		const url = this.ApiServicioNC.url + this.ApiServicioNC.endpoints.Snc_DerivarServicio;
+		return this._http.post<ResponseResultItem<any>>(url, datos, {
 			headers: this.headers_a_json,
 			observe: 'response',
 		});
