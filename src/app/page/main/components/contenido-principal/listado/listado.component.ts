@@ -58,8 +58,6 @@ interface Ticket {
   dFechaFinal?: string;
 }
 
-type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Derivado';
-
 @Component({
   selector: 'app-listado',
   standalone: true,
