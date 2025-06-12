@@ -2,6 +2,7 @@ import { Component, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { VerTicketComponent } from "../../../../shared/modales/ver-ticket/ver-ticket.component";
@@ -55,6 +56,7 @@ type EstadoFiltro = 'Todos' | 'Pendiente' | 'En Revisión' | 'Cerrado' | 'Deriva
     FormsModule,
     InputTextModule,
     Button,
+    Tooltip,
     TableModule,
     VerTicketComponent,
     GestionarTicketComponent,
@@ -152,13 +154,23 @@ export class VistaAreaComponent implements OnInit {
 
   // Procesa la respuesta de la API
   private procesarRespuestaAPI(response: any): void {
-    console.log('Respuesta de la API:', response);
+    console.log('Respuesta completa de la API:', response);
 
     if (response.body?.lstItem && response.body.lstItem.length > 0) {
-      this.ticketsOriginales = response.body.lstItem.map((item: Ticket) =>
+      console.log('Datos originales de la API:', response.body.lstItem);
+
+      // Mapear los tickets
+      this.ticketsOriginales = response.body.lstItem.map((item: any) =>
         this.mapearTicketDeAPI(item)
       );
 
+      // ✅ NUEVO: Actualizar el signal con los datos originales de la API
+      this._mainSharedService.actualizarDatosSeguimiento(
+        response.body.lstItem,
+        this.nTipoGestion
+      );
+
+      console.log('Tickets mapeados:', this.ticketsOriginales);
       this.inicializarDatos();
       console.log('Tickets cargados exitosamente:', this.ticketsOriginales.length);
     } else {
@@ -188,6 +200,9 @@ export class VistaAreaComponent implements OnInit {
     this.ticketsOriginales = [];
     this.ticketsFiltrados = [];
     this.estadisticas = { total: 0, alta: 0, media: 0, baja: 0 };
+
+    // ✅ NUEVO: Limpiar los signals
+    this._mainSharedService.limpiarDatosSeguimiento();
   }
 
   // ==================== MÉTODOS DE MAPEO Y FORMATEO ====================
@@ -195,12 +210,50 @@ export class VistaAreaComponent implements OnInit {
   /**
    * Mapea los datos de la API al formato del componente
    */
-  private mapearTicketDeAPI(item: Ticket): Ticket {
-    return {
-      ...item,
-      fechaIncidente: this.formatearFecha(item.fechaIncidente),
-      fechaRegistro: this.formatearFecha(item.fechaRegistro)
+  private mapearTicketDeAPI(item: any): Ticket {
+    console.log('Mapeando item individual:', item);
+
+    // Si fechaIncidente es null, usar fechaRegistro
+    const fechaIncidenteFormateada = item.fechaIncidente
+      ? this.formatearFecha(item.fechaIncidente)
+      : this.formatearFecha(item.fechaRegistro);
+
+    const ticketMapeado: Ticket = {
+      idNoConformidad: item.idNoConformidad,
+      idCodigoNC: item.idCodigoNC,
+      idCategoria: item.idCategoria,
+      descripcion: item.descripcion,
+      fechaIncidente: fechaIncidenteFormateada,
+      descripcionNC: item.descripcionNC || '',
+      idPrioridad: item.idPrioridad,
+      cPrioridad: item.cPrioridad,
+      detalleServicioNC: item.detalleServicioNC,
+      cUsOrigen: item.cUsOrigen,
+      cAreaOrigen: item.cAreaOrigen,
+      cPuestoOrigen: item.cPuestoOrigen,
+      unidadDestino: item.unidadDestino,
+      cAreaDestino: item.cAreaDestino,
+      cPerJuridica: item.cPerJuridica,
+      cFilDestino: item.cFilDestino,
+      estadoNC: item.estadoNC,
+      cEstado: item.cEstado,
+      fechaRegistro: this.formatearFecha(item.fechaRegistro),
+      cPerCodigoDeriva: item.cPerCodigoDeriva,
+      correoDeriva: item.correoDeriva,
+      cUsDestino: item.cUsDestino,
+      cUnidadDestino: item.cUnidadDestino,
+      cCargoDestino: item.cCargoDestino
     };
+
+    console.log('Ticket mapeado:', {
+      idCodigoNC: ticketMapeado.idCodigoNC,
+      fechaIncidenteOriginal: item.fechaIncidente,
+      fechaIncidenteUsada: fechaIncidenteFormateada,
+      fechaRegistro: ticketMapeado.fechaRegistro,
+      usandoFechaRegistro: !item.fechaIncidente
+    });
+
+    return ticketMapeado;
   }
 
   // Formatea las fechas de la API
@@ -313,14 +366,27 @@ export class VistaAreaComponent implements OnInit {
    * Abre el modal de detalles del ticket
    */
   verDetalles(ticket: Ticket): void {
+    console.log('Ver detalles del ticket:', ticket);
     this.selectedTicket = ticket;
     this.modalVisible = true;
   }
 
   /**
    * Abre el modal de gestión del ticket
+   * Solo permite gestionar tickets que no estén en estado 'Derivado'
    */
   gestionarTicket(ticket: Ticket): void {
+    // Verificar si el ticket está derivado o cerrado
+    if (ticket.cEstado === 'Derivado' || ticket.cEstado === 'Cerrado') {
+      console.warn('No se puede gestionar un ticket en estado:', ticket.cEstado, ticket);
+      return; // Salir sin hacer nada
+    }
+
+    console.log('Gestionar ticket:', ticket);
+
+    // ✅ NUEVO: Establecer el ticket en el signal antes de abrir el modal
+    this._mainSharedService.establecerTicketEnGestion(ticket);
+
     this.selectedTicketGestion = ticket;
     this.modalGestionVisible = true;
   }
@@ -329,6 +395,7 @@ export class VistaAreaComponent implements OnInit {
    * Abre el modal de proceso del ticket
    */
   abrirModalProceso(ticket: Ticket): void {
+    console.log('Proceso del ticket:', ticket);
     this.selectedTicketProceso = ticket;
     this.modalProcesoVisible = true;
   }
@@ -347,6 +414,9 @@ export class VistaAreaComponent implements OnInit {
   closeGestionModal(): void {
     this.modalGestionVisible = false;
     this.selectedTicketGestion = null;
+
+    // ✅ NUEVO: Limpiar el ticket en gestión del signal
+    this._mainSharedService.limpiarTicketEnGestion();
   }
 
   /**
@@ -373,6 +443,21 @@ export class VistaAreaComponent implements OnInit {
     return this.ticketsFiltrados.length;
   }
 
+
+  /**
+   * Obtiene el tooltip apropiado para el botón de gestionar según el estado
+   */
+  getTooltipGestionar(estado: string): string {
+    switch (estado) {
+      case 'Derivado':
+        return 'Ticket derivado - No se puede gestionar';
+      case 'Cerrado':
+        return 'Ticket cerrado - No se puede gestionar';
+      default:
+        return 'Gestionar ticket';
+    }
+  }
+
   /**
    * Verifica si hay tickets cargados
    */
@@ -385,5 +470,80 @@ export class VistaAreaComponent implements OnInit {
    */
   obtenerTicketPorId(idCodigoNC: string): Ticket | undefined {
     return this.ticketsOriginales.find(ticket => ticket.idCodigoNC === idCodigoNC);
+  }
+
+  actualizarTicketEspecifico(idCodigoNC: string): void {
+    // Recargar todos los datos para asegurar consistencia
+    this.cargarTicketsDesdeAPI();
+  }
+
+  /**
+   * Método para obtener los datos completos de un ticket para derivar
+   */
+  obtenerDatosParaDerivar(ticket: Ticket): any {
+    const datosDerivacion = {
+      cPerCodigo: this._mainSharedService.cPerCodigo(),
+      idNoConformidad: ticket.idNoConformidad,
+      idCodigoNC: ticket.idCodigoNC,
+      cNombreUsuarioO: ticket.cUsOrigen,
+      cAreaUsuarioO: ticket.cAreaOrigen,
+      cPuestoUsuarioO: ticket.cPuestoOrigen,
+      nUniOrgCodigoO: ticket.unidadDestino, // Unidad de origen
+      cNombreCategoria: ticket.descripcion,
+      dfechaIncidente: ticket.fechaIncidente,
+      fechaRegistroNC: ticket.fechaRegistro,
+      cLugarIncidente: ticket.descripcionNC,
+      cNombrePrioridad: ticket.cPrioridad,
+      cDetalleServicio: ticket.detalleServicioNC,
+      cPerJuridica: ticket.cPerJuridica,
+      cFilialUsuarioO: ticket.cFilDestino,
+      cUsuarioCorreoO: ticket.correoDeriva,
+      nUniOrgCodigoD: 0, // Se debe especificar al derivar
+      comentario: '' // Se debe especificar al derivar
+    };
+
+    console.log('Datos preparados para derivación:', datosDerivacion);
+    return datosDerivacion;
+  }
+
+  // Agregar estos métodos al VistaCoordinadorComponent
+
+  /**
+   * Maneja cuando un ticket ha sido derivado exitosamente
+   */
+  onTicketDerivado(ticketActualizado: Ticket): void {
+    console.log('Ticket derivado exitosamente:', ticketActualizado);
+
+    // Actualizar el ticket en la lista local
+    const index = this.ticketsOriginales.findIndex(
+      t => t.idCodigoNC === ticketActualizado.idCodigoNC
+    );
+
+    if (index !== -1) {
+      this.ticketsOriginales[index] = ticketActualizado;
+      this.filtrarTickets(); // Refiltrar para actualizar la vista
+      this.calcularEstadisticas();
+    }
+
+    // Opcional: Recargar todos los datos desde la API para asegurar consistencia
+    // this.cargarTicketsDesdeAPI();
+  }
+
+  /**
+   * Maneja cuando un ticket ha sido atendido exitosamente
+   */
+  onTicketAtendido(ticketActualizado: Ticket): void {
+    console.log('Ticket atendido exitosamente:', ticketActualizado);
+
+    // Actualizar el ticket en la lista local
+    const index = this.ticketsOriginales.findIndex(
+      t => t.idCodigoNC === ticketActualizado.idCodigoNC
+    );
+
+    if (index !== -1) {
+      this.ticketsOriginales[index] = ticketActualizado;
+      this.filtrarTickets(); // Refiltrar para actualizar la vista
+      this.calcularEstadisticas();
+    }
   }
 }

@@ -21,7 +21,7 @@
     <div class="px-8 py-4" *ngIf="ticket">
       <!-- Código y tipo de servicio -->
       <div
-        class="bg-gray-100 border-solid border rounded border-gray-400 p-2 text-center text-gray-600 text-[16px] mb-4">
+        class="bg-indigo-50 border-solid border rounded border-indigo-400 p-2 text-center text-indigo-600 text-[16px] mb-4">
         <strong>Código:</strong> {{ getCodigoServicio() }} - {{ getCategoria() }}
       </div>
 
@@ -44,9 +44,9 @@
             <div>
               <span [ngClass]="{
                 'bg-red-200 text-red-600': ticket.cPrioridad === 'Alta',
-                'bg-yellow-100 text-yellow-600': ticket.cPrioridad === 'Media',
-                'bg-green-100 text-green-600': ticket.cPrioridad === 'Baja'
-              }" class="px-3 py-1 rounded-full text-xs font-medium">
+                'bg-orange-100 text-orange-600': ticket.cPrioridad === 'Media',
+                'bg-yellow-100 text-yellow-600': ticket.cPrioridad === 'Baja'
+              }" class="px-3 py-1 rounded-full text-sm font-medium">
                 {{ ticket.cPrioridad }}
               </span>
             </div>
@@ -69,11 +69,11 @@
             <div class="text-sm text-gray-500">Estado</div>
             <div>
               <span [ngClass]="{
-                'text-yellow-600 bg-yellow-100': ticket.cEstado === 'Pendiente',
-                'text-blue-600 bg-blue-100': ticket.cEstado === 'En Revisión',
-                'text-green-600 bg-green-100': ticket.cEstado === 'Cerrado',
-                'text-purple-600 bg-purple-100': ticket.cEstado === 'Derivado'
-              }" class="px-2 py-1 rounded text-xs font-medium">
+                'text-blue-700 bg-blue-100': ticket.cEstado === 'Pendiente',
+                'text-pink-500 bg-pink-100': ticket.cEstado === 'En Revisión',
+                'text-green-700 bg-green-100': ticket.cEstado === 'Cerrado',
+                'text-red-900 bg-red-200': ticket.cEstado === 'Derivado'
+              }" class="px-2 py-1 border-solid border rounded text-sm font-medium">
                 {{ ticket.cEstado }}
               </span>
             </div>

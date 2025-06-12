@@ -73,10 +73,10 @@
 
             <td class="text-center w-[8%]">
               <span [ngClass]="{
-                                'text-blue-700 bg-blue-100': ticket.cEstado === 'Pendiente',
-                                'text-purple-700 bg-purple-100': ticket.cEstado === 'En Revisión',
-                                'text-green-700 bg-green-100': ticket.cEstado === 'Cerrado',
-                                'text-gray-700 bg-gray-100': ticket.cEstado === 'Derivado'
+                              'text-blue-700 bg-blue-100': ticket.cEstado === 'Pendiente',
+                              'text-pink-500 bg-pink-100': ticket.cEstado === 'En Revisión',
+                              'text-green-700 bg-green-100': ticket.cEstado === 'Cerrado',
+                              'text-red-900 bg-red-200': ticket.cEstado === 'Derivado'
                             }" class="px-2 py-1 rounded text-md font-medium border-solid border">
                 {{ ticket.cEstado }}
               </span>

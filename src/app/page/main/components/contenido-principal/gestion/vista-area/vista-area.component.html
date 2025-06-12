@@ -3,14 +3,14 @@
   <div class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-4 gap-4">
     <!-- Card Total -->
     <div
-      class="bg-blue-50 rounded-lg shadow-sm border-solid border border-blue-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      class="bg-zinc-50 rounded-lg shadow-sm border-solid border border-zinc-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
       <div class="flex items-center justify-between">
         <div>
-          <h4 class="text-blue-600 font-bold text-md uppercase tracking-wide mb-1">Total</h4>
-          <div class="text-2xl font-bold text-blue-600">{{ estadisticas.total }}</div>
+          <h4 class="text-zinc-600 font-bold text-md uppercase tracking-wide mb-1">Total</h4>
+          <div class="text-2xl font-bold text-zinc-600">{{ estadisticas.total }}</div>
         </div>
         <div class="flex items-center justify-center">
-          <i class="pi pi-check-circle text-3xl text-blue-500"></i>
+          <i class="pi pi-check-circle text-3xl text-zinc-500"></i>
         </div>
       </div>
     </div>
@@ -45,14 +45,14 @@
 
     <!-- Card Baja Prioridad -->
     <div
-      class="bg-green-50 rounded-lg shadow-sm border-solid border border-green-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
+      class="bg-yellow-50 rounded-lg shadow-sm border-solid border border-yellow-300 p-4 hover:shadow-md transition-shadow duration-200 flex flex-col justify-center">
       <div class="flex items-center justify-between">
         <div>
-          <h4 class="text-green-600 font-semibold text-md uppercase tracking-wide mb-1">Baja Prioridad</h4>
-          <div class="text-2xl font-bold text-green-600">{{ estadisticas.baja }}</div>
+          <h4 class="text-yellow-600 font-semibold text-md uppercase tracking-wide mb-1">Baja Prioridad</h4>
+          <div class="text-2xl font-bold text-yellow-600">{{ estadisticas.baja }}</div>
         </div>
         <div class="flex items-center justify-center">
-          <i class="pi pi-arrow-down text-3xl text-green-500"></i>
+          <i class="pi pi-arrow-down text-3xl text-yellow-500"></i>
         </div>
       </div>
     </div>
@@ -136,28 +136,41 @@
         <td class="text-center w-[12%]">
           <span [ngClass]="{
                           'bg-red-200 text-red-600': ticket.cPrioridad === 'Alta',
-                          'bg-yellow-100 text-yellow-600': ticket.cPrioridad === 'Media',
-                          'bg-green-100 text-green-600': ticket.cPrioridad === 'Baja'
+                          'bg-orange-100 text-orange-600': ticket.cPrioridad === 'Media',
+                          'bg-yellow-100 text-yellow-600': ticket.cPrioridad === 'Baja'
                       }" class="px-3 py-1 rounded-full text-md font-medium">
             {{ ticket.cPrioridad }}
           </span>
         </td>
         <td class="text-center w-[8%]">
           <span [ngClass]="{
-                          'text-yellow-600 bg-yellow-100': ticket.cEstado === 'Pendiente',
-                          'text-blue-600 bg-blue-100': ticket.cEstado === 'En Revisión',
-                          'text-green-600 bg-green-100': ticket.cEstado === 'Cerrado',
-                          'text-purple-600 bg-purple-100': ticket.cEstado === 'Derivado'
-                      }" class="px-2 py-1 rounded text-md font-medium">
+                        'text-blue-700 bg-blue-100': ticket.cEstado === 'Pendiente',
+                        'text-pink-500 bg-pink-100': ticket.cEstado === 'En Revisión',
+                        'text-green-700 bg-green-100': ticket.cEstado === 'Cerrado',
+                        'text-red-900 bg-red-200': ticket.cEstado === 'Derivado'
+                      }" class="px-2 py-1 rounded border-solid border text-md font-medium">
             {{ ticket.cEstado }}
           </span>
         </td>
         <td class="flex justify-center space-x-2">
           <p-button icon="pi pi-eye" severity="info" (click)="verDetalles(ticket)">
           </p-button>
-          <p-button icon="pi pi-cog" severity="help" (click)="gestionarTicket(ticket)">
+          <!-- Botón Gestionar - Deshabilitado si está derivado -->
+          <p-button
+            icon="pi pi-cog"
+            severity="help"
+            [disabled]="ticket.cEstado === 'Derivado' || ticket.cEstado === 'Cerrado'"
+            [pTooltip]="getTooltipGestionar(ticket.cEstado)"
+            tooltipPosition="top"
+            (click)="gestionarTicket(ticket)">
           </p-button>
-          <p-button icon="pi pi-history" severity="secondary" (click)="abrirModalProceso(ticket)" pTooltip="Ver Proceso"
+
+          <!-- Botón Proceso - Siempre habilitado -->
+          <p-button
+            icon="pi pi-history"
+            severity="secondary"
+            (click)="abrirModalProceso(ticket)"
+            pTooltip="Ver Proceso"
             tooltipPosition="top">
           </p-button>
         </td>
@@ -189,7 +202,11 @@
 </app-ver-ticket>
 
 <!-- Modal para Gestionar Ticket -->
-<app-gestionar-ticket [visible]="modalGestionVisible" (btnCerrar)="closeGestionModal()">
+<app-gestionar-ticket
+  [visible]="modalGestionVisible"
+  (btnCerrar)="closeGestionModal()"
+  (ticketDerivado)="onTicketDerivado($event)"
+  (ticketAtendido)="onTicketAtendido($event)">
 </app-gestionar-ticket>
 
 <!-- Modal para Proceso Ticket -->
