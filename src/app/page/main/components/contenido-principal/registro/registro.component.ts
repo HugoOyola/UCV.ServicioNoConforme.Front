@@ -296,7 +296,7 @@ export class RegistroComponent implements OnInit {
     switch (prioridad.label) {
       case 'Alta': return 'red';
       case 'Media': return 'orange';
-      case 'Baja': return 'green';
+      case 'Baja': return 'yellow';
       default: return 'gray';
     }
   }

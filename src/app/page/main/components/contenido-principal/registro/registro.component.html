@@ -18,7 +18,8 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Area Destino -->
         <div class="form-group">
-          <label for="area" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+          <label for="area" class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-building mr-2 text-blue-600" aria-hidden="true"></i>
             Área o Escuela destinataria <span class="text-red-500" aria-hidden="true">*</span>
             <span class="sr-only">(requerido)</span>
           </label>
@@ -38,7 +39,8 @@
 
         <!-- Categoría -->
         <div class="form-group">
-          <label for="categoria" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+          <label for="categoria" class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-tags mr-2 text-purple-600" aria-hidden="true"></i>
             Categoría <span class="text-red-500" aria-hidden="true">*</span>
             <span class="sr-only">(requerido)</span>
           </label>
@@ -55,7 +57,8 @@
 
         <!-- Fecha del incidente -->
         <div class="form-group">
-          <label for="fecha" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+          <label for="fecha" class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-calendar mr-2 text-green-600" aria-hidden="true"></i>
             Fecha del incidente
           </label>
           <p-datepicker id="fecha" formControlName="fecha" [iconDisplay]="'input'" [showIcon]="true"
@@ -65,13 +68,14 @@
 
         <!-- Lugar -->
         <div class="form-group">
-          <label for="lugar" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+          <label for="lugar" class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-map-marker mr-2 text-red-600" aria-hidden="true"></i>
             Lugar en el campus
           </label>
           <div class="relative flex-grow">
-            <input id="lugar" pInputText formControlName="lugar" type="text" class="w-full"
+            <input id="lugar" pInputText formControlName="lugar" type="text" class="w-full pl-10"
               placeholder="Ej. Biblioteca, Aula 101..." aria-label="Ingrese lugar en el campus">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true">
               <i class="pi pi-map-marker"></i>
             </span>
           </div>
@@ -80,7 +84,8 @@
         <!-- Prioridad -->
         <div class="form-group">
           <fieldset>
-            <legend class="block text-sm font-medium mb-2 text-[#1a2a47]">
+            <legend class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+              <i class="pi pi-flag mr-2 text-orange-600" aria-hidden="true"></i>
               Prioridad <span class="text-red-500" aria-hidden="true">*</span>
               <span class="sr-only">(requerido)</span>
             </legend>
@@ -109,15 +114,18 @@
       <!-- Detalle con contador de caracteres mejorado -->
       <div class="mb-6">
         <div class="form-group">
-          <label for="detalle" class="block text-sm font-medium mb-2 text-[#1a2a47]">
+          <label for="detalle" class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-file-edit mr-2 text-teal-600" aria-hidden="true"></i>
             Detalle del servicio no conforme <span class="text-red-500" aria-hidden="true">*</span>
             <span class="sr-only">(requerido)</span>
           </label>
-          <textarea id="detalle" pTextarea formControlName="detalle" rows="5" [autoResize]="true" class="w-full"
-            maxlength="2000" placeholder="Describa detalladamente su servicio no conforme..."
-            [attr.aria-required]="true"
-            [attr.aria-invalid]="form.get('detalle')?.touched && form.get('detalle')?.invalid"
-            aria-describedby="detalle-error contador-caracteres"></textarea>
+          <div class="relative">
+            <textarea id="detalle" pTextarea formControlName="detalle" rows="5" [autoResize]="true" class="w-full sdsdsdsdaseas<sda<ds<sdw<SD<pt-3"
+              maxlength="2000" placeholder="Describa detalladamente su servicio no conforme..."
+              [attr.aria-required]="true"
+              [attr.aria-invalid]="form.get('detalle')?.touched && form.get('detalle')?.invalid"
+              aria-describedby="detalle-error contador-caracteres"></textarea>
+          </div>
           <div class="flex justify-between mt-2">
             <div id="detalle-error" *ngIf="form.get('detalle')?.touched && form.get('detalle')?.invalid"
               class="text-red-500 text-xs flex items-center" aria-live="assertive">
@@ -131,20 +139,40 @@
         </div>
       </div>
 
+      <!-- Sección de archivos adjuntos (opcional) -->
+      <!-- <div class="mb-6">
+        <div class="form-group">
+          <label class="block text-sm font-medium mb-2 text-[#1a2a47] flex items-center">
+            <i class="pi pi-paperclip mr-2 text-gray-600" aria-hidden="true"></i>
+            Archivos adjuntos (opcional)
+          </label>
+          <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+            <i class="pi pi-cloud-upload text-3xl text-gray-400 mb-2" aria-hidden="true"></i>
+            <p class="text-gray-600 text-sm">Arrastra archivos aquí o haz clic para seleccionar</p>
+            <p class="text-gray-500 text-xs mt-1">Máximo 5MB por archivo</p>
+          </div>
+        </div>
+      </div> -->
+
       <!-- Alerta mejorada -->
       <div
         class="bg-yellow-50 border-solid border border-yellow-200 border-l-4 border-l-yellow-400 text-yellow-800 p-4 rounded-md mb-6 flex items-start"
         role="alert" aria-labelledby="alert-heading">
         <i class="pi pi-exclamation-triangle text-yellow-500 mr-3 text-lg mt-0.5" aria-hidden="true"></i>
         <div>
-          <p id="alert-heading" class="text-lg font-semibold mb-1">Atención:</p>
+          <p id="alert-heading" class="text-lg font-semibold mb-1 flex items-center">
+            Atención:
+          </p>
           <p class="text-md">La no conformidad será registrada para el <span class="font-semibold">Campus {{ campusNombre }}</span>.</p>
           <p class="text-sm mt-1">Asegúrese de que todos los datos sean correctos antes de enviar.</p>
         </div>
       </div>
 
-      <!-- Botón -->
-      <div class="flex justify-end">
+      <!-- Botones -->
+      <div class="flex justify-end gap-3">
+        <p-button label="Cancelar" icon="pi pi-times" severity="secondary" type="button"
+          styleClass="w-full sm:w-auto font-semibold">
+        </p-button>
         <p-button label="Registrar" icon="pi pi-save" severity="success" type="submit" [disabled]="form.invalid"
           styleClass="w-full sm:w-auto uppercase font-semibold">
         </p-button>
